@@ -7,11 +7,11 @@ import { StyleButton, StyleInputText } from "../Styles";
 
 import { Td } from "../comps/Table";
 import {
-  pbAddNewItemToTable,
-  pbEmptyTable,
-  pbGetAllItemsFromTable,
+  AddNewItemToTable,
+  EmptyTable,
+  GetAllItemsFromTable,
   TABLE_NAME,
-} from "../db/pb";
+} from "../db/sb";
 
 const HEADERS_TABLEAU_GEN = [
   "DATE",
@@ -68,7 +68,7 @@ export default function Finances() {
 
     let dep = { ...inputs };
 
-    await pbAddNewItemToTable(dep, TABLE_NAME.DEPENSES);
+    await AddNewItemToTable(dep, TABLE_NAME.DEPENSES);
     resetForm();
   }
 
@@ -80,7 +80,7 @@ export default function Finances() {
 
   async function loadAllDeps() {
     console.warn("loading all depenses ...");
-    const deps = await pbGetAllItemsFromTable(TABLE_NAME.DEPENSES);
+    const deps = await GetAllItemsFromTable(TABLE_NAME.DEPENSES);
     setDeps(deps);
   }
 
