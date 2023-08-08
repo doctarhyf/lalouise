@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ReactDOM } from "react";
 import PageHeader from "../comps/PageHeader";
 import { DummyStats } from "../Helper";
-//import { CountItemsInTable, GetAllItemsFromTable, TABLE_PREFIX } from "../db/DBManager";
-// import { pbCountItemsInTable,  TABLE_NAME  } from "../db/pb";
 import { CountItemsInTable, TABLE_NAME } from "../db/sb";
+import ProgressView from "../comps/ProgressView";
 
 function StatItem({ statData }) {
   return (
@@ -18,17 +17,19 @@ function StatItem({ statData }) {
 }
 
 export default function Home() {
-  //const [stats, setStats] = useState(null)
-  const [infCount, setInfCount] = useState(0);
-  const [medsCount, setMedsCount] = useState(0);
-  const [patsCount, setPatsCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [infCount, setInfCount] = useState("-");
+  const [medsCount, setMedsCount] = useState("-");
+  const [patsCount, setPatsCount] = useState("-");
   const [time, setTime] = useState();
 
   useEffect(() => {
     async function loadCounts() {
+      setLoading(true);
       setInfCount(await CountItemsInTable(TABLE_NAME.INFIRMIERS));
       setMedsCount(await CountItemsInTable());
       setPatsCount(await CountItemsInTable(TABLE_NAME.PATIENTS));
+      setLoading(false);
     }
 
     loadCounts();
@@ -47,6 +48,8 @@ export default function Home() {
           "fr-FR"
         ).format(new Date())}, ${time}`}
       />
+
+      <ProgressView show={loading} />
 
       <div className="stats-cont flex flex-wrap gap-8 align-middle justify-center">
         <StatItem
