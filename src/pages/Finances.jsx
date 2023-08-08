@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import PageHeader from "../comps/PageHeader";
-import { Tr } from "../comps/Table";
-import SectionMenu from "../comps/SectionMenu";
 import { StyleButton, StyleInputText } from "../Styles";
-//import { AddNewItemToTable, EmptyTable, GetAllItemsFromTable, TABLE_PREFIX } from '../db/DBManager'
-
+import PageHeader from "../comps/PageHeader";
+import SectionMenu from "../comps/SectionMenu";
+import { Tr } from "../comps/Table";
 import { Td } from "../comps/Table";
 import {
   AddNewItemToTable,

@@ -14,6 +14,8 @@ export async function RemoveAllItemsFromTable(tableName) {
   return error;
 }
 
+export const EmptyTable = RemoveAllItemsFromTable;
+
 export async function CountItemsInTable(tableName = TABLE_NAME.MEDS) {
   let count = "-";
   let { data: inf_, error } = await supabase.from(tableName).select("*");
