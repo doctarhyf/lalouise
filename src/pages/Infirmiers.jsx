@@ -19,6 +19,7 @@ import {
   GetNumDaysCurMonth,
   GetNumDaysInMonth,
 } from "../Helper";
+import ProgressView from "../comps/ProgressView";
 
 function InfirmierItem({ data, onViewInf }) {
   return (
@@ -297,6 +298,7 @@ export default function Infirmiers() {
   const [selectedSection, setSelectedSection] = useState("inflist");
   const [updateID, setUpdateID] = useState(-1);
   const [editidingInf, setEditidingInf] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const selClass = "text-sky-500 border-b-sky-500 bg-sky-500 text-white";
 
@@ -378,8 +380,10 @@ export default function Infirmiers() {
   }
 
   async function refreshInfList() {
+    setLoading(true);
     setListInfirmers(await GetAllItemsFromTable(TABLE_NAME.INFIRMIERS));
     setSelectedSection("inflist");
+    setLoading(false);
   }
 
   function resetForm() {
@@ -427,6 +431,8 @@ export default function Infirmiers() {
           Nouveau Infirmier
         </button>
       </div>
+
+      <ProgressView show={loading} />
 
       {selectedSection === "inflist" && (
         <div className="list-infirmiers mt-8">

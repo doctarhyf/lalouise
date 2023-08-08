@@ -4,7 +4,8 @@ import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
 import logo from "../assets/react.svg";
 import EmptyList from "../comps/EmptyList";
 import PageHeader from "../comps/PageHeader";
-// import { pbGetAllItemsFromTable, TABLE_NAME, pbUpdateItem, pbDeleteItem, pbAddNewItemToTable} from "../db/pb"
+import ProgressView from "../comps/ProgressView";
+
 import {
   GetAllItemsFromTable,
   TABLE_NAME,
@@ -185,6 +186,7 @@ function FormNewPat(props) {
 }
 
 export default function Reception() {
+  const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [listPatients, setListPatients] = useState([]);
 
@@ -280,11 +282,13 @@ export default function Reception() {
   }
 
   async function loadPatList() {
+    setLoading(true);
     const list = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
 
     setPatsCount(list.length);
     setListPatients(list);
     setSelectedSection("lspat");
+    setLoading(false);
   }
 
   function onCancel(e) {
@@ -292,7 +296,7 @@ export default function Reception() {
     setSelectedSection("lspat");
   }
 
-  const [selectedSection, setSelectedSection] = useState("newpat");
+  const [selectedSection, setSelectedSection] = useState("lspat");
 
   function onChangeSection(e) {
     const secName = e.target.name;
@@ -349,15 +353,6 @@ export default function Reception() {
 
       <div className="mb-8 flex flex-col md:flex-row border border-white border-b-sky-500">
         <button
-          name="newpat"
-          onClick={onChangeSection}
-          className={`px-2 mx-4 ml-0 border border-white  ${
-            selectedSection === "newpat" ? selClass : "hover:text-sky-500"
-          }  hover:border-b-sky-500  rounded-tl-[6pt] rounded-tr-[6pt] `}
-        >
-          Nouveau Patient
-        </button>
-        <button
           name="lspat"
           onClick={onChangeSection}
           className={`px-2 mx-4 border border-white ${
@@ -366,10 +361,22 @@ export default function Reception() {
         >
           Liste des Patients ({patsCount})
         </button>
+
+        <button
+          name="newpat"
+          onClick={onChangeSection}
+          className={`px-2 mx-4 ml-0 border border-white  ${
+            selectedSection === "newpat" ? selClass : "hover:text-sky-500"
+          }  hover:border-b-sky-500  rounded-tl-[6pt] rounded-tr-[6pt] `}
+        >
+          Nouveau Patient
+        </button>
       </div>
 
       {selectedSection === "lspat" && (
         <div className="lspat mt-8">
+          <ProgressView show={loading} />
+
           <div>
             {listPatients && listPatients.length > 0 ? (
               <div>

@@ -18,6 +18,7 @@ import {
 import PageHeader from "../comps/PageHeader";
 import SectionMenu from "../comps/SectionMenu";
 import { Td, Tr } from "../comps/Table";
+import ProgressView from "../comps/ProgressView";
 
 const SECTIONS = {
   MEDS_TABLE: { title: "Liste produits", name: "lsmeds" },
@@ -94,6 +95,8 @@ export default function Pharmacy() {
   const [q, setQ] = useState("");
   const [med2sell, setMed2sell] = useState({});
   const [qty2Sell, setQty2Sell] = useState(0);
+
+  const [loading, setLoading] = useState(true);
 
   const updateMed = async (e) => {
     let newMed = {};
@@ -181,7 +184,9 @@ export default function Pharmacy() {
 
     //setNewMed(med);
     async function loadAllMeds() {
+      setLoading(true);
       setMeds(await GetAllItemsFromTable(TABLE_NAME.MEDS));
+      setLoading(false);
     }
 
     loadAllMeds();
@@ -379,6 +384,8 @@ export default function Pharmacy() {
               onChange={onSearch}
               placeholder="search ..."
             />
+
+            <ProgressView show={loading} />
 
             <table className="border-collapse border border-slate-500  ">
               <tr>
