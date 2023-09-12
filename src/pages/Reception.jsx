@@ -44,9 +44,11 @@ function PatientItem({ data, onViewPatient }) {
 function FormNewPat(props) {
   return (
     <>
-      <div className="flex flew-wrap flex-col md:flex-row">
-        <div className="info-blk w-full">
-          <h5 className={StyleFormBlockTitle()}>Information du Patient</h5>
+      <div className=" flex-col md:flex-row">
+        <details className="info-blk w-full">
+          <summary className={StyleFormBlockTitle()}>
+            Information du Patient
+          </summary>
           <div>Nom</div>
           <input
             className={StyleInputText}
@@ -89,10 +91,15 @@ function FormNewPat(props) {
             onChange={(e) => props.setNewPatTaille(e.target.value)}
             type="Number"
           />
-        </div>
+        </details>
 
-        <div className="info-blk w-full">
-          <h5 className={StyleFormBlockTitle()}>Contact d'urgence</h5>
+        <details className="info-blk w-full">
+          <summary className={StyleFormBlockTitle()}>Payment</summary>
+          <div>All payments</div>
+        </details>
+
+        <details className="info-blk w-full">
+          <summary className={StyleFormBlockTitle()}>Contact d'urgence</summary>
           <div>Nom</div>
           <input
             className={StyleInputText}
@@ -114,10 +121,12 @@ function FormNewPat(props) {
             onChange={(e) => props.setEmergAdd(e.target.value)}
             type="text"
           />
-        </div>
+        </details>
 
-        <div className="info-blk w-full">
-          <h5 className={StyleFormBlockTitle()}>Historique Medical</h5>
+        <details className="info-blk w-full">
+          <summary className={StyleFormBlockTitle()}>
+            Historique Medical
+          </summary>
           <div>
             <input
               type="checkbox"
@@ -152,7 +161,7 @@ function FormNewPat(props) {
             value={props.autre}
             onChange={(e) => props.setAutre(e.target.value)}
           ></textarea>
-        </div>
+        </details>
       </div>
 
       {!props.editing && (
