@@ -89,6 +89,7 @@ export default function Pharmacy() {
   map.set("medSoldBy", setMedSoldBy);
 
   const [meds, setMeds] = useState([]);
+  const [medsFiltered, setMedsFiltered] = useState([]);
   const [curUpdateID, setCurUpdateID] = useState(0);
   const [updatingMed, setUpdatingMed] = useState(false);
 
@@ -183,14 +184,22 @@ export default function Pharmacy() {
     };
 
     //setNewMed(med);
-    async function loadAllMeds() {
-      setLoading(true);
-      setMeds(await GetAllItemsFromTable(TABLE_NAME.MEDS));
-      setLoading(false);
-    }
 
     loadAllMeds();
   }, []);
+
+  async function loadAllMeds() {
+    setMeds([]);
+    setMedsFiltered([]);
+
+    setLoading(true);
+    const meds = await GetAllItemsFromTable(TABLE_NAME.MEDS);
+
+    setMeds(meds);
+    setMedsFiltered(meds);
+
+    setLoading(false);
+  }
 
   const onInputChange = (e) => {
     const name = e.target.name;
@@ -232,16 +241,18 @@ export default function Pharmacy() {
     const q = e.target.value;
     setQ(q);
 
+    if (q === "") {
+      loadAllMeds();
+      return;
+    }
+
     let filter = meds.filter(
       (med) =>
         med.medName.toLowerCase().includes(q.toLowerCase()) ||
         med.medType.toLowerCase().includes(q.toLowerCase())
     );
 
-    setMeds(filter);
-    if (q === "") {
-      setMeds(await GetAllItemsFromTable(TABLE_NAME.MEDS));
-    }
+    setMedsFiltered(filter);
   }
 
   function clearNewMedData() {
@@ -410,7 +421,7 @@ export default function Pharmacy() {
                 ]}
               />
 
-              {meds.map((it, idx) => (
+              {medsFiltered.map((it, idx) => (
                 <MedItem
                   showMedToSell={showMedToSell}
                   key={it.id}
