@@ -6,7 +6,7 @@ const options = {
   minute: "numeric",
   second: "numeric",
   weekday: "long",
-  hour12: true,
+  hour12: false,
   timeZone: "America/Santiago",
 };
 
