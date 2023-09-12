@@ -52,10 +52,17 @@ function FormNewPat(props) {
     foreign_key: "",
     amount: "",
   });
+  const [payments, setPayments] = useState([]);
 
   useEffect(() => {
     setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
+    loadPayments();
   }, []);
+
+  async function loadPayments() {
+    const p = await GetAllItemsFromTable(TABLE_NAME.PAYMENTS);
+    setPayments(p);
+  }
 
   const cltd = "border-b border-neutral-400 p-1";
 
@@ -189,16 +196,28 @@ function FormNewPat(props) {
                 <table className="w-full">
                   <thead>
                     <tr>
-                      {["No", "Amount", "Type", "Description"].map((it, i) => (
+                      {["No", "Amount", "Type", "Date/Heure"].map((it, i) => (
                         <td className={cltd}>{it}</td>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
+                    {payments.map((p, i) => (
+                      <tr key={i}>
+                        <td>{i}</td>
+                        <td>
+                          {p.amount}
+                          {" .00 FC"}
+                        </td>
+                        <td>{p.type}</td>
+                        <td>{new Date(p.created_at).toISOString()}</td>
+                      </tr>
+                    ))}
                     <tr className="font-bold">
                       <td className={cltd}>TOTAL</td>
                       <td className={cltd} colSpan={3}>
-                        0.00 {"FC"}
+                        {payments.reduce((acc, it) => acc + it.amount, 0)}{" "}
+                        {"FC"}
                       </td>
                     </tr>
                   </tbody>
