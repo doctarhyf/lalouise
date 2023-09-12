@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import logo from "../assets/react.svg";
 import PageHeader from "../comps/PageHeader";
 import { StyleButton, StyleInputText } from "../Styles";
+import nurse from "../assets/nurse.png";
 
 import {
   AddNewItemToTable,
@@ -25,7 +26,7 @@ function InfirmierItem({ data, onViewInf }) {
   return (
     <div className="flex gap-x-4 hover:bg-sky-100 rounded-md p-2 cursor-pointer ">
       <div className="w-[30pt] h-[30pt]">
-        <img src={logo} />
+        <img src={nurse} />
       </div>
       <div className="grow">
         <div className="text-black">{data.nom}</div>
@@ -182,7 +183,7 @@ function Roulement(props) {
               <td className={classtdday}>
                 {props.editidingInf ? (
                   <RoulementDayEditor
-                    val={inf} //inf !== undefined && inf.roulement[i]}
+                    val={inf !== undefined && inf.roulement[i]}
                     day={i}
                     updateID={props.updateID}
                   />

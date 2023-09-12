@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CalcAge } from "../Helper";
 import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
-import logo from "../assets/pat.png";
+import logo from "../assets/patient.png";
 import EmptyList from "../comps/EmptyList";
 import PageHeader from "../comps/PageHeader";
 import ProgressView from "../comps/ProgressView";
@@ -17,7 +17,7 @@ import {
 function PatientItem({ data, onViewPatient }) {
   return (
     <div className="flex gap-x-4 hover:bg-sky-100 rounded-md p-2 cursor-pointer ">
-      <div className="bg-red-500 w-[30pt] h-[30pt] rounded-md overflow-hidden">
+      <div className=" w-[30pt] h-[30pt] rounded-md overflow-hidden">
         <img src={logo} className=" h-[100%] " />
       </div>
 
