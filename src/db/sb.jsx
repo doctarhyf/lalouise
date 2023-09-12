@@ -54,6 +54,21 @@ export async function GetAllItemsFromTable(tableName = TABLE_NAME.MEDS) {
   return items;
 }
 
+export async function GetAllItemsFromTableByColEqVal(
+  tableName = TABLE_NAME.MEDS,
+  colName,
+  val
+) {
+  let { data, error } = await supabase
+    .from(tableName)
+    .select("*")
+    .eq(colName, val);
+
+  if (error) return error;
+
+  return data;
+}
+
 export async function GetItemByID(tableName, itemID) {
   let { data, error } = await supabase
     .from(tableName)

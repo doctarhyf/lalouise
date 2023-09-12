@@ -12,8 +12,10 @@ import {
   UpdateItem,
   DeleteItem,
   AddNewItemToTable,
+  GetAllItemsFromTableByColEqVal,
 } from "../db/sb";
 import { PAYMENTS_TYPES } from "../helpers/flow";
+import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
 
@@ -60,14 +62,22 @@ function FormNewPat(props) {
   }, []);
 
   async function loadPayments() {
-    const p = await GetAllItemsFromTable(TABLE_NAME.PAYMENTS);
+    const p = await GetAllItemsFromTableByColEqVal(
+      TABLE_NAME.PAYMENTS,
+      "foreign_key",
+      props.updateID
+    );
+
+    console.log(`Payments of id : ${props.updateID} \n`, p);
+
     setPayments(p);
   }
 
-  const cltd = "border-b border-neutral-400 p-1";
+  const cltd = "border-b border-l border-neutral-400 p-1";
 
   async function onSaveNewPayement(e) {
     AddNewItemToTable(newPayment, TABLE_NAME.PAYMENTS, (data) => {
+      loadPayments();
       alert("Payment added successfuly!");
       setShowFormNewMed(false);
       console.log(data);
@@ -197,26 +207,30 @@ function FormNewPat(props) {
                   <thead>
                     <tr>
                       {["No", "Amount", "Type", "Date/Heure"].map((it, i) => (
-                        <td className={cltd}>{it}</td>
+                        <td className={` ${cltd} w-min `}>{it}</td>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {payments.map((p, i) => (
                       <tr key={i}>
-                        <td>{i}</td>
-                        <td>
-                          {p.amount}
-                          {" .00 FC"}
+                        <td className={cltd}>{i + 1}</td>
+                        <td className={cltd}>
+                          {FormatNumberWithCommas(p.amount)}
+                          {" FC"}
                         </td>
-                        <td>{p.type}</td>
-                        <td>{new Date(p.created_at).toISOString()}</td>
+                        <td className={cltd}>{p.type}</td>
+                        <td className={cltd}>
+                          {FormatDate(new Date(p.created_at))}
+                        </td>
                       </tr>
                     ))}
-                    <tr className="font-bold">
+                    <tr className="font-bold bg-neutral-100">
                       <td className={cltd}>TOTAL</td>
                       <td className={cltd} colSpan={3}>
-                        {payments.reduce((acc, it) => acc + it.amount, 0)}{" "}
+                        {FormatNumberWithCommas(
+                          payments.reduce((acc, it) => acc + it.amount, 0)
+                        )}{" "}
                         {"FC"}
                       </td>
                     </tr>
