@@ -148,18 +148,15 @@ function Roulement(props) {
     const id = props.updateID ? props.updateID : props.id;
     setInfId(id);
 
-    //console.warn('getting inf by id => ', props.id)
-
-    async function getInf() {
-      //if(props.updateID === undefined ) return
-
-      let inf = await GetItemByID(TABLE_NAME.INFIRMIERS, id);
-
-      setInf(inf);
-    }
-
-    getInf();
+    loadInfirmiers();
   }, []);
+
+  //console.warn('getting inf by id => ', props.id)
+
+  async function loadInfirmiers() {
+    let inf = await GetItemByID(TABLE_NAME.INFIRMIERS, id);
+    setInf(inf);
+  }
 
   return (
     <div>
@@ -289,7 +286,9 @@ function FormNewInf(props) {
 
 export default function Infirmiers() {
   const [q, setQ] = useState("");
+
   const [listInfirmiers, setListInfirmers] = useState([]);
+  const [listInfirmiersFiltered, setListInfirmersFiltered] = useState([]);
 
   const [infNom, setInfNom] = useState("Gracia Liwena");
   const [infPhone, setInfPhone] = useState("0892125047");
@@ -303,7 +302,7 @@ export default function Infirmiers() {
   const selClass = "text-sky-500 border-b-sky-500 bg-sky-500 text-white";
 
   useEffect(() => {
-    refreshInfList();
+    loadInfList();
   }, []);
 
   function onViewInf(inf) {
@@ -333,6 +332,19 @@ export default function Infirmiers() {
   function onSearchInf(e) {
     const q = e.target.value;
     setQ(q);
+
+    if (q.replaceAll(" ", "") === "") {
+      setListInfirmersFiltered(listInfirmiers);
+      return;
+    }
+
+    console.log(listInfirmiers);
+
+    const filtered = listInfirmiers.filter((inf, i) =>
+      inf.nom.toLowerCase().includes(q.toLowerCase())
+    );
+
+    setListInfirmersFiltered(filtered);
   }
 
   async function onNewInf(e) {
@@ -351,7 +363,7 @@ export default function Infirmiers() {
     await AddNewItemToTable(newInf, TABLE_NAME.INFIRMIERS);
     resetForm();
     setSelectedSection("inflist");
-    refreshInfList();
+    loadInfList();
   }
 
   async function onUpdateInf(updateID) {
@@ -367,7 +379,7 @@ export default function Infirmiers() {
     updInf.roulement = inf.roulement;
 
     await UpdateItem(TABLE_NAME.INFIRMIERS, updateID, updInf);
-    refreshInfList();
+    loadInfList();
   }
 
   async function onDelInf(e) {
@@ -375,13 +387,21 @@ export default function Infirmiers() {
 
     if (confirm("Are you sure you wanna delete this record?")) {
       await DeleteItem(TABLE_NAME.INFIRMIERS, updateID);
-      refreshInfList();
+      loadInfList();
     }
   }
 
-  async function refreshInfList() {
+  async function loadInfList() {
     setLoading(true);
-    setListInfirmers(await GetAllItemsFromTable(TABLE_NAME.INFIRMIERS));
+
+    setListInfirmers([]);
+    setListInfirmersFiltered([]);
+
+    const list = await GetAllItemsFromTable(TABLE_NAME.INFIRMIERS);
+
+    setListInfirmers(list);
+    setListInfirmersFiltered(list);
+
     setSelectedSection("inflist");
     setLoading(false);
   }
@@ -449,7 +469,7 @@ export default function Infirmiers() {
                   />
                 </div>
                 <div>
-                  {listInfirmiers.map((inf, idx) => (
+                  {listInfirmiersFiltered.map((inf, idx) => (
                     <InfirmierItem key={idx} data={inf} onViewInf={onViewInf} />
                   ))}
                 </div>

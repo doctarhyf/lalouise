@@ -31,9 +31,9 @@ export default function Layout() {
   return (
     <div className=" md:flex  main-layout md:h-screen  ">
       <nav
-        className={`menu  text-white  h-full ${
+        className={`menu  text-white transition-all ease-in-out duration-150  h-full ${
           showMenu
-            ? "p-8  bg-sky-500   "
+            ? "p-8  bg-sky-500    "
             : "p-2  md:w-[40pt] h-[40pt] bg-gradient-to-r from-cyan-500 to-blue-500 "
         } `}
       >
@@ -50,7 +50,7 @@ export default function Layout() {
         )}
 
         {showMenu && (
-          <ul>
+          <ul onClick={(e) => setShowMenu(false)}>
             <li className="text-white font-extrabold align-center text-3xl mb-4">
               <span>LaLouise</span>
             </li>
