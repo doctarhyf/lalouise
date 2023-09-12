@@ -17,14 +17,18 @@ import {
 function PatientItem({ data, onViewPatient }) {
   return (
     <div className="flex gap-x-4 hover:bg-sky-100 rounded-md p-2 cursor-pointer ">
-      <img src={logo} width={40} className="object-fit" />
-      <div>
+      <div className="bg-red-500 w-[30pt] h-[30pt] rounded-md overflow-hidden">
+        <img src={logo} className=" h-[100%] " />
+      </div>
+
+      <div className="grow">
         <div className="text-black">{data.nom}</div>
         <div className=" text-sm">
           <span className="text-slate-500">{data.emergContact.phone}</span>
           <span>{`, ${CalcAge(new Date(data.dob))} ans`}</span>
         </div>
       </div>
+
       <div>
         <button
           onClick={(e) => onViewPatient(data)}

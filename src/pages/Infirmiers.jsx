@@ -24,8 +24,10 @@ import ProgressView from "../comps/ProgressView";
 function InfirmierItem({ data, onViewInf }) {
   return (
     <div className="flex gap-x-4 hover:bg-sky-100 rounded-md p-2 cursor-pointer ">
-      <img src={logo} />
-      <div>
+      <div className="w-[30pt] h-[30pt]">
+        <img src={logo} />
+      </div>
+      <div className="grow">
         <div className="text-black">{data.nom}</div>
         <div className=" text-sm">
           <span className="text-slate-500">{data.phone}</span>,{" "}
