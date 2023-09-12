@@ -11,3 +11,18 @@ export const PAYMENTS_TYPES = [
 ];
 
 export const cltd = "border-b border-l border-neutral-400 p-1";
+
+export const MOIS = [
+  "Jan",
+  "Fev",
+  "Mar",
+  "Avr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Aou",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
