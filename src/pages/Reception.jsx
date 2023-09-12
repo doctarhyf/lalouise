@@ -14,7 +14,7 @@ import {
   AddNewItemToTable,
   GetAllItemsFromTableByColEqVal,
 } from "../db/sb";
-import { PAYMENTS_TYPES } from "../helpers/flow";
+import { PAYMENTS_TYPES, cltd } from "../helpers/flow";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
@@ -72,8 +72,6 @@ function FormNewPat(props) {
 
     setPayments(p);
   }
-
-  const cltd = "border-b border-l border-neutral-400 p-1";
 
   async function onSaveNewPayement(e) {
     AddNewItemToTable(newPayment, TABLE_NAME.PAYMENTS, (data) => {

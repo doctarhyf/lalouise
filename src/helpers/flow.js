@@ -9,3 +9,5 @@ export const PAYMENTS_TYPES = [
   { label: "Soins Intensifs", code: "SIN" },
   { label: "Pharmacie", code: "PHA" },
 ];
+
+export const cltd = "border-b border-l border-neutral-400 p-1";
