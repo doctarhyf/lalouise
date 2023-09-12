@@ -27,17 +27,34 @@ const SECTIONS = {
   SELLS_RECORD: { title: "Liste Sortie Produits", name: "lsprodsells" },
 };
 
+const STOCK_CODES = {
+  ALL: "st_all",
+  ZERO: "st_zero",
+  LOW: "st_low",
+  OK: "st_ok",
+};
+
+const STOCK_LOW_THRESHHOLD = 10;
+const BG_STOCK_LOW = "bg-yellow-600";
+const BG_STOCK_ZERO = "bg-red-600";
+const STOCK_FILTER_LABELS = [
+  { label: "Tous les produits", code: STOCK_CODES.ALL },
+  { label: "Stock Vide", code: STOCK_CODES.ZERO },
+  { label: "Stock Faible", code: STOCK_CODES.LOW },
+  { label: "Stock Ok", code: STOCK_CODES.OK },
+];
+
 function MedItem({ med, editMed, deleteMed, showMedToSell }) {
   //const medData = JSON.parse(med);
 
   return (
     <tr
       className={` ${
-        med.medAmount < 10 && med.medAmount > 1
-          ? "bg-yellow-600 text-white font-bold "
+        med.medAmount < STOCK_LOW_THRESHHOLD && med.medAmount > 1
+          ? BG_STOCK_LOW + ` text-white font-bold `
           : ""
       } ${
-        med.medAmount < 1 ? "bg-red-500 text-white font-bold " : ""
+        med.medAmount < 1 ? BG_STOCK_ZERO + " text-white font-bold " : ""
       }  border border-black cursor-pointer hover:bg-black hover:text-white`}
     >
       <Td data={med.id} />
@@ -272,6 +289,40 @@ export default function Pharmacy() {
     setQty2Sell(qty2sell);
   }
 
+  const [curStockCode, setCurStockCode] = useState(STOCK_CODES.ALL);
+  const [curStockFilterLabel, setCurStockFilterLabel] = useState(
+    STOCK_FILTER_LABELS[0].label
+  );
+
+  function onShowFilter(stockCode, stockFilterLabel) {
+    setCurStockCode(stockCode);
+    setCurStockFilterLabel(stockFilterLabel);
+
+    let filtered = meds;
+
+    switch (stockCode) {
+      case STOCK_CODES.ALL:
+        filtered = meds;
+        break;
+
+      case STOCK_CODES.ZERO:
+        filtered = meds.filter((m, i) => m.medAmount === 0);
+        break;
+
+      case STOCK_CODES.LOW:
+        filtered = meds.filter(
+          (m, i) => m.medAmount <= STOCK_LOW_THRESHHOLD && m.medAmount > 0
+        );
+        break;
+
+      case STOCK_CODES.OK:
+        filtered = meds.filter((m, i) => m.medAmount > STOCK_LOW_THRESHHOLD);
+        break;
+    }
+
+    setMedsFiltered(Array.from(filtered));
+  }
+
   return (
     <div className="p-8">
       <PageHeader title="Pharmacie" sub="Liste de tous les medicaments" />
@@ -396,6 +447,32 @@ export default function Pharmacy() {
               placeholder="search ..."
             />
 
+            <div className="md:flex gap-2 flex-wrap">
+              <p className="w-full">AFFICHER</p>
+
+              {STOCK_FILTER_LABELS.map((st, i) => (
+                <div>
+                  <span
+                    onClick={(e) => onShowFilter(st.code, st.label)}
+                    className={` ${
+                      st.code === curStockCode ? "text-white bg-sky-500" : ""
+                    } cursor-pointer outline rounded-md p-2 outline-neutral-300 hover:outline-sky-500 outline-[1px]`}
+                  >
+                    <input
+                      checked={st.code === curStockCode}
+                      type="radio"
+                      name="stock"
+                      code={st.code}
+                      onChange={(e) =>
+                        onShowFilter(e.target.getAttribute("code"), st.label)
+                      }
+                    />
+                    {st.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
             <ProgressView show={loading} />
 
             <table className="border-collapse border border-slate-500  ">
@@ -405,7 +482,12 @@ export default function Pharmacy() {
                   align="center"
                   className="border-collapse border border-slate-500"
                 >
-                  <div>TABLEAU DES MEDICAMENTS</div>
+                  <div>
+                    TABLEAU DES MEDICAMENTS -{" "}
+                    <span className=" p-1 rounded-md bg-black text-white text-xs font-bold">
+                      {curStockFilterLabel} {medsFiltered.length}
+                    </span>
+                  </div>
                 </td>
               </tr>
 
@@ -460,13 +542,14 @@ export default function Pharmacy() {
                   ? "bg-red-500 text-white font-bold text-sm"
                   : ""
               }  ${
-                med2sell.medAmount - qty2Sell <= 5 &&
+                med2sell.medAmount - qty2Sell <= STOCK_LOW_THRESHHOLD &&
                 med2sell.medAmount - qty2Sell > 0
                   ? "bg-yellow-600 text-white font-bold text-sm"
                   : ""
               }
                              ${
-                               med2sell.medAmount - qty2Sell > 5
+                               med2sell.medAmount - qty2Sell >
+                               STOCK_LOW_THRESHHOLD
                                  ? "bg-green-600 text-white font-bold text-sm"
                                  : ""
                              }`}
