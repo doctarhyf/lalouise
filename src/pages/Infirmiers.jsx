@@ -179,11 +179,11 @@ function Roulement(props) {
               {" "}
               {props.showingRoulementGen ? props.inf.nom : inf.nom}{" "}
             </td>
-            {[...Array(numDays)].map((day, i) => (
+            {[...Array(numDays)].fill(1).map((day, i) => (
               <td className={classtdday}>
                 {props.editidingInf ? (
                   <RoulementDayEditor
-                    val={inf?.roulement[i]}
+                    val={inf} //inf !== undefined && inf.roulement[i]}
                     day={i}
                     updateID={props.updateID}
                   />

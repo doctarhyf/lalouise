@@ -17,7 +17,7 @@ function LinkItem({ link }) {
 }
 
 export default function Layout() {
-  const [showMenu, setShowMenu] = useState(true);
+  const [showMenu, setShowMenu] = useState(false);
 
   const links = [
     { title: "Home", path: "/lalouise/" },
@@ -29,12 +29,12 @@ export default function Layout() {
   ];
 
   return (
-    <div className="flex main-layout h-screen ">
+    <div className=" md:flex  main-layout md:h-screen  ">
       <nav
-        className={`menu  text-white h-full ${
+        className={`menu  text-white  h-full ${
           showMenu
-            ? "p-8  bg-sky-500"
-            : "p-2  w-[56pt] bg-gradient-to-r from-cyan-500 to-blue-500 "
+            ? "p-8  bg-sky-500   "
+            : "p-2  md:w-[40pt] h-[40pt] bg-gradient-to-r from-cyan-500 to-blue-500 "
         } `}
       >
         <img
@@ -42,6 +42,12 @@ export default function Layout() {
           src={hosp}
           className="w-[28pt] h-[28pt] inline-block cursor-pointer"
         />
+
+        {!showMenu && (
+          <li className="-mt-[28pt] md:hidden list-none ml-[34pt] text-white font-extrabold align-center text-3xl mb-4">
+            <span>LaLouise</span>
+          </li>
+        )}
 
         {showMenu && (
           <ul>

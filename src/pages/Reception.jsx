@@ -189,6 +189,7 @@ export default function Reception() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [listPatients, setListPatients] = useState([]);
+  const [listPatientsFiltered, setListPatientsFiltered] = useState([]);
 
   const selClass = "text-sky-500 border-b-sky-500 bg-sky-500 text-white";
 
@@ -283,10 +284,14 @@ export default function Reception() {
 
   async function loadPatList() {
     setLoading(true);
+    setListPatients([]);
+    setListPatients([]);
+
     const list = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
 
     setPatsCount(list.length);
     setListPatients(list);
+    setListPatientsFiltered(Array.from(list));
     setSelectedSection("lspat");
     setLoading(false);
   }
@@ -304,9 +309,20 @@ export default function Reception() {
     console.log(secName);
   }
 
-  function onSearchInf(e) {
+  function onSearchPat(e) {
     const q = e.target.value;
     setQ(q);
+
+    if (q.replace(" ", "") === "") {
+      setListPatientsFiltered(listPatients);
+      return;
+    }
+
+    const filtered = listPatients.filter((p, i) =>
+      p.nom.toLowerCase().includes(q.toLowerCase() || p.phone.includes(q))
+    );
+
+    setListPatientsFiltered(filtered);
   }
 
   function onViewPatient(pat) {
@@ -385,11 +401,11 @@ export default function Reception() {
                     className={StyleInputText}
                     type="search"
                     value={q}
-                    onChange={onSearchInf}
+                    onChange={onSearchPat}
                     placeholder="Search ..."
                   />
                 </div>
-                {listPatients.map((pat, idx) => (
+                {listPatientsFiltered.map((pat, idx) => (
                   <PatientItem
                     onViewPatient={(e) => onViewPatient(pat)}
                     key={idx}
