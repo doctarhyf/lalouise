@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CalcAge } from "../Helper";
 import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
 import logo from "../assets/patient.png";
@@ -13,6 +13,9 @@ import {
   DeleteItem,
   AddNewItemToTable,
 } from "../db/sb";
+import { PAYMENTS_TYPES } from "../helpers/flow";
+
+const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
 
 function PatientItem({ data, onViewPatient }) {
   return (
@@ -30,10 +33,7 @@ function PatientItem({ data, onViewPatient }) {
       </div>
 
       <div>
-        <button
-          onClick={(e) => onViewPatient(data)}
-          className={`cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `}
-        >
+        <button onClick={(e) => onViewPatient(data)} className={clBtn}>
           View Details
         </button>
       </div>
@@ -42,10 +42,36 @@ function PatientItem({ data, onViewPatient }) {
 }
 
 function FormNewPat(props) {
+  const [showFormNewMed, setShowFormNewMed] = useState(false);
+  let refPaymentAmount = useRef();
+  const [newPayment, setNewPayment] = useState({
+    /* id:'',
+  created_at:'', */
+    type: PAYMENTS_TYPES[0].code,
+    foreign_table: TABLE_NAME.PATIENTS,
+    foreign_key: "",
+    amount: "",
+  });
+
+  useEffect(() => {
+    setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
+  }, []);
+
+  const cltd = "border-b border-neutral-400 p-1";
+
+  async function onSaveNewPayement(e) {
+    AddNewItemToTable(newPayment, TABLE_NAME.PAYMENTS, (data) => {
+      alert("Payment added successfuly!");
+      setShowFormNewMed(false);
+      console.log(data);
+    });
+    // setShowFormNewMed(false);
+  }
+
   return (
     <>
       <div className=" flex-col md:flex-row">
-        <details className="info-blk w-full">
+        <details className="info-blk w-full ">
           <summary className={StyleFormBlockTitle()}>
             Information du Patient
           </summary>
@@ -93,10 +119,94 @@ function FormNewPat(props) {
           />
         </details>
 
-        <details className="info-blk w-full">
-          <summary className={StyleFormBlockTitle()}>Payment</summary>
-          <div>All payments</div>
-        </details>
+        {props.updateID && (
+          <details className="info-blk w-full">
+            <summary className={StyleFormBlockTitle()}>Payment</summary>
+
+            {showFormNewMed && (
+              <div className="CONT-NEW_PAYMENT p-2 shadow outline outline-[1px]">
+                <p className="text-sm font-bold text-sky-500">
+                  NOUVEAU PAYEMENT
+                </p>
+                <form>
+                  <div>
+                    <select
+                      onChange={(e) =>
+                        setNewPayment((old) => ({
+                          ...old,
+                          type: e.target.value,
+                        }))
+                      }
+                      value={newPayment.type}
+                      className={StyleInputText}
+                    >
+                      <option value="-">- Type de payement -</option>
+                      {PAYMENTS_TYPES.map((p, i) => (
+                        <option value={p.code}>{p.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <input
+                      onChange={(e) =>
+                        setNewPayment((old) => ({
+                          ...old,
+                          amount: Number.parseFloat(e.target.value),
+                        }))
+                      }
+                      value={newPayment.amount}
+                      className={StyleInputText}
+                      type="number"
+                      placeholder="Montant"
+                    />
+                  </div>
+
+                  {newPayment.amount >= 100 && (
+                    <button
+                      type="button"
+                      onClick={onSaveNewPayement}
+                      className={clBtn}
+                    >
+                      ENREGISTRER PAYMENT
+                    </button>
+                  )}
+                </form>
+              </div>
+            )}
+
+            {!showFormNewMed && (
+              <div className="CONT-PAYMENTS-ALL outline-neutral-400 outline-[1px] outline-dashed p-2 ">
+                <button
+                  onClick={(e) => setShowFormNewMed(true)}
+                  className={clBtn}
+                >
+                  NOUVEAU PAYEMENT
+                </button>
+                <p className="font-bold text-sm text-sky-500">
+                  TABLEAU PAYEMENT
+                </p>
+                <table className="w-full">
+                  <thead>
+                    <tr>
+                      {["No", "Amount", "Type", "Description"].map((it, i) => (
+                        <td className={cltd}>{it}</td>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="font-bold">
+                      <td className={cltd}>TOTAL</td>
+                      <td className={cltd} colSpan={3}>
+                        0.00 {"FC"}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </details>
+        )}
 
         <details className="info-blk w-full">
           <summary className={StyleFormBlockTitle()}>Contact d'urgence</summary>
