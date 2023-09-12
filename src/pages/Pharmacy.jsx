@@ -50,7 +50,7 @@ function MedItem({ med, editMed, deleteMed, showMedToSell }) {
   return (
     <tr
       className={` ${
-        med.medAmount < STOCK_LOW_THRESHHOLD && med.medAmount > 1
+        med.medAmount <= STOCK_LOW_THRESHHOLD && med.medAmount >= 1
           ? BG_STOCK_LOW + ` text-white font-bold `
           : ""
       } ${
@@ -454,7 +454,7 @@ export default function Pharmacy() {
                 <div>
                   <span
                     onClick={(e) => onShowFilter(st.code, st.label)}
-                    className={` ${
+                    className={` inline-block my-2 md:my-0 w-full ${
                       st.code === curStockCode ? "text-white bg-sky-500" : ""
                     } cursor-pointer outline rounded-md p-2 outline-neutral-300 hover:outline-sky-500 outline-[1px]`}
                   >
