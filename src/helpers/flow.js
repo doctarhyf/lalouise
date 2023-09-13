@@ -18,7 +18,7 @@ export function GetPaymentTypeLableFromCode(code) {
   );
 }
 
-export const cltd = "border-b border-l border-neutral-400 p-1";
+export const cltd = "border-b border-l border-neutral-400 p-1 w-[200pt]";
 
 export const MOIS = [
   "All",

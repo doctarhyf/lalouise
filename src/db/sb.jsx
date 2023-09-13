@@ -80,7 +80,7 @@ export async function GetItemByID(tableName, itemID) {
   return data;
 }
 
-export async function UpdateItem(tableName, id, updData) {
+export async function UpdateItem(tableName, id, updData, onUpdateFinished) {
   const { data, error } = await supabase
     .from(tableName)
     .update(updData)
@@ -88,7 +88,7 @@ export async function UpdateItem(tableName, id, updData) {
     .select();
 
   if (error) return error;
-  //console.log("UpdateItem", data, error);
+  onUpdateFinished(data);
   return data;
 }
 

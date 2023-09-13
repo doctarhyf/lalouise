@@ -201,9 +201,117 @@ function Roulement(props) {
   );
 }
 
+function Roul({ infData, editidingInf, updateID, loadData, hideTopRows }) {
+  function onUpdateRoulement(infID, val, day) {
+    if (infID === undefined) return;
+
+    let data = infData;
+    let roulement = data.roulement;
+    roulement[day] = val;
+
+    data.roulement = roulement;
+
+    UpdateItem(TABLE_NAME.INFIRMIERS, infID, data, (d) => {
+      console.log("update finished => ", d);
+      loadData();
+    });
+  }
+
+  return (
+    <div>
+      <table className="table-auto">
+        <thead>
+          <tr>
+            {!hideTopRows && (
+              <td
+                align="center"
+                colSpan={
+                  (infData.roulement && infData.roulement.length + 1) || 0
+                }
+                className={cltd}
+              >
+                Roulement Mois de 'month'
+              </td>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {!hideTopRows && (
+            <tr>
+              <td className={cltd}>Jours</td>
+              {infData.roulement &&
+                infData.roulement.map((d, i) => (
+                  <td className={cltd} key={i}>
+                    {i + 1}
+                  </td>
+                ))}
+            </tr>
+          )}
+          <tr>
+            <td className={cltd}> {infData.nom} </td>
+            {infData.roulement &&
+              infData.roulement.map((d, i) => (
+                <td className={cltd} key={i} width={20}>
+                  {editidingInf ? (
+                    <select
+                      value={d}
+                      onChange={(e) => {
+                        onUpdateRoulement(updateID, e.target.value, i);
+                      }}
+                    >
+                      <option value="-">-</option>
+                      <option value="J">J</option>
+                      <option value="N">N</option>
+                      <option value="R">R</option>
+                    </select>
+                  ) : (
+                    d
+                  )}
+                </td>
+              ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function RoulGen({ updateID, loadData }) {
+  const [listInfirmiers, setListInfirmiers] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setLoading(true);
+    const infs = await GetAllItemsFromTable(TABLE_NAME.INFIRMIERS);
+    setListInfirmiers(infs);
+    setLoading(false);
+  }
+
+  return (
+    <div>
+      <ProgressView show={loading} />
+      {listInfirmiers.map((infData, i) => (
+        <Roul
+          infData={infData}
+          hideTopRows={i === 0 ? false : true}
+          /* editidingInf={props.editidingInf}
+          updateID={props.updateID} */
+          loadData={loadData}
+        />
+      ))}
+    </div>
+  );
+}
+
 function FormNewInf(props) {
   const [loading, setLoading] = useState(false);
   const [infData, setInfData] = useState([]);
+
+  console.log(props);
 
   useEffect(() => {
     loadData();
@@ -265,32 +373,13 @@ function FormNewInf(props) {
           <>
             <div>Programe</div>
             <ProgressView show={loading} />
-            <div>
-              <table>
-                <thead>
-                  <tr>
-                    <td
-                      colSpan={
-                        (infData.roulement && infData.roulement.length + 1) || 0
-                      }
-                      className={cltd}
-                    >
-                      Roulement
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    {infData.roulement &&
-                      infData.roulement.map((d, i) => (
-                        <td className={cltd} key={i}>
-                          {d}
-                        </td>
-                      ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+
+            <Roul
+              infData={infData}
+              editidingInf={props.editidingInf}
+              updateID={props.updateID}
+              loadData={loadData}
+            />
 
             {/* <Roulement
               editidingInf={props.editidingInf}
@@ -547,10 +636,11 @@ export default function Infirmiers() {
 
       {selectedSection === "inftt" && (
         <div className="horaire">
-          <RoulementGeneral
+          {/* <RoulementGeneral
             listInfirmiers={listInfirmiers}
             updateID={updateID}
-          />
+          /> */}
+          <RoulGen listInfirmiers={listInfirmiers} updateID={updateID} />
         </div>
       )}
 
