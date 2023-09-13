@@ -19,6 +19,7 @@ import PageHeader from "../comps/PageHeader";
 import SectionMenu from "../comps/SectionMenu";
 import { Td, Tr } from "../comps/Table";
 import ProgressView from "../comps/ProgressView";
+import { FormatDate } from "../helpers/funcs";
 
 const SECTIONS = {
   MEDS_TABLE: { title: "Liste produits", name: "lsmeds" },
@@ -161,6 +162,8 @@ export default function Pharmacy() {
     UpdateItem(TABLE_NAME.MEDS, med2sell.id, med2sell);
     AddNewItemToTable(sellrec, TABLE_NAME.MED_SELLS_REC, (d) => {
       console.log("on sell rec ", d);
+
+      loadAllData();
     });
     setSelectedSection(SECTIONS.MEDS_TABLE.name);
 
@@ -625,16 +628,21 @@ export default function Pharmacy() {
           <table className="w-full">
             <thead>
               <tr>
-                {["No", "Produit", "Qte Sortie", "Stock Restant", "Date"].map(
-                  (it, i) => (
-                    <td
-                      key={i}
-                      className="p1 border-b border-l border-neutral-400"
-                    >
-                      {it}
-                    </td>
-                  )
-                )}
+                {[
+                  "No",
+                  "Produit",
+                  "Ancien Stock",
+                  "Qte Sortie",
+                  "Stock Restant",
+                  "Date",
+                ].map((it, i) => (
+                  <td
+                    key={i}
+                    className="p1 border-b border-l border-neutral-400"
+                  >
+                    {it}
+                  </td>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -644,16 +652,26 @@ export default function Pharmacy() {
                     {i + 1}
                   </td>
                   <td className="p1 border-b border-l border-neutral-400">
-                    {meds.find((it, i) => it.id === msr.prodID).medName}
+                    {(meds.find((it, i) => it.id === msr.prodID) &&
+                      meds.find((it, i) => it.id === msr.prodID).medName) || (
+                      <span className="text-sm font-bold bg-red-500 text-white rounded-md p-1">
+                        Med Deleted
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="p1 border-b border-l border-neutral-400">
+                    {msr.oldstock}
                   </td>
                   <td className="p1 border-b border-l border-neutral-400">
                     {msr.qty}
                   </td>
                   <td className="p1 border-b border-l border-neutral-400">
-                    {msr.oldstock}
+                    {msr.newstock}
                   </td>
+
                   <td className="p1 border-b border-l border-neutral-400">
-                    {msr.created_at}
+                    {FormatDate(new Date(msr.created_at))}
                   </td>
                 </tr>
               ))}
