@@ -173,6 +173,17 @@ export default function Finances() {
             </tr>
           </thead>
           <tbody>
+            {paymentsFiltered.length > 10 && (
+              <tr className="font-bold bg-neutral-100">
+                <td className={cltd}>TOTAL</td>
+                <td className={cltd} colSpan={3}>
+                  {FormatNumberWithCommas(
+                    paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
+                  )}{" "}
+                  {"FC"}
+                </td>
+              </tr>
+            )}
             {paymentsFiltered.map((p, i) => (
               <tr
                 key={i}
