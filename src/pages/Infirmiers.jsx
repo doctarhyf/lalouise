@@ -21,6 +21,8 @@ import {
   GetNumDaysInMonth,
 } from "../Helper";
 import ProgressView from "../comps/ProgressView";
+import { cltd } from "../helpers/flow";
+const titleClass = `text-xl text-green-500 mb-2`;
 
 function InfirmierItem({ data, onViewInf }) {
   return (
@@ -200,8 +202,24 @@ function Roulement(props) {
 }
 
 function FormNewInf(props) {
-  const titleClass = `text-xl text-green-500 mb-2`;
-  console.log("damn", props);
+  const [loading, setLoading] = useState(false);
+  const [infData, setInfData] = useState([]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setLoading(true);
+
+    let inf = await GetItemByID(TABLE_NAME.INFIRMIERS, props.updateID);
+    inf = inf.length === 1 ? inf[0] : [];
+
+    setInfData(inf);
+    console.log(inf.roulement);
+
+    setLoading(false);
+  }
 
   return (
     <>
@@ -246,12 +264,40 @@ function FormNewInf(props) {
         {props.editidingInf && (
           <>
             <div>Programe</div>
-            <Roulement
+            <ProgressView show={loading} />
+            <div>
+              <table>
+                <thead>
+                  <tr>
+                    <td
+                      colSpan={
+                        (infData.roulement && infData.roulement.length + 1) || 0
+                      }
+                      className={cltd}
+                    >
+                      Roulement
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {infData.roulement &&
+                      infData.roulement.map((d, i) => (
+                        <td className={cltd} key={i}>
+                          {d}
+                        </td>
+                      ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* <Roulement
               editidingInf={props.editidingInf}
               showDates
               showData
               updateID={props.updateID}
-            />
+            /> */}
           </>
         )}
 
