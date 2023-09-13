@@ -26,8 +26,14 @@ export default function Finances() {
     setLoading(false);
   }
 
-  function GetMonthFromPaymentDate(payment) {
-    return Number.parseInt(payment.created_at.toString().split("-")[1]);
+  function GetPaymentDateParts(payment) {
+    let [y, m, d] = payment.created_at.split("T")[0].split("-");
+
+    return {
+      y: Number.parseInt(y) + 0,
+      m: Number.parseInt(m) + 0,
+      d: Number.parseInt(d) + 0,
+    };
   }
 
   function onSelectMonth(e) {
@@ -39,9 +45,10 @@ export default function Finances() {
     setPaymentsFiltered(filtered);
     if (month === 0) return;
 
-    filtered = payments.filter((p, i) => GetMonthFromPaymentDate(p) === month);
-
+    filtered = payments.filter((p, i) => GetPaymentDateParts(p).m === month);
     setPaymentsFiltered(Array.from(filtered));
+
+    //console.log(payments[0]);
   }
 
   return (
@@ -60,11 +67,18 @@ export default function Finances() {
         </div>
       </div>
       <div>
-        <div className="text-lg text-sky-500">TABLEAU FINANCES</div>
-
         <ProgressView show={loading} />
         <table className="w-full">
           <thead>
+            <tr>
+              <td
+                colSpan={4}
+                className="text-lg border-b border-l  text-center text-sky-500"
+              >
+                TABLEAU FINANCES - {MOIS[selectedMonth]}/
+                {new Date().getFullYear()}
+              </td>
+            </tr>
             <tr>
               {["No", "Amount", "Type", "Date/Heure"].map((it, i) => (
                 <td className={` ${cltd} w-min `}>{it}</td>

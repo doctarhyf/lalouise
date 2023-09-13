@@ -112,7 +112,8 @@ export async function AddNewItemToTable(
 
   //console.log("AddNewItemToTable", data, error);
   if (error) {
-    //console.log(error);
+    console.log(error);
+
     return;
   }
 

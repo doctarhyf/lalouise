@@ -142,7 +142,7 @@ export default function Pharmacy() {
   function sellMed(e) {
     let sellrec = {
       prodID: med2sell.id,
-      date: new Date(),
+      last_update: new Date(),
       oldstock: med2sell.medAmount,
     };
 
@@ -152,12 +152,16 @@ export default function Pharmacy() {
     console.log("stockRest", stockRest);
 
     sellrec.newstock = stockRest;
-
+    sellrec.qty = qty2Sell;
     med2sell.medAmount = stockRest;
     console.warn("afta upd", med2sell);
 
+    console.log("sellrec_", sellrec);
+
     UpdateItem(TABLE_NAME.MEDS, med2sell.id, med2sell);
-    AddNewItemToTable(sellrec, TABLE_NAME.MED_SELLS_REC);
+    AddNewItemToTable(sellrec, TABLE_NAME.MED_SELLS_REC, (d) => {
+      console.log("on sell rec ", d);
+    });
     setSelectedSection(SECTIONS.MEDS_TABLE.name);
 
     console.log(sellrec);
@@ -191,6 +195,9 @@ export default function Pharmacy() {
     }
   };
 
+  const [medSellsRecs, setMedSellsRecs] = useState([]);
+  const [medSellsRecsFiltered, setMedSellsRecsFiltered] = useState([]);
+
   useEffect(() => {
     const med = {
       medName: "",
@@ -202,18 +209,23 @@ export default function Pharmacy() {
 
     //setNewMed(med);
 
-    loadAllMeds();
+    loadAllData();
   }, []);
 
-  async function loadAllMeds() {
+  async function loadAllData() {
     setMeds([]);
     setMedsFiltered([]);
 
+    setMedSellsRecs([]);
+    setMedSellsRecsFiltered([]);
     setLoading(true);
     const meds = await GetAllItemsFromTable(TABLE_NAME.MEDS);
+    const sellsrecs = await GetAllItemsFromTable(TABLE_NAME.MED_SELLS_REC);
 
     setMeds(meds);
     setMedsFiltered(meds);
+    setMedSellsRecs(sellsrecs);
+    setMedSellsRecsFiltered(sellsrecs);
 
     setLoading(false);
   }
@@ -259,7 +271,7 @@ export default function Pharmacy() {
     setQ(q);
 
     if (q === "") {
-      loadAllMeds();
+      loadAllData();
       return;
     }
 
@@ -610,7 +622,43 @@ export default function Pharmacy() {
 
       {selectedSection === SECTIONS.SELLS_RECORD.name && (
         <section className="ls-prod-sells">
-          Quinine 12 boites sortie le 22/06/23 stock: 90
+          <table className="w-full">
+            <thead>
+              <tr>
+                {["No", "Produit", "Qte Sortie", "Stock Restant", "Date"].map(
+                  (it, i) => (
+                    <td
+                      key={i}
+                      className="p1 border-b border-l border-neutral-400"
+                    >
+                      {it}
+                    </td>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {medSellsRecsFiltered.map((msr, i) => (
+                <tr key={i}>
+                  <td className="p1 border-b border-l border-neutral-400">
+                    {i + 1}
+                  </td>
+                  <td className="p1 border-b border-l border-neutral-400">
+                    {meds.find((it, i) => it.id === msr.prodID).medName}
+                  </td>
+                  <td className="p1 border-b border-l border-neutral-400">
+                    {msr.qty}
+                  </td>
+                  <td className="p1 border-b border-l border-neutral-400">
+                    {msr.oldstock}
+                  </td>
+                  <td className="p1 border-b border-l border-neutral-400">
+                    {msr.created_at}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
       )}
     </div>
