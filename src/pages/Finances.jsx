@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import PageHeader from "../comps/PageHeader";
-import { GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
+import { AddNewItemToTable, GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 
 import { GetPaymentTypeLableFromCode, MOIS, cltd } from "../helpers/flow";
 import ProgressView from "../comps/ProgressView";
-import { IconButton } from "@mui/material";
 
 export default function Finances() {
   const [payments, setPayments] = useState([]);
@@ -13,6 +12,7 @@ export default function Finances() {
   const [selectedMonth, setSelectedMonth] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showSpendsForm, setShowSpendsForm] = useState(false);
+  const [spendData, setSpendData] = useState({ type: "OTH" });
 
   useEffect(() => {
     loadPayments();
@@ -53,12 +53,92 @@ export default function Finances() {
     //console.log(payments[0]);
   }
 
+  function onInsererDep(e) {
+    const data = spendData;
+    data.amount = -data.amount;
+
+    console.log(data);
+
+    setLoading(true);
+    AddNewItemToTable(data, TABLE_NAME.PAYMENTS, (d) => {
+      console.log("on item added : ", d);
+      setLoading(false);
+      setShowSpendsForm(false);
+      loadPayments();
+    });
+  }
+
   return (
     <div className="p-8">
       {" "}
       <PageHeader title="Finances" sub="Finances generales du centre" />
-      <div>
-        <IconButton />
+      <button
+        className={` ${
+          showSpendsForm ? "hidden" : "visible"
+        } p-1 border-sky-500 border text-sky-500 hover:text-white my-2 hover:bg-sky-500 rounded-md `}
+        onClick={(e) => {
+          setShowSpendsForm(!showSpendsForm);
+        }}
+      >
+        + INSERER DEPENSE
+      </button>
+      <div
+        className={` ${
+          showSpendsForm ? "visible" : "hidden"
+        }  flex flex-col gap-2 `}
+      >
+        <div className="text-sky-500">INSERER DEPENSE</div>
+
+        <input
+          className="outline outline-neutral-400 p-1 rounded-md outline-[1px] hover:outline-sky-500"
+          type="number"
+          value={spendData.amount || 0}
+          onChange={(e) =>
+            setSpendData((old) => ({
+              ...old,
+              amount: parseInt(e.target.value),
+            }))
+          }
+          placeholder="Montant"
+        />
+        <input
+          className="outline outline-neutral-400 p-1 rounded-md outline-[1px] hover:outline-sky-500"
+          type="text"
+          value={spendData.description || ""}
+          onChange={(e) =>
+            setSpendData((old) => ({
+              ...old,
+              description: e.target.value,
+            }))
+          }
+          placeholder="Description ... "
+        />
+        <input
+          className="outline outline-neutral-400 p-1 rounded-md outline-[1px] hover:outline-sky-500"
+          type="datetime-local"
+          value={spendData.created_at || new Date()}
+          onChange={(e) =>
+            setSpendData((old) => ({
+              ...old,
+              created_at: e.target.value,
+            }))
+          }
+        />
+        {
+          <button
+            className={` ${
+              spendData.amount && spendData.description && spendData.created_at
+                ? "visible"
+                : "hidden"
+            } p-1 border-sky-500 border text-sky-500 hover:text-white my-2 hover:bg-sky-500 rounded-md `}
+            onClick={onInsererDep}
+          >
+            ENREGISTRER
+          </button>
+        }
+      </div>
+      <div className={showSpendsForm ? "hidden" : "visible"}>
+        <ProgressView show={loading} />
         <div className="flex">
           <p>AFFICHER TABLEAU DU MOIS : </p>
           <select value={selectedMonth} onChange={onSelectMonth}>
@@ -67,27 +147,6 @@ export default function Finances() {
             ))}
           </select>
         </div>
-      </div>
-      <button
-        className=""
-        onClick={(e) => {
-          setShowSpendsForm(!showSpendsForm);
-        }}
-      >
-        INSERER DEPENSE
-      </button>
-      <div
-        className={` ${
-          showSpendsForm ? "visible" : "hidden"
-        }  flex flex-col gap-2 `}
-      >
-        <input type="number" placeholder="Montant" />
-        <input type="text" placeholder="Description ... " />
-        <input type="datetime-local" />
-        <button>ENREGISTRER</button>
-      </div>
-      <div className={showSpendsForm ? "hidden" : "visible"}>
-        <ProgressView show={loading} />
         <table className="w-full">
           <thead>
             <tr>

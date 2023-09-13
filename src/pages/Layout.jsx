@@ -59,7 +59,7 @@ export default function Layout() {
               <LinkItem link={link} key={idx} />
             ))}
 
-            <div className="text-[10pt] flex-grow justify-end absolute bottom-0 mb-8 text-black text-opacity-75">
+            <div className="text-[10pt] flex-grow justify-end md:absolute bottom-0 mb-8 text-black text-opacity-75">
               @Copyright 2023{" "}
             </div>
           </ul>
