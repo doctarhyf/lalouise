@@ -124,7 +124,8 @@ export default function Finances() {
             }))
           }
         />
-        {
+
+        <div className="flex flex-col md:flex-row gap-2">
           <button
             className={` ${
               spendData.amount && spendData.description && spendData.created_at
@@ -135,7 +136,14 @@ export default function Finances() {
           >
             ENREGISTRER
           </button>
-        }
+
+          <button
+            className={` p-1 border-red-500 border text-red-500 hover:text-white my-2 hover:bg-red-500 rounded-md `}
+            onClick={(e) => setShowSpendsForm(false)}
+          >
+            ANNULER
+          </button>
+        </div>
       </div>
       <div className={showSpendsForm ? "hidden" : "visible"}>
         <ProgressView show={loading} />
@@ -171,7 +179,11 @@ export default function Finances() {
                 className="hover:bg-sky-500 hover:text-white cursor-pointer"
               >
                 <td className={cltd}>{i + 1}</td>
-                <td className={cltd}>
+                <td
+                  className={`${cltd} ${
+                    p.amount <= 0 ? "text-red-500" : "text-green-600"
+                  } `}
+                >
                   {FormatNumberWithCommas(p.amount)}
                   {" FC"}
                 </td>
