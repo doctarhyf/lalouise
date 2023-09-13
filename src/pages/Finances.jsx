@@ -26,25 +26,22 @@ export default function Finances() {
     setLoading(false);
   }
 
-  function getMonthFromPaymentDate(pd) {
-    return Number.parseInt(payments[0].created_at.toString().split("-")[1]);
+  function GetMonthFromPaymentDate(payment) {
+    return Number.parseInt(payment.created_at.toString().split("-")[1]);
   }
 
   function onSelectMonth(e) {
-    setSelectedMonth(e.target.value);
-    /*  let filtered;
+    setPaymentsFiltered([]);
+    const month = parseInt(e.target.value) + 0;
+    setSelectedMonth(month);
 
-    if (e.target.value === -1) {
-      setPaymentsFiltered(payments);
-      return;
-    }
+    let filtered = Array.from(payments);
+    setPaymentsFiltered(filtered);
+    if (month === 0) return;
 
-    if (payments.length > 0) {
-      setLoading(true);
-      filtered = payments.filter((p, i) => true);
-      setPaymentsFiltered(filtered);
-      setLoading(false);
-    } */
+    filtered = payments.filter((p, i) => GetMonthFromPaymentDate(p) === month);
+
+    setPaymentsFiltered(Array.from(filtered));
   }
 
   return (
@@ -56,7 +53,6 @@ export default function Finances() {
         <div>
           <p>Mois</p>
           <select value={selectedMonth} onChange={onSelectMonth}>
-            <option value={-1}>All</option>
             {MOIS.map((m, i) => (
               <option value={i}>{m}</option>
             ))}
