@@ -81,7 +81,7 @@ function Roul({ infData, editidingInf, updateID, loadData, hideTopRows }) {
                 }
                 className={cltd}
               >
-                Roulement Mois de 'month'
+                Roulement Mois de ' - Month - '
               </td>
             )}
           </tr>
@@ -99,10 +99,10 @@ function Roul({ infData, editidingInf, updateID, loadData, hideTopRows }) {
             </tr>
           )}
           <tr>
-            <td className={cltd}> {infData.nom} </td>
+            <td className={` ${cltd} min-w-[100pt] `}> {infData.nom} </td>
             {infData.roulement &&
               infData.roulement.map((d, i) => (
-                <td className={cltd} key={i} width={20}>
+                <td className={`${cltd} w-[24pt] `} key={i} width={20}>
                   {editidingInf ? (
                     <select
                       value={d}
