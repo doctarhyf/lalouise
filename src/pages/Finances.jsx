@@ -3,7 +3,7 @@ import PageHeader from "../comps/PageHeader";
 import { GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 
-import { MOIS, cltd } from "../helpers/flow";
+import { GetPaymentTypeLableFromCode, MOIS, cltd } from "../helpers/flow";
 import ProgressView from "../comps/ProgressView";
 
 export default function Finances() {
@@ -96,7 +96,7 @@ export default function Finances() {
                   {FormatNumberWithCommas(p.amount)}
                   {" FC"}
                 </td>
-                <td className={cltd}>{p.type}</td>
+                <td className={cltd}>{GetPaymentTypeLableFromCode(p.type)}</td>
                 <td className={cltd}>{FormatDate(new Date(p.created_at))}</td>
               </tr>
             ))}

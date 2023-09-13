@@ -10,6 +10,14 @@ export const PAYMENTS_TYPES = [
   { label: "Pharmacie", code: "PHA" },
 ];
 
+export function GetPaymentTypeLableFromCode(code) {
+  return (
+    (PAYMENTS_TYPES.find((it, i) => it.code === code) &&
+      PAYMENTS_TYPES.find((it, i) => it.code === code).label) ||
+    code
+  );
+}
+
 export const cltd = "border-b border-l border-neutral-400 p-1";
 
 export const MOIS = [
