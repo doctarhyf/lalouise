@@ -5,12 +5,14 @@ import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 
 import { GetPaymentTypeLableFromCode, MOIS, cltd } from "../helpers/flow";
 import ProgressView from "../comps/ProgressView";
+import { IconButton } from "@mui/material";
 
 export default function Finances() {
   const [payments, setPayments] = useState([]);
   const [paymentsFiltered, setPaymentsFiltered] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [showSpendsForm, setShowSpendsForm] = useState(false);
 
   useEffect(() => {
     loadPayments();
@@ -56,9 +58,9 @@ export default function Finances() {
       {" "}
       <PageHeader title="Finances" sub="Finances generales du centre" />
       <div>
-        <div className="text-lg text-sky-500">RECHERCHE/FILTRE</div>
-        <div>
-          <p>Mois</p>
+        <IconButton />
+        <div className="flex">
+          <p>AFFICHER TABLEAU DU MOIS : </p>
           <select value={selectedMonth} onChange={onSelectMonth}>
             {MOIS.map((m, i) => (
               <option value={i}>{m}</option>
@@ -66,7 +68,25 @@ export default function Finances() {
           </select>
         </div>
       </div>
-      <div>
+      <button
+        className=""
+        onClick={(e) => {
+          setShowSpendsForm(!showSpendsForm);
+        }}
+      >
+        INSERER DEPENSE
+      </button>
+      <div
+        className={` ${
+          showSpendsForm ? "visible" : "hidden"
+        }  flex flex-col gap-2 `}
+      >
+        <input type="number" placeholder="Montant" />
+        <input type="text" placeholder="Description ... " />
+        <input type="datetime-local" />
+        <button>ENREGISTRER</button>
+      </div>
+      <div className={showSpendsForm ? "hidden" : "visible"}>
         <ProgressView show={loading} />
         <table className="w-full">
           <thead>
