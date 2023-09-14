@@ -5,7 +5,7 @@ import logo from "../assets/patient.png";
 import EmptyList from "../comps/EmptyList";
 import PageHeader from "../comps/PageHeader";
 import ProgressView from "../comps/ProgressView";
-
+import patient from "../assets/patient.png";
 import {
   GetAllItemsFromTable,
   TABLE_NAME,
@@ -13,17 +13,131 @@ import {
   DeleteItem,
   AddNewItemToTable,
   GetAllItemsFromTableByColEqVal,
+  UploadFile,
+  BUCKET_NAMES,
+  GetBucketFilePublicUrl,
 } from "../db/sb";
 import { PAYMENTS_TYPES, cltd } from "../helpers/flow";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
+import { Link } from "react-router-dom";
 
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
+
+function FileUploader({ auto, id, notifyUploadDone }) {
+  const [file, setFile] = useState();
+  const [pct, setpct] = useState(0);
+  const [uploadFinished, setUploadFinished] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
+  const [storageFilePath, setStorageFilePath] = useState();
+
+  function onChange(e) {
+    const f = e.target.files[0];
+    setFile(f);
+
+    //console.log(e);
+
+    if (auto) {
+      startUpload();
+    }
+  }
+
+  async function startUpload() {
+    UploadFile(file, onUploadProgress, onUploadError, onFileUploaded);
+
+    /*setStorageFilePath(undefined);
+    setShowProgress(true);
+    setpct(0);
+    UploadFile(file, onUploadProgress, onUploadError, onFileUploaded);
+    setUploadFinished(false);*/
+  }
+
+  function onUploadProgress(pct) {
+    console.log("onProgress - pct : ", pct);
+    setpct(pct);
+  }
+
+  function onUploadError(error) {
+    console.log("onError", error);
+    //alert(error);
+    setShowProgress(false);
+    setStorageFilePath(undefined);
+  }
+
+  function onFileUploaded(storeInfo) {
+    //console.log("onDone", JSON.stringify(stroreInfo));
+    //alert(downloadLink);
+    setShowProgress(false);
+    setUploadFinished(true);
+    setStorageFilePath(storeInfo.storageFilePath);
+    notifyUploadDone({ ...storeInfo, id: id });
+  }
+
+  function onFileDeleted() {
+    alert("File deleted!");
+    console.log("File deleted!");
+  }
+
+  function onFileDeleteError(error) {
+    console.log("onFileDeleteError", error);
+  }
+
+  async function onReset(e) {
+    const res = await DeleteFileFromBucket(
+      storageFilePath,
+      onFileDeleted,
+      onFileDeleteError
+    );
+    console.log("Res delete : ", res);
+    setStorageFilePath(undefined);
+    setUploadFinished(false);
+    setFile(undefined);
+    console.log(e);
+  }
+
+  async function onUploadFile(e) {
+    if (file !== undefined) {
+      startUpload();
+    } else {
+      //alert("Please select a file first!");
+    }
+  }
+
+  return (
+    <div className="flex flex-col">
+      <input
+        accept=".jpg, .jpeg, .png, .gif"
+        className={` ${uploadFinished ? "hidden" : ""} `}
+        type="file"
+        onChange={onChange}
+      />
+      <div className={` ${!uploadFinished ? "hidden" : ""} `}>
+        <button onClick={(e) => onReset(e)}>RE-UPLOAD</button>
+      </div>
+      <progress
+        className={` ${showProgress ? "" : "hidden"} `}
+        value={pct}
+        max={100}
+      />
+      {auto || <button onClick={onUploadFile}>Upload File</button>}
+    </div>
+  );
+}
+
+function MultiFileUploaderCont({ notifyUploadDone, count = 3 }) {
+  return (
+    <div>
+      {[...Array(count)].fill(0).map((it, i) => (
+        <FileUploader auto id={i} notifyUploadDone={notifyUploadDone} />
+      ))}
+    </div>
+  );
+}
 
 function PatientItem({ data, onViewPatient }) {
   return (
     <div className="flex gap-x-4 hover:bg-sky-100 rounded-md p-2 cursor-pointer ">
       <div className=" w-[30pt] h-[30pt] rounded-md overflow-hidden">
-        <img src={logo} className=" h-[100%] " />
+        <img src={data.photo || logo} className=" h-[100%] " />
       </div>
 
       <div className="grow">
@@ -59,6 +173,7 @@ function FormNewPat(props) {
   useEffect(() => {
     setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
     loadPayments();
+    console.log(props);
   }, []);
 
   async function loadPayments() {
@@ -83,6 +198,18 @@ function FormNewPat(props) {
     // setShowFormNewMed(false);
   }
 
+  function notifyUploadDone(storeInfo, id) {
+    console.log(storeInfo, id);
+
+    let { publicUrl } = GetBucketFilePublicUrl(storeInfo.path);
+
+    props.setNewPatPhoto(publicUrl);
+
+    console.log("file uploaded => \n", publicUrl);
+  }
+
+  console.log("form props ", props);
+
   return (
     <>
       <div className=" flex-col md:flex-row">
@@ -90,6 +217,19 @@ function FormNewPat(props) {
           <summary className={StyleFormBlockTitle()}>
             Information du Patient
           </summary>
+
+          <div>
+            <div>Photo</div>
+            <div>
+              <img src={props.newPatPhoto || patient} width={80} />
+            </div>
+
+            <MultiFileUploaderCont
+              count={1}
+              notifyUploadDone={notifyUploadDone}
+            />
+          </div>
+
           <div>Nom</div>
           <input
             className={StyleInputText}
@@ -232,6 +372,14 @@ function FormNewPat(props) {
                         {"FC"}
                       </td>
                     </tr>
+                    <tr>
+                      <td colSpan={4}>
+                        {" "}
+                        <Link to={"/lalouise/finances"}>
+                          Page Finances
+                        </Link>{" "}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -347,6 +495,8 @@ export default function Reception() {
 
   const selClass = "text-sky-500 border-b-sky-500 bg-sky-500 text-white";
 
+  const [newPatPhoto, setNewPatPhoto] = useState("");
+
   const [newPatNom, setNewPatNom] = useState("Franvale Mutunda");
   const [newPatPhone, setNewPatPhone] = useState("0893092849");
   const [newPatAdd, setNewPatAdd] = useState("2220 Av des aviat II");
@@ -381,6 +531,9 @@ export default function Reception() {
     if (yes) {
       let newPat = { emergContact: {} };
       newPat.id = updateID;
+
+      newPat.photo = newPatPhoto;
+
       newPat.nom = newPatNom;
       newPat.phone = newPatPhone;
       newPat.add = newPatAdd;
@@ -485,6 +638,7 @@ export default function Reception() {
 
     let curViewPat = pat;
 
+    setNewPatPhoto(curViewPat.photo);
     setNewPatNom(curViewPat.nom);
     setNewPatPhone(curViewPat.phone);
     setNewPatAdd(curViewPat.add);
@@ -618,6 +772,8 @@ export default function Reception() {
             onSaveNewPat={onSaveNewPat}
             onCancel={onCancel}
             onUpdatePat={onUpdatePat}
+            newPatPhoto={newPatPhoto}
+            setNewPatPhoto={setNewPatPhoto}
           />
         </div>
       )}
@@ -657,6 +813,8 @@ export default function Reception() {
             onCancel={onCancel}
             onUpdatePat={onUpdatePat}
             onDelPat={onDelPat}
+            newPatPhoto={newPatPhoto}
+            setNewPatPhoto={setNewPatPhoto}
           />
         </div>
       )}

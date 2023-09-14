@@ -28,6 +28,7 @@ function App() {
           <Route path="/lalouise/infirmiers" element={<Infirmiers />} />
           <Route path="/lalouise/finances" element={<Finances />} />
           <Route path="/lalouise/params" element={<Params />} />
+          <Route path="*" element={<div>Page Not Found</div>} />
         </Route>
       </Routes>
     </BrowserRouter>

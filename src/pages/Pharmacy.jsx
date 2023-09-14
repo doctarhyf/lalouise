@@ -216,23 +216,30 @@ export default function Pharmacy() {
   }, []);
 
   async function loadAllData() {
-    setMeds([]);
-    setMedsFiltered([]);
+    try {
+      setMeds([]);
+      setMedsFiltered([]);
 
-    setMedSellsRecs([]);
-    setMedSellsRecsFiltered([]);
-    setLoading(true);
-    const meds = await GetAllItemsFromTable(TABLE_NAME.MEDS);
-    const sellsrecs = await GetAllItemsFromTable(TABLE_NAME.MED_SELLS_REC);
+      setMedSellsRecs([]);
+      setMedSellsRecsFiltered([]);
+      setLoading(true);
+      const meds = await GetAllItemsFromTable(TABLE_NAME.MEDS);
+      const sellsrecs = await GetAllItemsFromTable(TABLE_NAME.MED_SELLS_REC);
 
-    setMeds(meds);
-    setMedsFiltered(meds);
-    setMedSellsRecs(sellsrecs);
-    setMedSellsRecsFiltered(sellsrecs);
+      setMeds(meds);
+      setMedsFiltered(meds);
+      setMedSellsRecs(sellsrecs);
+      setMedSellsRecsFiltered(sellsrecs);
 
-    setLoading(false);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+      alert(e);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   }
-
   const onInputChange = (e) => {
     const name = e.target.name;
     const val = e.target.value;

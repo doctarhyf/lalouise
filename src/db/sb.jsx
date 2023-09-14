@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from "uuid";
 
 const supabase = createClient(
   "https://akttdrggveyretcvkjmq.supabase.co",
@@ -88,8 +89,27 @@ export async function UpdateItem(tableName, id, updData, onUpdateFinished) {
     .select();
 
   if (error) return error;
-  onUpdateFinished(data);
+  if (onUpdateFinished) onUpdateFinished(data);
   return data;
+}
+
+export async function DeleteFileFromBucket(
+  storageFilePath,
+  onFileDeleted,
+  onFileDeleteError
+) {
+  const { data, error } = await supabase.storage
+    .from(BUCKET_NAMES.PATIENTS_PHOTO)
+    .remove([storageFilePath]);
+
+  if (error) {
+    if (onFileDeleteError) onFileDeleteError(error);
+    console.log(error);
+    return;
+  }
+
+  onFileDeleted(data);
+  console.log(data);
 }
 
 export async function DeleteItem(tableName, id) {
@@ -130,3 +150,57 @@ export const TABLE_NAME = {
   MED_SELLS_REC: "sellrec_",
   PAYMENTS: "payments",
 };
+
+export const BUCKET_NAMES = {
+  PATIENTS_PHOTO: "patients_photo",
+};
+
+export function GetBucketFilePublicUrl(filePath) {
+  const { data } = supabase.storage
+    .from(BUCKET_NAMES.PATIENTS_PHOTO)
+    .getPublicUrl(filePath);
+
+  return data;
+}
+
+export async function UploadFile(
+  file,
+  onUploadProgress,
+  onUploadError,
+  onFileUploaded
+) {
+  console.log("uploading ...");
+
+  /*  const { data, error } = await supabase.storage.getBucket(
+    BUCKET_NAMES.PATIENTS_PHOTO
+  );
+ */
+
+  if (file === undefined) {
+    console.log(
+      "File load error file is undefined! Select another file please!"
+    );
+    return;
+  }
+
+  let fileName = `${uuidv4()}.${
+    file.name.split(".")[file.name.split(".").length - 1]
+  }`;
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET_NAMES.PATIENTS_PHOTO)
+    .upload(`photos/${fileName}`, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (error) {
+    console.log(error);
+    onUploadError(error);
+    return;
+  }
+
+  console.log();
+  onFileUploaded(data);
+  return data;
+}
