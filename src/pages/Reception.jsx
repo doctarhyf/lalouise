@@ -148,7 +148,7 @@ function MultiFileUploaderCont({ notifyUploadDone, count = 3 }) {
 
 function PatientItem({ data, onViewPatient }) {
   return (
-    <div className="flex gap-x-4 hover:bg-sky-100 rounded-md p-2 cursor-pointer ">
+    <div className=" md:w-[30%] md:border flex gap-x-4 hover:bg-sky-100  rounded-md p-2 cursor-pointer ">
       <div className=" w-[30pt] h-[30pt] rounded-md overflow-hidden">
         <img src={data.photo || logo} className=" h-[100%] " />
       </div>
@@ -729,13 +729,16 @@ export default function Reception() {
                     placeholder="Search ..."
                   />
                 </div>
-                {listPatientsFiltered.map((pat, idx) => (
-                  <PatientItem
-                    onViewPatient={(e) => onViewPatient(pat)}
-                    key={idx}
-                    data={pat}
-                  />
-                ))}
+
+                <div className="md:flex gap-2 flex-wrap">
+                  {listPatientsFiltered.map((pat, idx) => (
+                    <PatientItem
+                      onViewPatient={(e) => onViewPatient(pat)}
+                      key={idx}
+                      data={pat}
+                    />
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center">
