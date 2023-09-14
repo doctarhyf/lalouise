@@ -111,13 +111,26 @@ function FileUploader({ auto, id, notifyUploadDone }) {
         onChange={onChange}
       />
       <div className={` ${!uploadFinished ? "hidden" : ""} `}>
-        <button onClick={(e) => onReset(e)}>RE-UPLOAD</button>
+        <button
+          className="p-1 text-xs bg-green-800 rounded-full text-white"
+          onClick={(e) => {
+            //onReset(e)
+          }}
+        >
+          FILE UPLOADED
+        </button>
       </div>
-      <progress
-        className={` ${showProgress ? "" : "hidden"} `}
-        value={pct}
-        max={100}
-      />
+
+      <div
+        className={`w-full bg-neutral-800 h-[12pt]  rounded-full my-2 overflow-hidden ${
+          showProgress ? "visible" : "invisible"
+        } `}
+      >
+        <div
+          className={` w-[${pct}%]  bg-green-700 h-full text-white text-[9pt] `}
+        ></div>
+      </div>
+
       {auto || <button onClick={onUploadFile}>Upload File</button>}
     </div>
   );
@@ -173,7 +186,7 @@ function FormNewPat(props) {
   useEffect(() => {
     setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
     loadPayments();
-    console.log(props);
+    console.log("form props : ", props);
   }, []);
 
   async function loadPayments() {
@@ -206,6 +219,7 @@ function FormNewPat(props) {
     props.setNewPatPhoto(publicUrl);
 
     console.log("file uploaded => \n", publicUrl);
+    props.loadPatList();
   }
 
   console.log("form props ", props);
@@ -218,17 +232,19 @@ function FormNewPat(props) {
             Information du Patient
           </summary>
 
-          <div>
-            <div>Photo</div>
+          {false && (
             <div>
-              <img src={props.newPatPhoto || patient} width={80} />
-            </div>
+              <div>Photo</div>
+              <div>
+                <img src={props.newPatPhoto || patient} width={200} />
+              </div>
 
-            <MultiFileUploaderCont
-              count={1}
-              notifyUploadDone={notifyUploadDone}
-            />
-          </div>
+              <MultiFileUploaderCont
+                count={1}
+                notifyUploadDone={notifyUploadDone}
+              />
+            </div>
+          )}
 
           <div>Nom</div>
           <input
@@ -742,6 +758,7 @@ export default function Reception() {
       {selectedSection === "newpat" && (
         <div className="new-pat-form">
           <FormNewPat
+            loadPatList={loadPatList}
             editing={false}
             newPatNom={newPatNom}
             setNewPatNom={setNewPatNom}
@@ -781,6 +798,7 @@ export default function Reception() {
       {selectedSection === "viewpat" && (
         <div className="view-pat">
           <FormNewPat
+            loadPatList={loadPatList}
             updateID={updateID}
             editing={true}
             newPatNom={newPatNom}
