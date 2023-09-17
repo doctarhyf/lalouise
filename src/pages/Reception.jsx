@@ -17,7 +17,7 @@ import {
   BUCKET_NAMES,
   GetBucketFilePublicUrl,
 } from "../db/sb";
-import { PAYMENTS_TYPES, cltd } from "../helpers/flow";
+import { DEPARTEMENTS, PAYMENTS_TYPES, cltd } from "../helpers/flow";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 import { Link } from "react-router-dom";
 
@@ -180,6 +180,7 @@ function FormNewPat(props) {
     foreign_table: TABLE_NAME.PATIENTS,
     foreign_key: "",
     amount: "",
+    cash: false,
   });
   const [payments, setPayments] = useState([]);
 
@@ -222,8 +223,6 @@ function FormNewPat(props) {
     props.loadPatList();
   }
 
-  console.log("form props ", props);
-
   return (
     <>
       <div className=" flex-col md:flex-row">
@@ -245,6 +244,19 @@ function FormNewPat(props) {
               />
             </div>
           )}
+
+          <div>Departement (MAT, SIN, SOP)</div>
+          <select
+            value={props.newPatDep || DEPARTEMENTS.SIN.code}
+            className={StyleInputText}
+            onChange={(e) => props.setNewPatDep(e.target.value)}
+          >
+            {Object.values(DEPARTEMENTS).map((dep, i) => (
+              <option key={i} value={dep.code}>
+                {dep.label}
+              </option>
+            ))}
+          </select>
 
           <div>Nom</div>
           <input
@@ -295,7 +307,7 @@ function FormNewPat(props) {
             <summary className={StyleFormBlockTitle()}>Payment</summary>
 
             {showFormNewMed && (
-              <div className="CONT-NEW_PAYMENT p-2 shadow outline outline-[1px]">
+              <div className="CONT-NEW_PAYMENT  p-2 shadow outline outline-[1px]">
                 <p className="text-sm font-bold text-sky-500">
                   NOUVEAU PAYEMENT
                 </p>
@@ -333,6 +345,45 @@ function FormNewPat(props) {
                     />
                   </div>
 
+                  <div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        checked={newPayment.cash}
+                        onChange={(e) =>
+                          setNewPayment((old) => ({
+                            ...old,
+                            cash: e.target.checked,
+                          }))
+                        }
+                      />
+                      CASH{" "}
+                      <span className="text-neutral-400">
+                        (Veuillez cocher si c'est paye cash!)
+                      </span>
+                    </div>
+                    {!newPayment.cash && (
+                      <div className="bg-red-500 p-1 font-bold text-xs text-white rounded-md w-fit">
+                        {" "}
+                        La facture sera paye ulterieurement (credit){" "}
+                      </div>
+                    )}
+                    {newPayment.cash && (
+                      <div className="bg-green-500 p-1 font-bold text-xs text-white rounded-md w-fit">
+                        {" "}
+                        La facture sera paye CASH!{" "}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => setShowFormNewMed(false)}
+                    className="text-red-500 my-4 rounded-md border border-transparent hover:border hover:border-red-500 p-1"
+                  >
+                    ANNULER
+                  </button>
+
                   {newPayment.amount >= 100 && (
                     <button
                       type="button"
@@ -360,7 +411,14 @@ function FormNewPat(props) {
                 <table className="w-full">
                   <thead>
                     <tr>
-                      {["No", "Amount", "Type", "Date/Heure"].map((it, i) => (
+                      {[
+                        "No",
+                        "Amount",
+                        "Type",
+                        "CASH",
+                        "Deja Paye",
+                        "Date/Heure",
+                      ].map((it, i) => (
                         <td className={` ${cltd} w-min `}>{it}</td>
                       ))}
                     </tr>
@@ -374,6 +432,10 @@ function FormNewPat(props) {
                           {" FC"}
                         </td>
                         <td className={cltd}>{p.type}</td>
+                        <td className={cltd}>{p.cash ? "OUI" : "CREDIT"}</td>
+                        <td className={cltd}>
+                          {!p.payed ? "NON-PAYE" : "DEJA PAYE"}
+                        </td>
                         <td className={cltd}>
                           {FormatDate(new Date(p.created_at))}
                         </td>
@@ -381,7 +443,7 @@ function FormNewPat(props) {
                     ))}
                     <tr className="font-bold bg-neutral-100">
                       <td className={cltd}>TOTAL</td>
-                      <td className={cltd} colSpan={3}>
+                      <td className={cltd} colSpan={6}>
                         {FormatNumberWithCommas(
                           payments.reduce((acc, it) => acc + it.amount, 0)
                         )}{" "}
@@ -513,6 +575,7 @@ export default function Reception() {
 
   const [newPatPhoto, setNewPatPhoto] = useState("");
 
+  const [newPatDep, setNewPatDep] = useState(DEPARTEMENTS.SIN.label);
   const [newPatNom, setNewPatNom] = useState("Franvale Mutunda");
   const [newPatPhone, setNewPatPhone] = useState("0893092849");
   const [newPatAdd, setNewPatAdd] = useState("2220 Av des aviat II");
@@ -550,6 +613,7 @@ export default function Reception() {
 
       newPat.photo = newPatPhoto;
 
+      newPat.dep = newPatDep;
       newPat.nom = newPatNom;
       newPat.phone = newPatPhone;
       newPat.add = newPatAdd;
@@ -581,6 +645,8 @@ export default function Reception() {
 
     if (yes) {
       let newPat = { emergContact: {} };
+
+      newPat.dep = newPatDep;
       newPat.nom = newPatNom;
       newPat.phone = newPatPhone;
       newPat.add = newPatAdd;
@@ -655,6 +721,7 @@ export default function Reception() {
     let curViewPat = pat;
 
     setNewPatPhoto(curViewPat.photo);
+    setNewPatDep(curViewPat.dep);
     setNewPatNom(curViewPat.nom);
     setNewPatPhone(curViewPat.phone);
     setNewPatAdd(curViewPat.add);
@@ -765,6 +832,8 @@ export default function Reception() {
             editing={false}
             newPatNom={newPatNom}
             setNewPatNom={setNewPatNom}
+            newPatDep={newPatDep}
+            setNewPatDep={setNewPatDep}
             newPatPhone={newPatPhone}
             setNewPatPhone={setNewPatPhone}
             newPatAdd={newPatAdd}
@@ -806,6 +875,8 @@ export default function Reception() {
             editing={true}
             newPatNom={newPatNom}
             setNewPatNom={setNewPatNom}
+            newPatDep={newPatDep}
+            setNewPatDep={setNewPatDep}
             newPatPhone={newPatPhone}
             setNewPatPhone={setNewPatPhone}
             newPatAdd={newPatAdd}
