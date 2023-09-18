@@ -188,6 +188,7 @@ function FormNewPat(props) {
     foreign_key: "",
     amount: "",
     cash: false,
+    payed: false,
   });
   const [payments, setPayments] = useState([]);
 
@@ -386,6 +387,7 @@ function FormNewPat(props) {
                           setNewPayment((old) => ({
                             ...old,
                             cash: e.target.checked,
+                            payed: e.target.checked,
                           }))
                         }
                       />
@@ -460,7 +462,7 @@ function FormNewPat(props) {
                     {payments.map((p, i) => (
                       <tr
                         key={i}
-                        className={` ${!p.cash ? "text-red-500 italic" : ""} `}
+                        className={` ${!p.payed ? "text-red-500 italic" : ""} `}
                       >
                         <td className={cltd}>{i + 1}</td>
                         <td className={cltd}>
