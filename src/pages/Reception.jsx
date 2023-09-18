@@ -21,6 +21,13 @@ import { DEPARTEMENTS, PAYMENTS_TYPES, cltd } from "../helpers/flow";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 import { Link } from "react-router-dom";
 
+import cash from "../assets/cash.png";
+import check from "../assets/check.png";
+import close from "../assets/close.png";
+import ok from "../assets/ok.png";
+import debt from "../assets/debt.png";
+import loading from "../assets/loading.gif";
+
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
 
 function FileUploader({ auto, id, notifyUploadDone }) {
@@ -223,6 +230,31 @@ function FormNewPat(props) {
     props.loadPatList();
   }
 
+  async function onConfirmPayment(p) {
+    if (!confirm("Etes vous sure de vouloir confirmer ce payement?")) {
+      return;
+    }
+
+    let upd = { ...p, payed: true, payed_at: new Date().toISOString() };
+
+    // console.dir(upd);
+
+    //return;
+    UpdateItem(
+      TABLE_NAME.PAYMENTS,
+      p.id,
+      upd,
+      (r) => {
+        alert("Credit paye!");
+        loadPayments();
+        console.log(r);
+      },
+      (e) => {
+        alert("Error confirmation\n" + e);
+        console.log(e);
+      }
+    );
+  }
   return (
     <>
       <div className=" flex-col md:flex-row">
@@ -418,6 +450,7 @@ function FormNewPat(props) {
                         "CASH",
                         "Deja Paye",
                         "Date/Heure",
+                        "Confirmer Payement",
                       ].map((it, i) => (
                         <td className={` ${cltd} w-min `}>{it}</td>
                       ))}
@@ -425,19 +458,52 @@ function FormNewPat(props) {
                   </thead>
                   <tbody>
                     {payments.map((p, i) => (
-                      <tr key={i}>
+                      <tr
+                        key={i}
+                        className={` ${!p.cash ? "text-red-500 italic" : ""} `}
+                      >
                         <td className={cltd}>{i + 1}</td>
                         <td className={cltd}>
                           {FormatNumberWithCommas(p.amount)}
                           {" FC"}
                         </td>
                         <td className={cltd}>{p.type}</td>
-                        <td className={cltd}>{p.cash ? "OUI" : "CREDIT"}</td>
                         <td className={cltd}>
-                          {!p.payed ? "NON-PAYE" : "DEJA PAYE"}
+                          {p.cash ? (
+                            <span>
+                              {" "}
+                              <img src={cash} width={30} />
+                              CASH
+                            </span>
+                          ) : (
+                            <span>
+                              {" "}
+                              <img src={debt} width={30} />
+                              CREDIT
+                            </span>
+                          )}
+                        </td>
+                        <td className={cltd}>
+                          {!p.payed ? (
+                            <img src={close} width={30} />
+                          ) : (
+                            <img src={check} width={30} />
+                          )}
                         </td>
                         <td className={cltd}>
                           {FormatDate(new Date(p.created_at))}
+                        </td>
+                        <td className={cltd}>
+                          {p.payed ? (
+                            <img src={ok} width={30} />
+                          ) : (
+                            <button
+                              className={clBtn}
+                              onClick={(e) => onConfirmPayment(p)}
+                            >
+                              CONFIRMER
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -445,7 +511,12 @@ function FormNewPat(props) {
                       <td className={cltd}>TOTAL</td>
                       <td className={cltd} colSpan={6}>
                         {FormatNumberWithCommas(
-                          payments.reduce((acc, it) => acc + it.amount, 0)
+                          payments.reduce((sum, record) => {
+                            if (record.payed == true) {
+                              return sum + record.amount;
+                            }
+                            return 0 + sum;
+                          }, 0)
                         )}{" "}
                         {"FC"}
                       </td>
