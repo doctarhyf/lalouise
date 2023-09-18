@@ -562,8 +562,12 @@ function FormNewPat(props) {
                             )}{" "}
                           </div>
                           <div className="text-slate-500 text-sm">
-                            {p.payed && <div> Paye le : {p.payed_at}</div>}
-                            {!p.payed && <div> {p.created_at} </div>}
+                            {p.payed && !p.cash && (
+                              <div> Paye le : {p.payed_at}</div>
+                            )}
+                            {p.cash && (
+                              <div>Cash paye le : {p.created_at} </div>
+                            )}
                           </div>
                         </div>
                       </div>
