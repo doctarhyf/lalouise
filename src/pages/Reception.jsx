@@ -571,10 +571,12 @@ function FormNewPat(props) {
                           </div>
                           <div className="text-slate-500 text-sm">
                             {p.payed && !p.cash && (
-                              <div> Paye le : {p.payed_at}</div>
+                              <div> Paye le : {FormatDate(p.payed_at)}</div>
                             )}
                             {p.cash && (
-                              <div>Cash paye le : {p.created_at} </div>
+                              <div>
+                                Cash paye le : {FormatDate(p.created_at)}{" "}
+                              </div>
                             )}
                           </div>
                         </div>
@@ -799,9 +801,12 @@ export default function Reception() {
 
       newPat.autre = autre;
 
-      await AddNewItemToTable(newPat, TABLE_NAME.PATIENTS);
-      loadPatList();
       console.log(newPat);
+
+      await AddNewItemToTable(newPat, TABLE_NAME.PATIENTS, (d) => {
+        loadPatList();
+        console.log(d);
+      });
     }
   }
 
@@ -885,6 +890,20 @@ export default function Reception() {
     }
   }
 
+  const [filterDep, setFilterDep] = useState(DEPARTEMENTS.SIN.code);
+  function onSelectedFilterDep(filterDep) {
+    console.log(filterDep);
+
+    setFilterDep(filterDep);
+
+    if (filterDep === "all") {
+      setListPatientsFiltered(listPatients);
+      return;
+    }
+
+    setListPatientsFiltered(listPatients.filter((p, i) => p.dep === filterDep));
+  }
+
   return (
     <div className="p-8">
       <PageHeader
@@ -917,6 +936,22 @@ export default function Reception() {
       {selectedSection === "lspat" && (
         <div className="lspat mt-8">
           <ProgressView show={loading} />
+
+          <div>
+            Afficher patients de :
+            <select
+              value={filterDep || DEPARTEMENTS.SIN.code}
+              className={StyleInputText}
+              onChange={(e) => onSelectedFilterDep(e.target.value)}
+            >
+              <option value="all">Tous les patients</option>
+              {Object.values(DEPARTEMENTS).map((dep, i) => (
+                <option key={i} value={dep.code}>
+                  {dep.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div>
             {listPatients && listPatients.length > 0 ? (

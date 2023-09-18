@@ -11,8 +11,11 @@ const options = {
 };
 
 export function FormatDate(date = new Date()) {
-  date = date.setHours(date.getHours() + 7);
-  return new Intl.DateTimeFormat("fr-FR", options).format(date);
+  if (date.getHours) {
+    date = date.setHours(date.getHours() + 7);
+    return new Intl.DateTimeFormat("fr-FR", options).format(date);
+  }
+  return date;
 }
 
 export function FormatNumberWithCommas(number) {
