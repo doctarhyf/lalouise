@@ -181,8 +181,7 @@ function FormNewPat(props) {
   const [showFormNewMed, setShowFormNewMed] = useState(false);
   let refPaymentAmount = useRef();
   const [newPayment, setNewPayment] = useState({
-    /* id:'',
-  created_at:'', */
+    created_at: new Date().toISOString(),
     type: PAYMENTS_TYPES[0].code,
     foreign_table: TABLE_NAME.PATIENTS,
     foreign_key: "",
@@ -442,16 +441,17 @@ function FormNewPat(props) {
                 <p className="font-bold text-sm text-sky-500">
                   TABLEAU PAYEMENT
                 </p>
-                <table className="w-full">
+                <table className="w-full hidden md:block">
                   <thead>
                     <tr>
                       {[
                         "No",
                         "Amount",
                         "Type",
-                        "CASH",
+                        "CASH/CREDIT.",
                         "Deja Paye",
                         "Date/Heure",
+                        "Paye le",
                         "Confirmer Payement",
                       ].map((it, i) => (
                         <td className={` ${cltd} w-min `}>{it}</td>
@@ -496,6 +496,9 @@ function FormNewPat(props) {
                           {FormatDate(new Date(p.created_at))}
                         </td>
                         <td className={cltd}>
+                          {p.payed_at && FormatDate(new Date(p.payed_at))}
+                        </td>
+                        <td className={cltd}>
                           {p.payed ? (
                             <img src={ok} width={30} />
                           ) : (
@@ -511,7 +514,7 @@ function FormNewPat(props) {
                     ))}
                     <tr className="font-bold bg-neutral-100">
                       <td className={cltd}>TOTAL</td>
-                      <td className={cltd} colSpan={6}>
+                      <td className={cltd} colSpan={7}>
                         {FormatNumberWithCommas(
                           payments.reduce((sum, record) => {
                             if (record.payed == true) {
@@ -533,6 +536,52 @@ function FormNewPat(props) {
                     </tr>
                   </tbody>
                 </table>
+
+                <div className="PAYMENTS md:hidden ">
+                  <div className="my-2 border-b">
+                    {payments.map((p, i) => (
+                      <div
+                        className={`flex gap-4 ${
+                          !p.payed ? "text-red-500" : ""
+                        } `}
+                      >
+                        <div className="text-slate-600">{i + 1}.</div>
+                        <div className="flex flex-col ">
+                          <div className="text-lg font-bold">{p.amount} FC</div>
+                          <div className="text-sm flex gap-2">
+                            {" "}
+                            {p.cash ? (
+                              <img src={cash} width={20} />
+                            ) : (
+                              "CREDIT"
+                            )},{" "}
+                            {p.payed ? (
+                              <img src={check} width={20} />
+                            ) : (
+                              "NON-PAYE"
+                            )}{" "}
+                          </div>
+                          <div className="text-slate-500 text-sm">
+                            {p.payed && <div> Paye le : {p.payed_at}</div>}
+                            {!p.payed && <div> {p.created_at} </div>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bg-neutral-300 font-bold text-lg">
+                    TOTAL :{" "}
+                    {FormatNumberWithCommas(
+                      payments.reduce((sum, record) => {
+                        if (record.payed == true) {
+                          return sum + record.amount;
+                        }
+                        return 0 + sum;
+                      }, 0)
+                    )}{" "}
+                    {"FC"}
+                  </div>
+                </div>
               </div>
             )}
           </details>
