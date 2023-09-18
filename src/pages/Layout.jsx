@@ -40,7 +40,7 @@ export default function Layout() {
         <img
           onClick={(e) => setShowMenu(!showMenu)}
           src={hosp}
-          className="w-[28pt] h-[28pt] inline-block cursor-pointer"
+          className="min-w-[28pt]  h-[28pt] inline-block cursor-pointer"
         />
 
         {!showMenu && (

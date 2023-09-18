@@ -155,7 +155,7 @@ function MultiFileUploaderCont({ notifyUploadDone, count = 3 }) {
 
 function PatientItem({ data, onViewPatient }) {
   return (
-    <div className=" md:w-[30%] md:border flex gap-x-4 hover:bg-sky-100  rounded-md p-2 cursor-pointer ">
+    <div className=" md:w-[280px] md:border flex gap-x-4 hover:bg-sky-100  rounded-md p-2 cursor-pointer ">
       <div className=" w-[30pt] h-[30pt] rounded-md overflow-hidden">
         <img src={data.photo || logo} className=" h-[100%] " />
       </div>

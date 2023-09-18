@@ -3,7 +3,12 @@ import PageHeader from "../comps/PageHeader";
 import { AddNewItemToTable, GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 
-import { GetPaymentTypeLableFromCode, MOIS, cltd } from "../helpers/flow";
+import {
+  GetPaymentTypeLableFromCode,
+  MOIS,
+  PAYMENTS_TYPES,
+  cltd,
+} from "../helpers/flow";
 import ProgressView from "../comps/ProgressView";
 
 export default function Finances() {
@@ -13,6 +18,8 @@ export default function Finances() {
   const [loading, setLoading] = useState(false);
   const [showSpendsForm, setShowSpendsForm] = useState(false);
   const [spendData, setSpendData] = useState({ type: "OTH" });
+  const [showTableGen, setShowTableGen] = useState(false);
+  const [quitancierData, setQuitancierData] = useState([]);
 
   useEffect(() => {
     loadPayments();
@@ -25,7 +32,62 @@ export default function Finances() {
     const p = await GetAllItemsFromTable(TABLE_NAME.PAYMENTS);
     setPayments(p);
     setPaymentsFiltered(Array.from(p));
+
+    CalculateQuitancier(p);
+
     setLoading(false);
+  }
+
+  function CalculateQuitancier(payments) {
+    setQuitancierData([]);
+
+    let payementsConfirmed = [];
+    let quitancier = {};
+
+    for (let payment of payments) {
+      let payed_at = payment.created_at; // payment.payed_at;
+      if (payed_at) {
+        let date = payed_at.split("T")[0];
+        quitancier[date] = [];
+        payementsConfirmed.push(payment);
+      }
+    }
+    console.log(quitancier);
+    for (let payment of payementsConfirmed) {
+      let payed_at = payment.created_at; // payment.payed_at;
+      let date = payed_at.split("T")[0];
+      quitancier[date].push(payment);
+    }
+
+    let quitData = {};
+
+    Object.entries(quitancier).map((q, i) => {
+      const key = q[0];
+      const data = q[1];
+
+      const pha = data.reduce(function (acc, cv) {
+        if (cv.type === "PHA") {
+          return acc + cv.amount;
+        }
+
+        return acc + 0;
+      }, 0);
+
+      const quit = data.reduce(function (acc, cv) {
+        if (cv.type !== "PHA") {
+          return acc + cv.amount;
+        }
+
+        return acc + 0;
+      }, 0);
+
+      console.log(key, "pha => ", pha);
+      console.log(key, "quit => ", quit);
+
+      quitData[key] = [quit, pha];
+    });
+
+    setQuitancierData(quitData);
   }
 
   function GetPaymentDateParts(payment) {
@@ -82,6 +144,14 @@ export default function Finances() {
       >
         + INSERER DEPENSE
       </button>
+      <div>
+        <input
+          type="checkbox"
+          value={showTableGen}
+          onChange={(e) => setShowTableGen(e.target.checked)}
+        />
+        SHOW TABLEAU GEN{" "}
+      </div>
       <div
         className={` ${
           showSpendsForm ? "visible" : "hidden"
@@ -147,33 +217,68 @@ export default function Finances() {
       </div>
       <div className={showSpendsForm ? "hidden" : "visible"}>
         <ProgressView show={loading} />
-        <div className="flex">
-          <p>AFFICHER TABLEAU DU MOIS : </p>
-          <select value={selectedMonth} onChange={onSelectMonth}>
-            {MOIS.map((m, i) => (
-              <option value={i}>{m}</option>
-            ))}
-          </select>
-        </div>
-        <table className="w-full">
-          <thead>
-            <tr>
-              <td
-                colSpan={4}
-                className="text-lg border-b border-l  text-center text-sky-500"
-              >
-                TABLEAU FINANCES - {MOIS[selectedMonth]}/
-                {new Date().getFullYear()}
-              </td>
-            </tr>
-            <tr>
-              {["No", "Amount", "Type", "Date/Heure"].map((it, i) => (
-                <td className={` ${cltd} w-min `}>{it}</td>
+
+        {showTableGen && (
+          <div className="flex">
+            <p>AFFICHER TABLEAU DU MOIS : </p>
+            <select value={selectedMonth} onChange={onSelectMonth}>
+              {MOIS.map((m, i) => (
+                <option value={i}>{m}</option>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {paymentsFiltered.length > 10 && (
+            </select>
+          </div>
+        )}
+
+        {showTableGen && (
+          <table className=" TABLEAU GEN w-full">
+            <thead>
+              <tr>
+                <td
+                  colSpan={4}
+                  className="text-lg border-b border-l  text-center text-sky-500"
+                >
+                  TABLEAU FINANCES - {MOIS[selectedMonth]}/
+                  {new Date().getFullYear()}
+                </td>
+              </tr>
+              <tr>
+                {["No", "Amount", "Type", "Date/Heure"].map((it, i) => (
+                  <td className={` ${cltd} w-min `}>{it}</td>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {paymentsFiltered.length > 10 && (
+                <tr className="font-bold bg-neutral-100">
+                  <td className={cltd}>TOTAL</td>
+                  <td className={cltd} colSpan={3}>
+                    {FormatNumberWithCommas(
+                      paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
+                    )}{" "}
+                    {"FC"}
+                  </td>
+                </tr>
+              )}
+              {paymentsFiltered.map((p, i) => (
+                <tr
+                  key={i}
+                  className="hover:bg-sky-500 hover:text-white cursor-pointer"
+                >
+                  <td className={cltd}>{i + 1}</td>
+                  <td
+                    className={`${cltd} ${
+                      p.amount <= 0 ? "text-red-500" : "text-green-600"
+                    } `}
+                  >
+                    {FormatNumberWithCommas(p.amount)}
+                    {" FC"}
+                  </td>
+                  <td className={cltd}>
+                    {GetPaymentTypeLableFromCode(p.type)}
+                  </td>
+                  <td className={cltd}>{FormatDate(new Date(p.created_at))}</td>
+                </tr>
+              ))}
               <tr className="font-bold bg-neutral-100">
                 <td className={cltd}>TOTAL</td>
                 <td className={cltd} colSpan={3}>
@@ -183,36 +288,47 @@ export default function Finances() {
                   {"FC"}
                 </td>
               </tr>
-            )}
-            {paymentsFiltered.map((p, i) => (
-              <tr
-                key={i}
-                className="hover:bg-sky-500 hover:text-white cursor-pointer"
-              >
-                <td className={cltd}>{i + 1}</td>
+            </tbody>
+          </table>
+        )}
+
+        {!showTableGen && (
+          <table>
+            <thead>
+              <tr>
                 <td
-                  className={`${cltd} ${
-                    p.amount <= 0 ? "text-red-500" : "text-green-600"
-                  } `}
+                  colSpan={5}
+                  align="center"
+                  className="text-lg border-b border-l text-center text-sky-500"
                 >
-                  {FormatNumberWithCommas(p.amount)}
-                  {" FC"}
+                  TABLEAU QUITANCIER
                 </td>
-                <td className={cltd}>{GetPaymentTypeLableFromCode(p.type)}</td>
-                <td className={cltd}>{FormatDate(new Date(p.created_at))}</td>
               </tr>
-            ))}
-            <tr className="font-bold bg-neutral-100">
-              <td className={cltd}>TOTAL</td>
-              <td className={cltd} colSpan={3}>
-                {FormatNumberWithCommas(
-                  paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
-                )}{" "}
-                {"FC"}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              <tr className="font-bold">
+                {["QUITANCIER", "PHARMACIE", "TOT. Q.", "TOT. PH.", "Date"].map(
+                  (it, i) => (
+                    <td className={cltd}>{it}</td>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(quitancierData).map((qd, i) => (
+                <tr>
+                  <td className={cltd}>
+                    {FormatNumberWithCommas(qd[1][0])} FC
+                  </td>
+                  <td className={cltd}>
+                    {FormatNumberWithCommas(qd[1][1])} FC
+                  </td>
+                  <td className={cltd}></td>
+                  <td className={cltd}></td>
+                  <td className={cltd}>{qd[0]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
