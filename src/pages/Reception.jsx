@@ -558,7 +558,15 @@ function FormNewPat(props) {
                             {p.payed ? (
                               <img src={check} width={20} />
                             ) : (
-                              "NON-PAYE"
+                              <>
+                                NON PAYE,{" "}
+                                <button
+                                  className={clBtn}
+                                  onClick={(e) => onConfirmPayment(p)}
+                                >
+                                  CONFIRMER
+                                </button>
+                              </>
                             )}{" "}
                           </div>
                           <div className="text-slate-500 text-sm">
