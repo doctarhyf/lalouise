@@ -305,11 +305,9 @@ export default function Finances() {
                 </td>
               </tr>
               <tr className="font-bold">
-                {["QUITANCIER", "PHARMACIE", "TOT. Q.", "TOT. PH.", "Date"].map(
-                  (it, i) => (
-                    <td className={cltd}>{it}</td>
-                  )
-                )}
+                {["TOT. QUITANCIER", "TOT. PHARMACIE", "Date"].map((it, i) => (
+                  <td className={cltd}>{it}</td>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -321,8 +319,6 @@ export default function Finances() {
                   <td className={cltd}>
                     {FormatNumberWithCommas(qd[1][1])} FC
                   </td>
-                  <td className={cltd}></td>
-                  <td className={cltd}></td>
                   <td className={cltd}>{qd[0]}</td>
                 </tr>
               ))}
