@@ -45,7 +45,7 @@ export default function Finances() {
     let quitancier = {};
 
     for (let payment of payments) {
-      let payed_at = payment.created_at; // payment.payed_at;
+      let payed_at = payment.payed_at; // payment.payed_at;
       if (payed_at) {
         let date = payed_at.split("T")[0];
         quitancier[date] = [];
@@ -54,40 +54,43 @@ export default function Finances() {
     }
     console.log(quitancier);
     for (let payment of payementsConfirmed) {
-      let payed_at = payment.created_at; // payment.payed_at;
+      let payed_at = payment.payed_at; // payment.payed_at;
       let date = payed_at.split("T")[0];
       quitancier[date].push(payment);
     }
 
-    let quitData = {};
+    let donneesTableauQuitancierPharmacie = [];
 
     Object.entries(quitancier).map((q, i) => {
       const key = q[0];
       const data = q[1];
 
-      const pha = data.reduce(function (acc, cv) {
-        if (cv.type === "PHA") {
+      const totalPharmacie = data.reduce(function (acc, cv) {
+        if (cv.type === "PHA" && cv.payed) {
           return acc + cv.amount;
         }
 
         return acc + 0;
       }, 0);
 
-      const quit = data.reduce(function (acc, cv) {
-        if (cv.type !== "PHA") {
+      const totalQuitancier = data.reduce(function (acc, cv) {
+        if (cv.type !== "PHA" && cv.payed) {
           return acc + cv.amount;
         }
 
         return acc + 0;
       }, 0);
 
-      console.log(key, "pha => ", pha);
-      console.log(key, "quit => ", quit);
+      console.log(key, "pha => ", totalPharmacie);
+      console.log(key, "quit => ", totalQuitancier);
 
-      quitData[key] = [quit, pha];
+      donneesTableauQuitancierPharmacie[key] = [
+        totalQuitancier,
+        totalPharmacie,
+      ];
     });
 
-    setQuitancierData(quitData);
+    setQuitancierData(donneesTableauQuitancierPharmacie);
   }
 
   function GetPaymentDateParts(payment) {
@@ -234,7 +237,7 @@ export default function Finances() {
             <thead>
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={7}
                   className="text-lg border-b border-l  text-center text-sky-500"
                 >
                   TABLEAU FINANCES - {MOIS[selectedMonth]}/
@@ -242,7 +245,15 @@ export default function Finances() {
                 </td>
               </tr>
               <tr>
-                {["No", "Amount", "Type", "Date/Heure"].map((it, i) => (
+                {[
+                  "No",
+                  "Date/Heure",
+                  "Amount",
+                  "Type",
+                  "Cash",
+                  "Deja Paye",
+                  "Paye le",
+                ].map((it, i) => (
                   <td className={` ${cltd} w-min `}>{it}</td>
                 ))}
               </tr>
@@ -251,7 +262,7 @@ export default function Finances() {
               {paymentsFiltered.length > 10 && (
                 <tr className="font-bold bg-neutral-100">
                   <td className={cltd}>TOTAL</td>
-                  <td className={cltd} colSpan={3}>
+                  <td className={cltd} colSpan={7}>
                     {FormatNumberWithCommas(
                       paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
                     )}{" "}
@@ -265,6 +276,7 @@ export default function Finances() {
                   className="hover:bg-sky-500 hover:text-white cursor-pointer"
                 >
                   <td className={cltd}>{i + 1}</td>
+                  <td className={cltd}>{FormatDate(new Date(p.created_at))}</td>
                   <td
                     className={`${cltd} ${
                       p.amount <= 0 ? "text-red-500" : "text-green-600"
@@ -276,12 +288,26 @@ export default function Finances() {
                   <td className={cltd}>
                     {GetPaymentTypeLableFromCode(p.type)}
                   </td>
-                  <td className={cltd}>{FormatDate(new Date(p.created_at))}</td>
+                  <td className={cltd}>{p.cash ? "CASH" : "DEPT"}</td>
+                  <td className={cltd}>
+                    {p.payed ? (
+                      <span className="text-xs p-1 font-bold rounded-lg text-white bg-green-600 ">
+                        PAYE
+                      </span>
+                    ) : (
+                      <span className="text-xs p-1 font-bold rounded-lg text-white bg-red-600 ">
+                        NON-PAYE
+                      </span>
+                    )}
+                  </td>
+                  <td className={cltd}>
+                    {p.payed_at && FormatDate(new Date(p.payed_at))}
+                  </td>
                 </tr>
               ))}
               <tr className="font-bold bg-neutral-100">
                 <td className={cltd}>TOTAL</td>
-                <td className={cltd} colSpan={3}>
+                <td className={cltd} colSpan={7}>
                   {FormatNumberWithCommas(
                     paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
                   )}{" "}
@@ -312,7 +338,7 @@ export default function Finances() {
             </thead>
             <tbody>
               {Object.entries(quitancierData).map((qd, i) => (
-                <tr>
+                <tr className="hover:bg-sky-500 hover:text-white cursor-pointer ">
                   <td className={cltd}>
                     {FormatNumberWithCommas(qd[1][0])} FC
                   </td>
