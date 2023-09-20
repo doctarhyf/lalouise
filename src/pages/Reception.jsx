@@ -397,14 +397,12 @@ function FormNewPat(props) {
                     </div>
                     {!newPayment.cash && (
                       <div className="bg-red-500 p-1 font-bold text-xs text-white rounded-md w-fit">
-                        {" "}
-                        La facture sera paye ulterieurement (credit){" "}
+                        CREDIT: La facture sera paye ulterieurement.
                       </div>
                     )}
                     {newPayment.cash && (
                       <div className="bg-green-500 p-1 font-bold text-xs text-white rounded-md w-fit">
-                        {" "}
-                        La facture sera paye CASH!{" "}
+                        CASH: La facture est paye cash!
                       </div>
                     )}
                   </div>
