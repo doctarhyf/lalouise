@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import PageHeader from "../comps/PageHeader";
 import { AddNewItemToTable, GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
+import drugs from "../assets/drugs.png";
+import invoice from "../assets/invoice.png";
+import eye from "../assets/eye.png";
 
 import {
   GetPaymentTypeLableFromCode,
@@ -10,6 +13,113 @@ import {
   cltd,
 } from "../helpers/flow";
 import ProgressView from "../comps/ProgressView";
+
+function TablePaymentGen({ selectedQuitDate, paymentsFiltered, showTableGen }) {
+  return (
+    <>
+      <table className=" TABLEAU GEN w-full">
+        <thead>
+          <tr>
+            <td
+              colSpan={7}
+              className="text-lg border-b border-l  text-center text-sky-500"
+            >
+              PAYEMENTS DE ({selectedQuitDate})
+            </td>
+          </tr>
+          <tr>
+            {[
+              "No",
+              "Date/Heure",
+              "Amount",
+              "Type",
+              "Cash",
+              "Deja Paye",
+              "Paye le",
+            ].map((it, i) => (
+              <td className={` ${cltd} w-min `}>{it}</td>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {paymentsFiltered.length > 10 && (
+            <tr className={`font-bold bg-neutral-100  `}>
+              <td className={cltd}>TOTAL</td>
+              <td className={cltd} colSpan={7}>
+                {FormatNumberWithCommas(
+                  paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
+                )}{" "}
+                {"FC"}
+              </td>
+            </tr>
+          )}
+          {paymentsFiltered.map((p, i) => (
+            <tr
+              key={i}
+              className={`hover:bg-sky-500 hover:text-white cursor-pointer   ${
+                p.payed ? "" : "bg-red-100"
+              }
+              
+
+                   
+                      ${p.type === "DEP" ? "italic text-red-800 font-bold" : ""}
+                      
+                      `}
+            >
+              <td className={` ${cltd}  `}>
+                <div className="flex">
+                  <div> {i + 1} </div>
+                  <img src={p.type === "PHA" ? drugs : invoice} width={24} />
+                </div>
+              </td>
+              <td className={cltd}>{FormatDate(new Date(p.created_at))}</td>
+              <td className={`${cltd} ${""} `}>
+                {p.type === "DEP" ? "-" : ""}
+                {FormatNumberWithCommas(p.amount)}
+                {" FC"}
+              </td>
+              <td className={cltd}>
+                {GetPaymentTypeLableFromCode(p.type)}{" "}
+                {p.type === "DEP" ? `(${p.description})` : ""}
+              </td>
+              <td className={cltd}>{p.cash ? "CASH" : "DEPT"}</td>
+              <td className={cltd}>
+                {p.payed ? (
+                  <span className="text-xs p-1 font-bold rounded-lg text-white bg-green-600 ">
+                    PAYE
+                  </span>
+                ) : (
+                  <span className="text-xs p-1 font-bold rounded-lg text-white bg-red-600 ">
+                    NON
+                  </span>
+                )}
+              </td>
+              <td className={cltd}>
+                {p.payed_at && FormatDate(new Date(p.payed_at))}
+              </td>
+            </tr>
+          ))}
+          <tr className="font-bold bg-neutral-100">
+            <td className={cltd}>TOTAL</td>
+            <td className={cltd} colSpan={7}>
+              {FormatNumberWithCommas(
+                //paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
+                paymentsFiltered.reduce(function (acc, cv) {
+                  if (cv.payed) {
+                    return acc + cv.amount;
+                  }
+
+                  return acc + 0;
+                }, 0)
+              )}{" "}
+              {"FC"}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </>
+  );
+}
 
 export default function Finances() {
   const [payments, setPayments] = useState([]);
@@ -21,6 +131,8 @@ export default function Finances() {
   const [showTableGen, setShowTableGen] = useState(false);
   const [quitancierData, setQuitancierData] = useState([]);
   const [selectedQuitDate, setSelectedQuitDate] = useState(false);
+  const [viewPaymentsDetailsOnDate, setViewPaymentsDetailsOnDate] =
+    useState(false);
 
   useEffect(() => {
     loadPayments();
@@ -203,10 +315,12 @@ export default function Finances() {
     });
   }
 
-  function onQuitancierDateClicked(qd) {
+  function onQuitancierRowClicked(qd) {
     const [selectedDate] = qd;
 
     setSelectedQuitDate(selectedDate);
+
+    console.log(selectedDate);
 
     const selectedDatePayements = payments.filter((p, i) =>
       p.created_at.includes(selectedDate)
@@ -315,89 +429,11 @@ export default function Finances() {
         )}
 
         {showTableGen && (
-          <table className=" TABLEAU GEN w-full">
-            <thead>
-              <tr>
-                <td
-                  colSpan={7}
-                  className="text-lg border-b border-l  text-center text-sky-500"
-                >
-                  TABLEAU FINANCES - {MOIS[selectedMonth]}/
-                  {new Date().getFullYear()}
-                </td>
-              </tr>
-              <tr>
-                {[
-                  "No",
-                  "Date/Heure",
-                  "Amount",
-                  "Type",
-                  "Cash",
-                  "Deja Paye",
-                  "Paye le",
-                ].map((it, i) => (
-                  <td className={` ${cltd} w-min `}>{it}</td>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {paymentsFiltered.length > 10 && (
-                <tr className="font-bold bg-neutral-100">
-                  <td className={cltd}>TOTAL</td>
-                  <td className={cltd} colSpan={7}>
-                    {FormatNumberWithCommas(
-                      paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
-                    )}{" "}
-                    {"FC"}
-                  </td>
-                </tr>
-              )}
-              {paymentsFiltered.map((p, i) => (
-                <tr
-                  key={i}
-                  className="hover:bg-sky-500 hover:text-white cursor-pointer"
-                >
-                  <td className={cltd}>{i + 1}</td>
-                  <td className={cltd}>{FormatDate(new Date(p.created_at))}</td>
-                  <td
-                    className={`${cltd} ${
-                      p.amount <= 0 ? "text-red-500" : "text-green-600"
-                    } `}
-                  >
-                    {FormatNumberWithCommas(p.amount)}
-                    {" FC"}
-                  </td>
-                  <td className={cltd}>
-                    {GetPaymentTypeLableFromCode(p.type)}
-                  </td>
-                  <td className={cltd}>{p.cash ? "CASH" : "DEPT"}</td>
-                  <td className={cltd}>
-                    {p.payed ? (
-                      <span className="text-xs p-1 font-bold rounded-lg text-white bg-green-600 ">
-                        PAYE
-                      </span>
-                    ) : (
-                      <span className="text-xs p-1 font-bold rounded-lg text-white bg-red-600 ">
-                        NON-PAYE
-                      </span>
-                    )}
-                  </td>
-                  <td className={cltd}>
-                    {p.payed_at && FormatDate(new Date(p.payed_at))}
-                  </td>
-                </tr>
-              ))}
-              <tr className="font-bold bg-neutral-100">
-                <td className={cltd}>TOTAL</td>
-                <td className={cltd} colSpan={7}>
-                  {FormatNumberWithCommas(
-                    paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
-                  )}{" "}
-                  {"FC"}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <TablePaymentGen
+            showTableGen={showTableGen}
+            selectedQuitDate={selectedQuitDate}
+            paymentsFiltered={paymentsFiltered}
+          />
         )}
 
         {!showTableGen && (
@@ -414,18 +450,23 @@ export default function Finances() {
                   </td>
                 </tr>
                 <tr className="font-bold">
-                  {["TOT. QUITANCIER", "TOT. PHARMACIE", "Date"].map(
-                    (it, i) => (
-                      <td className={cltd}>{it}</td>
-                    )
-                  )}
+                  {[
+                    "TOT. QUITANCIER",
+                    "TOT. PHARMACIE",
+                    /*   "View Details", */
+                    "Date",
+                  ].map((it, i) => (
+                    <td className={cltd}>{it}</td>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {Object.entries(quitancierData).map((qd, i) => (
                   <tr
-                    className="hover:bg-sky-500 hover:text-white cursor-pointer "
-                    onClick={(e) => onQuitancierDateClicked(qd)}
+                    className={`  ${
+                      qd[0] === selectedQuitDate ? "bg-sky-500 text-white" : ""
+                    } hover:bg-sky-500 hover:text-white cursor-pointer `}
+                    onClick={(e) => onQuitancierRowClicked(qd)}
                   >
                     <td className={cltd}>
                       {FormatNumberWithCommas(qd[1].quit)} FC
@@ -433,107 +474,31 @@ export default function Finances() {
                     <td className={cltd}>
                       {FormatNumberWithCommas(qd[1].pha)} FC
                     </td>
+                    {/*   <td className={cltd}>
+                      <img
+                        onClick={(e) => setViewDetailsTable(viewDetailsTable)}
+                        src={eye}
+                        width={30}
+                      />
+                    </td> */}
                     <td className={cltd}>{qd[0]}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            {selectedQuitDate && (
-              <table className=" TABLEAU GEN w-full">
-                <thead>
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="text-lg border-b border-l  text-center text-sky-500"
-                    >
-                      PAYEMENTS DE ({selectedQuitDate})
-                    </td>
-                  </tr>
-                  <tr>
-                    {[
-                      "No",
-                      "Date/Heure",
-                      "Amount",
-                      "Type",
-                      "Cash",
-                      "Deja Paye",
-                      "Paye le",
-                    ].map((it, i) => (
-                      <td className={` ${cltd} w-min `}>{it}</td>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {paymentsFiltered.length > 10 && (
-                    <tr className="font-bold bg-neutral-100">
-                      <td className={cltd}>TOTAL</td>
-                      <td className={cltd} colSpan={7}>
-                        {FormatNumberWithCommas(
-                          paymentsFiltered.reduce(
-                            (acc, it) => acc + it.amount,
-                            0
-                          )
-                        )}{" "}
-                        {"FC"}
-                      </td>
-                    </tr>
-                  )}
-                  {paymentsFiltered.map((p, i) => (
-                    <tr
-                      key={i}
-                      className="hover:bg-sky-500 hover:text-white cursor-pointer"
-                    >
-                      <td className={cltd}>{i + 1}</td>
-                      <td className={cltd}>
-                        {FormatDate(new Date(p.created_at))}
-                      </td>
-                      <td
-                        className={`${cltd} ${
-                          p.amount <= 0 ? "text-red-500" : "text-green-600"
-                        } `}
-                      >
-                        {FormatNumberWithCommas(p.amount)}
-                        {" FC"}
-                      </td>
-                      <td className={cltd}>
-                        {GetPaymentTypeLableFromCode(p.type)}
-                      </td>
-                      <td className={cltd}>{p.cash ? "CASH" : "DEPT"}</td>
-                      <td className={cltd}>
-                        {p.payed ? (
-                          <span className="text-xs p-1 font-bold rounded-lg text-white bg-green-600 ">
-                            PAYE
-                          </span>
-                        ) : (
-                          <span className="text-xs p-1 font-bold rounded-lg text-white bg-red-600 ">
-                            NON-PAYE
-                          </span>
-                        )}
-                      </td>
-                      <td className={cltd}>
-                        {p.payed_at && FormatDate(new Date(p.payed_at))}
-                      </td>
-                    </tr>
-                  ))}
-                  <tr className="font-bold bg-neutral-100">
-                    <td className={cltd}>TOTAL</td>
-                    <td className={cltd} colSpan={7}>
-                      {FormatNumberWithCommas(
-                        //paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
-                        paymentsFiltered.reduce(function (acc, cv) {
-                          if (cv.payed) {
-                            return acc + cv.amount;
-                          }
-
-                          return acc + 0;
-                        }, 0)
-                      )}{" "}
-                      {"FC"}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div>
+              <input
+                type="checkbox"
+                onChange={(e) => setViewPaymentsDetailsOnDate(e.target.checked)}
+              />{" "}
+              SHOW/HIDE Details{" "}
+            </div>
+            {selectedQuitDate && viewPaymentsDetailsOnDate && (
+              <TablePaymentGen
+                selectedQuitDate={selectedQuitDate}
+                paymentsFiltered={paymentsFiltered}
+              />
             )}
           </div>
         )}
