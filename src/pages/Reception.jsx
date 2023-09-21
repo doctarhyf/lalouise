@@ -210,6 +210,21 @@ function FormNewPat(props) {
   }
 
   async function onSaveNewPayement(e) {
+    /* {
+    created_at: '2023-09-21T19:19:21.234Z',
+    type: 'FCM',
+    foreign_table: 'pat_',
+    foreign_key: 70,
+    amount: 5000,
+    cash: false,
+    payed: false
+  }
+ */
+
+    newPayment.payed_at = newPayment.cash ? newPayment.created_at : null;
+
+    // console.log(newPayment);
+
     AddNewItemToTable(newPayment, TABLE_NAME.PAYMENTS, (data) => {
       loadPayments();
       alert("Payment added successfuly!");
@@ -356,9 +371,12 @@ function FormNewPat(props) {
                       className={StyleInputText}
                     >
                       <option value="-">- Type de payement -</option>
-                      {PAYMENTS_TYPES.map((p, i) => (
-                        <option value={p.code}>{p.label}</option>
-                      ))}
+                      {PAYMENTS_TYPES.map(
+                        (p, i) =>
+                          p.code !== "DEP" && (
+                            <option value={p.code}>{p.label}</option>
+                          )
+                      )}
                     </select>
                   </div>
 

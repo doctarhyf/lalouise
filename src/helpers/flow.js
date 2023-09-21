@@ -8,6 +8,7 @@ export const PAYMENTS_TYPES = [
   { label: "Echographie", code: "ECH" },
   { label: "Soins Intensifs", code: "SIN" },
   { label: "Pharmacie", code: "PHA" },
+  { label: "Depense", code: "DEP" },
   { label: "Other", code: "OTH" },
 ];
 

@@ -12,7 +12,7 @@ const options = {
 
 export function FormatDate(date = new Date()) {
   if (date.getHours) {
-    date = date.setHours(date.getHours() + 7);
+    // date = date.setHours(date.getHours() + 7);
     return new Intl.DateTimeFormat("fr-FR", options).format(date);
   }
   return date;

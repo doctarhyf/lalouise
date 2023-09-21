@@ -40,6 +40,74 @@ export default function Finances() {
   }
 
   function CalculateQuitancier(payments) {
+    // console.log(payments);
+    setQuitancierData({});
+
+    let payments_groupeb_by_dates = {};
+    let totals_groupedby_date_quit_pha = {};
+
+    //group payments by dates
+    for (let payment of payments) {
+      const { created_at, payed_at } = payment;
+      let using_date = payed_at;
+
+      console.log("using_date ==> ", using_date);
+      if (using_date === null) continue;
+
+      const curDate = using_date.split("T")[0];
+
+      let dayData = payments_groupeb_by_dates[curDate];
+      if (dayData === undefined) {
+        dayData = [payment];
+      } else {
+        dayData = [...dayData, payment];
+      }
+
+      payments_groupeb_by_dates[curDate] = dayData;
+
+      console.log("dayData", "\n", payments_groupeb_by_dates);
+    }
+
+    Object.entries(payments_groupeb_by_dates).map((date_payments, i) => {
+      const [date, payments] = date_payments;
+
+      let tot_pha = 0;
+      let tot_quit = 0;
+      for (let payment of payments) {
+        if (payment.type !== "PHA" && payment.type !== "DEP" && payment.payed) {
+          // total quitancier
+
+          tot_quit += payment.amount;
+        }
+
+        if (payment.type === "PHA" && payment.payed) {
+          // tot pharmacie
+          // quit data
+          tot_pha += payment.amount;
+        }
+
+        if (payment.type === "DEP" && payment.payed) {
+          // reduction depense from pharmacie
+          // quit data
+          tot_pha -= payment.amount;
+        }
+      }
+
+      const day_data = { quit: tot_quit, pha: tot_pha };
+      totals_groupedby_date_quit_pha[date] = day_data;
+
+      // console.log("date", date, "tot_pha", tot_pha, "tot_quit", tot_quit);
+    });
+
+    console.log(
+      "totals_groupedby_date_quit_pha => ",
+      totals_groupedby_date_quit_pha
+    );
+
+    setQuitancierData(totals_groupedby_date_quit_pha);
+  }
+
+  function CalculateQuitancier1(payments) {
     setQuitancierData([]);
 
     let payementsConfirmed = [];
@@ -121,9 +189,10 @@ export default function Finances() {
 
   function onInsererDep(e) {
     const data = spendData;
-    data.amount = -data.amount;
-
-    console.log(data);
+    data.type = "DEP";
+    data.payed = true;
+    data.cash = true;
+    data.payed_at = data.created_at;
 
     setLoading(true);
     AddNewItemToTable(data, TABLE_NAME.PAYMENTS, (d) => {
@@ -359,10 +428,10 @@ export default function Finances() {
                     onClick={(e) => onQuitancierDateClicked(qd)}
                   >
                     <td className={cltd}>
-                      {FormatNumberWithCommas(qd[1][0])} FC
+                      {FormatNumberWithCommas(qd[1].quit)} FC
                     </td>
                     <td className={cltd}>
-                      {FormatNumberWithCommas(qd[1][1])} FC
+                      {FormatNumberWithCommas(qd[1].pha)} FC
                     </td>
                     <td className={cltd}>{qd[0]}</td>
                   </tr>
