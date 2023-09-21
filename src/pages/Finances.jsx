@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PageHeader from "../comps/PageHeader";
-import { AddNewItemToTable, GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
+import {
+  AddNewItemToTable,
+  DeleteItem,
+  GetAllItemsFromTable,
+  TABLE_NAME,
+} from "../db/sb";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 import drugs from "../assets/drugs.png";
 import invoice from "../assets/invoice.png";
@@ -14,7 +19,20 @@ import {
 } from "../helpers/flow";
 import ProgressView from "../comps/ProgressView";
 
-function TablePaymentGen({ selectedQuitDate, paymentsFiltered, showTableGen }) {
+const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
+
+function TablePaymentGen({ selectedQuitDate, paymentsFiltered, loadPayments }) {
+  async function onDeletePayment(p) {
+    if (!confirm("Etes-vous sur de vouloir supprimer ce payement?")) {
+      return;
+    }
+
+    DeleteItem(TABLE_NAME.PAYMENTS, p.id, (r) => {
+      alert("Item deleted!Res : ", r);
+      loadPayments();
+    });
+  }
+
   return (
     <>
       <table className=" TABLEAU GEN w-full">
@@ -95,7 +113,10 @@ function TablePaymentGen({ selectedQuitDate, paymentsFiltered, showTableGen }) {
                 )}
               </td>
               <td className={cltd}>
-                {p.payed_at && FormatDate(new Date(p.payed_at))}
+                <div> {p.payed_at && FormatDate(new Date(p.payed_at))}</div>
+                <button className={clBtn} onClick={(e) => onDeletePayment(p)}>
+                  SUPPRIMER
+                </button>
               </td>
             </tr>
           ))}
@@ -434,7 +455,7 @@ export default function Finances() {
 
         {showTableGen && (
           <TablePaymentGen
-            showTableGen={showTableGen}
+            loadPayments={loadPayments}
             selectedQuitDate={selectedQuitDate}
             paymentsFiltered={paymentsFiltered}
           />
@@ -500,6 +521,7 @@ export default function Finances() {
             </div>
             {selectedQuitDate && viewPaymentsDetailsOnDate && (
               <TablePaymentGen
+                loadPayments={loadPayments}
                 selectedQuitDate={selectedQuitDate}
                 paymentsFiltered={paymentsFiltered}
               />

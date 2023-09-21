@@ -537,15 +537,14 @@ function FormNewPat(props) {
                               >
                                 CONFIRMER
                               </button>
-
-                              <button
-                                className={clBtn}
-                                onClick={(e) => onDeletePayment(p)}
-                              >
-                                SUPPRIMER
-                              </button>
                             </>
                           )}
+                          <button
+                            className={clBtn}
+                            onClick={(e) => onDeletePayment(p)}
+                          >
+                            SUPPRIMER
+                          </button>
                         </td>
                       </tr>
                     ))}
