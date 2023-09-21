@@ -106,7 +106,11 @@ function TablePaymentGen({ selectedQuitDate, paymentsFiltered, showTableGen }) {
                 //paymentsFiltered.reduce((acc, it) => acc + it.amount, 0)
                 paymentsFiltered.reduce(function (acc, cv) {
                   if (cv.payed) {
-                    return acc + cv.amount;
+                    if (cv.type === "DEP") {
+                      return acc - cv.amount;
+                    } else {
+                      return acc + cv.amount;
+                    }
                   }
 
                   return acc + 0;
