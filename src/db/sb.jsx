@@ -124,10 +124,10 @@ export async function DeleteFileFromBucket(
   console.log(data);
 }
 
-export async function DeleteItem(tableName, id) {
+export async function DeleteItem(tableName, id, onItemDeleted) {
   const { error } = await supabase.from(tableName).delete().eq("id", id);
 
-  //console.log("DeleteItem", error);
+  if (onItemDeleted) onItemDeleted(error);
 
   return error;
 }

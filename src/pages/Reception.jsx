@@ -27,6 +27,7 @@ import close from "../assets/close.png";
 import ok from "../assets/ok.png";
 import debt from "../assets/debt.png";
 import loading from "../assets/loading.gif";
+import { IconButton } from "@mui/material";
 
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
 
@@ -243,6 +244,17 @@ function FormNewPat(props) {
 
     console.log("file uploaded => \n", publicUrl);
     props.loadPatList();
+  }
+
+  async function onDeletePayment(p) {
+    if (!confirm("Etes-vous sur de vouloir supprimer ce payement?")) {
+      return;
+    }
+
+    DeleteItem(TABLE_NAME.PAYMENTS, p.id, (r) => {
+      alert("Item deleted!Res : ", r);
+      loadPayments();
+    });
   }
 
   async function onConfirmPayment(p) {
@@ -518,12 +530,21 @@ function FormNewPat(props) {
                           {p.payed ? (
                             <img src={ok} width={30} />
                           ) : (
-                            <button
-                              className={clBtn}
-                              onClick={(e) => onConfirmPayment(p)}
-                            >
-                              CONFIRMER
-                            </button>
+                            <>
+                              <button
+                                className={clBtn}
+                                onClick={(e) => onConfirmPayment(p)}
+                              >
+                                CONFIRMER
+                              </button>
+
+                              <button
+                                className={clBtn}
+                                onClick={(e) => onDeletePayment(p)}
+                              >
+                                SUPPRIMER
+                              </button>
+                            </>
                           )}
                         </td>
                       </tr>
