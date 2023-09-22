@@ -19,7 +19,7 @@ import PageHeader from "../comps/PageHeader";
 import SectionMenu from "../comps/SectionMenu";
 import { Td, Tr } from "../comps/Table";
 import ProgressView from "../comps/ProgressView";
-import { FormatDate } from "../helpers/funcs";
+import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 
 const SECTIONS = {
   MEDS_TABLE: { title: "Liste produits", name: "lsmeds" },
@@ -114,8 +114,10 @@ export default function Pharmacy() {
   const [q, setQ] = useState("");
   const [med2sell, setMed2sell] = useState({});
   const [qty2Sell, setQty2Sell] = useState(0);
+  const [isCash, setIsCash] = useState(true);
 
   const [loading, setLoading] = useState(true);
+  const [selectedPatientData, setSelectedPatientData] = useState();
 
   const updateMed = async (e) => {
     let newMed = {};
@@ -140,7 +142,12 @@ export default function Pharmacy() {
     );
   };
 
-  function sellMed(e) {
+  function onSellMed(e) {
+    if (selectedPatientData === undefined) {
+      console.log("selectedPatientData === undefined, selecet a patient first");
+      return;
+    }
+
     let sellrec = {
       prodID: med2sell.id,
       last_update: new Date(),
@@ -159,15 +166,36 @@ export default function Pharmacy() {
 
     console.log("sellrec_", sellrec);
 
+    let medSellPayement = {
+      foreign_table: TABLE_NAME.MEDS,
+      amount: medPrice * qty2Sell,
+      description: "",
+      cash: isCash,
+      payed: isCash,
+      payed_at: isCash ? new Date().toISOString() : null,
+      foreign_key: selectedPatientData.id,
+      data: JSON.stringify(selectedPatientData),
+    };
+
+    console.log(medSellPayement);
+    /*
+
+
+id,created_at,type,foreign_key,foreign_table,amount,description,cash,payed,payed_at,data
+134,2023-09-21 19:22:36.881,FCM,70,pat_,5500,,true,true,2023-09-21 19:22:36.881,
+
+
+    /*
+
+    /* 
     UpdateItem(TABLE_NAME.MEDS, med2sell.id, med2sell);
     AddNewItemToTable(sellrec, TABLE_NAME.MED_SELLS_REC, (d) => {
       console.log("on sell rec ", d);
 
       loadAllData();
     });
-    setSelectedSection(SECTIONS.MEDS_TABLE.name);
 
-    console.log(sellrec);
+    setSelectedSection(SECTIONS.MEDS_TABLE.name); */
   }
 
   function showMedToSell(med2sell) {
@@ -355,89 +383,6 @@ export default function Pharmacy() {
         onChangeSection={onChangeSection}
       />
 
-      {selectedSection === SECTIONS.FORM_ADD_MED.name && (
-        <section className="add-new-med-form ">
-          <h4 className="text-3xl text-sky-500">
-            {updatingMed ? `Updating Med " ${curUpdateID} "` : "Add New Med"}{" "}
-          </h4>
-          <div>
-            <div>Nom du produit</div>
-            <input
-              type="text"
-              placeholder="Ex: Quinine ..."
-              className={StyleInputText}
-              name="medName"
-              value={medName}
-              onChange={onInputChange}
-            />
-          </div>
-          <div>
-            <div>Stock</div>
-            <input
-              type="number"
-              className={StyleInputText}
-              name="medAmount"
-              value={medAmount}
-              onChange={onInputChange}
-            />
-          </div>
-          <div>
-            <div>Type</div>
-            <select
-              className={StyleInputSelect}
-              value={medType}
-              onChange={onInputChange}
-              name="medType"
-            >
-              <option value="comprime">Comprime</option>
-              <option value="cyro">Cyro</option>
-              <option value="boite">Boite</option>
-            </select>
-          </div>
-
-          <div>Prix (CDF)</div>
-          <input
-            type="number"
-            name="medPrice"
-            className={StyleInputText}
-            value={medPrice}
-            onChange={onInputChange}
-          />
-          <div>Vendu par</div>
-          <select
-            value={medSoldBy}
-            className={StyleInputSelect}
-            name="medSoldBy"
-            onChange={onInputChange}
-          >
-            <option value="comprime">Comprime</option>
-            <option value="cyro">Cyro</option>
-            <option value="boite">Boite</option>
-          </select>
-          <div>
-            {!updatingMed && (
-              <button
-                onClick={addNewMed}
-                className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-sky-500 hover:text-white text-sky-500  border border-sky-500 `}
-              >
-                Add New Med
-              </button>
-            )}
-            {updatingMed && (
-              <button onClick={updateMed} className={StyleButton("green-500")}>
-                Update
-              </button>
-            )}
-            <button
-              onClick={(e) => setSelectedSection(SECTIONS.MEDS_TABLE.name)}
-              className={StyleButton("gray-500")}
-            >
-              Cancel
-            </button>
-          </div>
-        </section>
-      )}
-
       {selectedSection === SECTIONS.MEDS_TABLE.name && (
         <section>
           {/* { meds && meds.length > 0 ? */}
@@ -542,91 +487,218 @@ export default function Pharmacy() {
       {selectedSection === SECTIONS.SELL_MEDL.name && (
         <section className="sell-med">
           <table>
-            <tr>
-              <Td data={"Produit"} />
-              <Td data={med2sell.medName} />
-            </tr>
-            <tr>
-              <Td data={"Prix (CDF)"} />
-              <Td data={med2sell.medPrice} />
-            </tr>
-            <tr>
-              <Td data={"Sold by"} />
-              <Td data={med2sell.medSoldBy} />
-            </tr>
-            <tr>
-              <Td data={"Stock"} />
-              <Td data={med2sell.medAmount} />
-            </tr>
-            <tr
-              className={` ${
-                med2sell.medAmount - qty2Sell === 0
-                  ? "bg-red-500 text-white font-bold text-sm"
-                  : ""
-              }  ${
-                med2sell.medAmount - qty2Sell <= STOCK_LOW_THRESHHOLD &&
-                med2sell.medAmount - qty2Sell > 0
-                  ? "bg-yellow-600 text-white font-bold text-sm"
-                  : ""
-              }
-                             ${
-                               med2sell.medAmount - qty2Sell >
-                               STOCK_LOW_THRESHHOLD
-                                 ? "bg-green-600 text-white font-bold text-sm"
-                                 : ""
-                             }`}
-            >
-              <Td data={"Stock Restant"} />
-              <Td
-                className={`${
-                  med2sell.medAmount - qty2Sell < 1
-                    ? " bg-red-500 font-bold text-white "
-                    : ""
-                }`}
-                data={med2sell.medAmount - qty2Sell}
-              />
-            </tr>
-            <tr>
-              <Td data={"Quantite a vendre"} />
-              <Td
-                data={
-                  <input
-                    type="number"
-                    className={StyleInputSelect}
-                    name="qty"
-                    value={qty2Sell}
-                    onChange={onChangeQty2Sell}
-                    min={1}
-                    max={med2sell.medAmount}
-                  />
+            <tbody>
+              <tr>
+                <td
+                  align="right"
+                  className={`text-sm text-neutral-600 font-bold `}
+                >
+                  Patient:
+                </td>
+                <td>
+                  <select>
+                    <option>PAT 1</option>
+                    <option>PAT 2</option>
+                  </select>
+                </td>
+              </tr>
+              {[
+                "Nom du produit",
+                "Quantite a sortir",
+                "Stock Restant",
+                "P.U/$",
+                "Total",
+              ].map((r, i) => (
+                <tr
+                  className={`
+                
+                ${
+                  i === 2 &&
+                  med2sell.medAmount - qty2Sell > 10 &&
+                  "bg-green-300"
                 }
-              />
-            </tr>
-            <tr>
-              <td colSpan={2}>
-                <div className="flex">
-                  {med2sell.medAmount - qty2Sell > -1 && (
+                
+
+                 ${
+                   i === 2 &&
+                   med2sell.medAmount - qty2Sell <= 10 &&
+                   med2sell.medAmount - qty2Sell > 0 &&
+                   "bg-yellow-300"
+                 }
+
+                  ${
+                    i === 2 &&
+                    med2sell.medAmount - qty2Sell <= 0 &&
+                    "bg-red-500"
+                  }
+
+
+                `}
+                  key={i}
+                >
+                  <td
+                    align="right"
+                    className={`text-sm text-neutral-600 font-bold `}
+                  >
+                    {r} : {"  "}
+                  </td>
+                  {i === 0 && <td className="font-bold">{med2sell.medName}</td>}
+                  {i === 1 && (
+                    <td>
+                      <input
+                        type="number"
+                        className={StyleInputSelect}
+                        name="qty"
+                        value={qty2Sell}
+                        onChange={onChangeQty2Sell}
+                        min={1}
+                        max={med2sell.medAmount}
+                      />
+                    </td>
+                  )}
+                  {i === 2 && (
+                    <td>
+                      {FormatNumberWithCommas(med2sell.medAmount - qty2Sell)}
+                    </td>
+                  )}
+                  {i === 3 && (
+                    <td>
+                      {FormatNumberWithCommas(med2sell.medPrice)}
+                      {" FC"}
+                      {"/"}
+                      {med2sell.medSoldBy}
+                    </td>
+                  )}
+                  {i === 4 && (
+                    <td className=" font-bold ">
+                      {FormatNumberWithCommas(med2sell.medPrice * qty2Sell)}
+                      {" FC"}
+                    </td>
+                  )}
+                </tr>
+              ))}
+              <tr>
+                <td align="right">
+                  <input
+                    type="checkbox"
+                    value={isCash}
+                    onChange={(e) => setIsCash(e.target.checked)}
+                  />
+                </td>
+                <td>CASH?</td>
+              </tr>
+              <tr>
+                <td align="right">
+                  {" "}
+                  {med2sell.medAmount - qty2Sell > 0 && (
                     <button
                       className={StyleButton("green-500")}
-                      onClick={sellMed}
+                      onClick={onSellMed}
                     >
                       SELL
                     </button>
                   )}
-                  <button
-                    className={StyleButton("gray-500")}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedSection(SECTIONS.MEDS_TABLE.name);
-                    }}
-                  >
-                    {" "}
-                    CANCEL
-                  </button>
-                </div>
-              </td>
-            </tr>
+                </td>
+                <td align="center" colSpan={2}>
+                  <div className="flex">
+                    <button
+                      className={StyleButton("gray-500")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedSection(SECTIONS.MEDS_TABLE.name);
+                      }}
+                    >
+                      {" "}
+                      CANCEL
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
           </table>
+        </section>
+      )}
+
+      {selectedSection === SECTIONS.FORM_ADD_MED.name && (
+        <section className="add-new-med-form ">
+          <h4 className="text-3xl text-sky-500">
+            {updatingMed ? `Updating Med " ${curUpdateID} "` : "Add New Med"}{" "}
+          </h4>
+          <div>
+            <div>Nom du produit</div>
+            <input
+              type="text"
+              placeholder="Ex: Quinine ..."
+              className={StyleInputText}
+              name="medName"
+              value={medName}
+              onChange={onInputChange}
+            />
+          </div>
+          <div>
+            <div>Stock</div>
+            <input
+              type="number"
+              className={StyleInputText}
+              name="medAmount"
+              value={medAmount}
+              onChange={onInputChange}
+            />
+          </div>
+          <div>
+            <div>Type</div>
+            <select
+              className={StyleInputSelect}
+              value={medType}
+              onChange={onInputChange}
+              name="medType"
+            >
+              <option value="comprime">Comprime</option>
+              <option value="cyro">Cyro</option>
+              <option value="boite">Boite</option>
+            </select>
+          </div>
+
+          <div>Prix (CDF)</div>
+          <input
+            type="number"
+            name="medPrice"
+            className={StyleInputText}
+            value={medPrice}
+            onChange={onInputChange}
+          />
+          <div>Vendu par</div>
+          <select
+            value={medSoldBy}
+            className={StyleInputSelect}
+            name="medSoldBy"
+            onChange={onInputChange}
+          >
+            <option value="comprime">Comprime</option>
+            <option value="cyro">Cyro</option>
+            <option value="boite">Boite</option>
+          </select>
+          <div>
+            {!updatingMed && (
+              <button
+                onClick={addNewMed}
+                className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-sky-500 hover:text-white text-sky-500  border border-sky-500 `}
+              >
+                Add New Med
+              </button>
+            )}
+            {updatingMed && (
+              <button onClick={updateMed} className={StyleButton("green-500")}>
+                Update
+              </button>
+            )}
+            <button
+              onClick={(e) => setSelectedSection(SECTIONS.MEDS_TABLE.name)}
+              className={StyleButton("gray-500")}
+            >
+              Cancel
+            </button>
+          </div>
         </section>
       )}
 

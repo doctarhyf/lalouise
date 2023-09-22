@@ -19,5 +19,7 @@ export function FormatDate(date = new Date()) {
 }
 
 export function FormatNumberWithCommas(number) {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return !isNaN(number)
+    ? number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    : number;
 }
