@@ -142,62 +142,6 @@ export default function Pharmacy() {
     );
   };
 
-  function onSellMed(e) {
-    if (selectedPatientData === undefined) {
-      console.log("selectedPatientData === undefined, selecet a patient first");
-      return;
-    }
-
-    let sellrec = {
-      prodID: med2sell.id,
-      last_update: new Date(),
-      oldstock: med2sell.medAmount,
-    };
-
-    e.preventDefault();
-    console.log("b4 upd ", med2sell);
-    const stockRest = med2sell.medAmount - qty2Sell;
-    console.log("stockRest", stockRest);
-
-    sellrec.newstock = stockRest;
-    sellrec.qty = qty2Sell;
-    med2sell.medAmount = stockRest;
-    console.warn("afta upd", med2sell);
-
-    console.log("sellrec_", sellrec);
-
-    let medSellPayement = {
-      foreign_table: TABLE_NAME.MEDS,
-      amount: medPrice * qty2Sell,
-      description: "",
-      cash: isCash,
-      payed: isCash,
-      payed_at: isCash ? new Date().toISOString() : null,
-      foreign_key: selectedPatientData.id,
-      data: JSON.stringify(selectedPatientData),
-    };
-
-    console.log(medSellPayement);
-    /*
-
-
-id,created_at,type,foreign_key,foreign_table,amount,description,cash,payed,payed_at,data
-134,2023-09-21 19:22:36.881,FCM,70,pat_,5500,,true,true,2023-09-21 19:22:36.881,
-
-
-    /*
-
-    /* 
-    UpdateItem(TABLE_NAME.MEDS, med2sell.id, med2sell);
-    AddNewItemToTable(sellrec, TABLE_NAME.MED_SELLS_REC, (d) => {
-      console.log("on sell rec ", d);
-
-      loadAllData();
-    });
-
-    setSelectedSection(SECTIONS.MEDS_TABLE.name); */
-  }
-
   function showMedToSell(med2sell) {
     setMed2sell(med2sell);
     setSelectedSection(SECTIONS.SELL_MEDL.name);
@@ -228,6 +172,8 @@ id,created_at,type,foreign_key,foreign_table,amount,description,cash,payed,payed
 
   const [medSellsRecs, setMedSellsRecs] = useState([]);
   const [medSellsRecsFiltered, setMedSellsRecsFiltered] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [patientsFiltered, setPatientsFiltered] = useState([]);
 
   useEffect(() => {
     const med = {
@@ -247,13 +193,18 @@ id,created_at,type,foreign_key,foreign_table,amount,description,cash,payed,payed
     try {
       setMeds([]);
       setMedsFiltered([]);
+      setPatients([]);
+      setPatientsFiltered([]);
 
       setMedSellsRecs([]);
       setMedSellsRecsFiltered([]);
       setLoading(true);
       const meds = await GetAllItemsFromTable(TABLE_NAME.MEDS);
       const sellsrecs = await GetAllItemsFromTable(TABLE_NAME.MED_SELLS_REC);
+      const patients = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
 
+      setPatients(patients);
+      setPatientsFiltered(Array.from(patients));
       setMeds(meds);
       setMedsFiltered(meds);
       setMedSellsRecs(sellsrecs);
@@ -373,6 +324,100 @@ id,created_at,type,foreign_key,foreign_table,amount,description,cash,payed,payed
     setMedsFiltered(Array.from(filtered));
   }
 
+  const [qpat, setqpat] = useState("");
+  function onSearchPatient(e) {
+    const v = e.target.value;
+    setqpat(v);
+
+    if (v.replaceAll(" ", "") === "") {
+      setPatientsFiltered(patients);
+      return;
+    }
+
+    let filtered = patients.filter((p, i) =>
+      p.nom.toLowerCase().includes(qpat.toLocaleLowerCase())
+    );
+
+    setPatientsFiltered(filtered);
+
+    console.log(e);
+  }
+
+  function onSetSelectedPatientData(data) {
+    const patientData = JSON.parse(data);
+
+    setSelectedPatientData(data);
+    setqpat(patientData.nom);
+  }
+
+  function onSellMed(e) {
+    e.preventDefault();
+
+    if (selectedPatientData === undefined) {
+      alert("Error, choisissez dabord un patient avant de vendre le produit!");
+      console.log("selectedPatientData === undefined, selecet a patient first");
+      return;
+    }
+
+    let sellrec = {
+      prodID: med2sell.id,
+      last_update: new Date(),
+      oldstock: med2sell.medAmount,
+    };
+
+    const stockRest = med2sell.medAmount - qty2Sell;
+    sellrec.newstock = stockRest;
+    sellrec.qty = qty2Sell;
+    med2sell.medAmount = stockRest;
+
+    let patientData = JSON.parse(selectedPatientData);
+
+    let paymentRecord = {
+      foreign_table: TABLE_NAME.MEDS,
+      amount: medPrice * qty2Sell,
+      description: "",
+      cash: isCash,
+      payed: isCash,
+      payed_at: isCash ? new Date().toISOString() : null,
+      foreign_key: patientData.id,
+      data: selectedPatientData,
+      type: "PHA",
+    };
+
+    UpdateItem(
+      TABLE_NAME.MEDS,
+      med2sell.id,
+      med2sell,
+      (res) => {
+        alert("Med sold!\n" + res);
+
+        AddNewItemToTable(sellrec, TABLE_NAME.MED_SELLS_REC, (d) => {
+          console.log("on sell rec ", d);
+
+          AddNewItemToTable(
+            paymentRecord,
+            TABLE_NAME.PAYMENTS,
+            (res) => {
+              console.log("Payment rec added succes\n", res);
+              loadAllData();
+              setSelectedSection(SECTIONS.MEDS_TABLE.name);
+            },
+            (e) => {
+              console.log(e);
+              alert("Add error\n" + e);
+            }
+          );
+
+          //loadAllData();
+        });
+      },
+      (e) => {
+        alert("Error selling med.\n" + e);
+        console.log(e);
+      }
+    );
+  }
+
   return (
     <div className="p-8">
       <PageHeader title="Pharmacie" sub="Liste de tous les medicaments" />
@@ -490,16 +535,31 @@ id,created_at,type,foreign_key,foreign_table,amount,description,cash,payed,payed
             <tbody>
               <tr>
                 <td
+                  valign="top"
                   align="right"
                   className={`text-sm text-neutral-600 font-bold `}
                 >
                   Patient:
                 </td>
                 <td>
-                  <select>
-                    <option>PAT 1</option>
-                    <option>PAT 2</option>
-                  </select>
+                  <div className="space-y-4 flex-col fex">
+                    {false && (
+                      <input
+                        type="search"
+                        className={StyleInputText}
+                        value={qpat}
+                        onChange={onSearchPatient}
+                      />
+                    )}
+                    <select
+                      className="w-fit p-2 outline-sky-400"
+                      onClick={(e) => onSetSelectedPatientData(e.target.value)}
+                    >
+                      {patientsFiltered.map((p, i) => (
+                        <option value={JSON.stringify(p)}>{p.nom}</option>
+                      ))}
+                    </select>
+                  </div>
                 </td>
               </tr>
               {[
@@ -581,16 +641,27 @@ id,created_at,type,foreign_key,foreign_table,amount,description,cash,payed,payed
                 <td align="right">
                   <input
                     type="checkbox"
-                    value={isCash}
+                    checked={isCash}
                     onChange={(e) => setIsCash(e.target.checked)}
                   />
                 </td>
-                <td>CASH?</td>
+                <td>
+                  CASH{" "}
+                  {isCash ? (
+                    <span className="bg-green-600 font-bold p-1 rounded-full text-sm text-white px-2">
+                      CASH: Paid immediatly
+                    </span>
+                  ) : (
+                    <span className="bg-red-500 font-bold p-1 rounded-full text-sm text-white px-2">
+                      CREDIT: Will be paid later
+                    </span>
+                  )}{" "}
+                </td>
               </tr>
               <tr>
                 <td align="right">
                   {" "}
-                  {med2sell.medAmount - qty2Sell > 0 && (
+                  {qty2Sell > 0 && patientsFiltered.length > 0 && (
                     <button
                       className={StyleButton("green-500")}
                       onClick={onSellMed}

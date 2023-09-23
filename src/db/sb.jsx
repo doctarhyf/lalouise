@@ -135,7 +135,8 @@ export async function DeleteItem(tableName, id, onItemDeleted) {
 export async function AddNewItemToTable(
   newItem,
   tableName = TABLE_NAME.MEDS,
-  onItemAdded = null
+  onItemAdded = null,
+  onAddItemError
 ) {
   const { data, error } = await supabase
     .from(tableName)
@@ -145,7 +146,7 @@ export async function AddNewItemToTable(
   //console.log("AddNewItemToTable", data, error);
   if (error) {
     console.log(error);
-
+    if (onAddItemError) onAddItemError(error);
     return;
   }
 
