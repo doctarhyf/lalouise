@@ -374,7 +374,7 @@ export default function Pharmacy() {
 
     let paymentRecord = {
       foreign_table: TABLE_NAME.MEDS,
-      amount: medPrice * qty2Sell,
+      amount: med2sell.medPrice * qty2Sell,
       description: "",
       cash: isCash,
       payed: isCash,
