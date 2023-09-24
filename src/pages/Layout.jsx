@@ -59,6 +59,16 @@ export default function Layout() {
               <LinkItem link={link} key={idx} />
             ))}
 
+            <button
+              className="w-full bg-red-400 hover:bg-red-500 text-white p-1 text-center"
+              onClick={(e) => {
+                localStorage.removeItem("llu");
+                window.location.reload();
+              }}
+            >
+              LOGOUT
+            </button>
+
             <div className="text-[10pt] flex-grow justify-end md:absolute bottom-0 mb-8 text-black text-opacity-75">
               @Copyright 2023{" "}
             </div>

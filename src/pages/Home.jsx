@@ -51,6 +51,15 @@ export default function Home() {
 
       <ProgressView show={loading} />
 
+      <div className="bg-lime-500  h-[160pt] overflow-hidden mb-8 w-fit">
+        <img
+          className=" object-fit w-[100%] "
+          src={
+            "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg"
+          }
+        />
+      </div>
+
       <div className="stats-cont flex flex-wrap gap-8 align-middle justify-center">
         <StatItem
           key={0}

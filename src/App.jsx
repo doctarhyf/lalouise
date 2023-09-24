@@ -18,10 +18,20 @@ import { createClient } from "@supabase/supabase-js";
 import NotFound from "./pages/NotFoud";
 
 function App() {
+  const [user, setuser] = useState();
+
+  useEffect(() => {
+    const u = localStorage.getItem("llu");
+
+    setuser(u);
+
+    console.log(u);
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/lalouise/" element={<Layout />}>
+        <Route path="/lalouise/" element={user ? <Layout /> : <Login />}>
           <Route index element={<Home />} />
           <Route path="/lalouise/home" element={<Home />} />
           <Route path="/lalouise/pharmacy" element={<Pharmacy />} />

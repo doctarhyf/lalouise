@@ -353,11 +353,11 @@ export default function Pharmacy() {
   function onSellMed(e) {
     e.preventDefault();
 
-    if (selectedPatientData === undefined) {
+    /* if (selectedPatientData === undefined) {
       alert("Error, choisissez dabord un patient avant de vendre le produit!");
       console.log("selectedPatientData === undefined, selecet a patient first");
       return;
-    }
+    } */
 
     let sellrec = {
       prodID: med2sell.id,
@@ -370,7 +370,7 @@ export default function Pharmacy() {
     sellrec.qty = qty2Sell;
     med2sell.medAmount = stockRest;
 
-    let patientData = JSON.parse(selectedPatientData);
+    /*  let patientData = JSON.parse(selectedPatientData);
 
     let paymentRecord = {
       foreign_table: TABLE_NAME.MEDS,
@@ -382,7 +382,7 @@ export default function Pharmacy() {
       foreign_key: patientData.id,
       data: selectedPatientData,
       type: "PHA",
-    };
+    }; */
 
     UpdateItem(
       TABLE_NAME.MEDS,
@@ -394,7 +394,7 @@ export default function Pharmacy() {
         AddNewItemToTable(sellrec, TABLE_NAME.MED_SELLS_REC, (d) => {
           console.log("on sell rec ", d);
 
-          AddNewItemToTable(
+          /* AddNewItemToTable(
             paymentRecord,
             TABLE_NAME.PAYMENTS,
             (res) => {
@@ -406,9 +406,10 @@ export default function Pharmacy() {
               console.log(e);
               alert("Add error\n" + e);
             }
-          );
+          ); */
 
-          //loadAllData();
+          alert("Process success!");
+          loadAllData();
         });
       },
       (e) => {
@@ -533,7 +534,7 @@ export default function Pharmacy() {
         <section className="sell-med">
           <table>
             <tbody>
-              <tr>
+              {/*  <tr>
                 <td
                   valign="top"
                   align="right"
@@ -561,7 +562,7 @@ export default function Pharmacy() {
                     </select>
                   </div>
                 </td>
-              </tr>
+              </tr> */}
               {[
                 "Nom du produit",
                 "Quantite a sortir",

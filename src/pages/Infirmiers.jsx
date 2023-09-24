@@ -89,20 +89,30 @@ function Roul({ infData, editidingInf, updateID, loadData, hideTopRows }) {
         <tbody>
           {!hideTopRows && (
             <tr>
-              <td className={cltd}>Jours</td>
+              <td className={` ${cltd} bg-neutral-100 `}>Jours</td>
               {infData.roulement &&
                 infData.roulement.map((d, i) => (
-                  <td className={cltd} key={i}>
+                  <td
+                    className={` ${cltd} min-w-[30pt] bg-neutral-100 `}
+                    key={i}
+                  >
                     {i + 1}
                   </td>
                 ))}
             </tr>
           )}
           <tr>
-            <td className={` ${cltd} min-w-[100pt] `}> {infData.nom} </td>
+            <td className={` ${cltd} w-[100pt] max-w-[100pt] min-w-[100pt]   `}>
+              {" "}
+              {infData.nom}{" "}
+            </td>
             {infData.roulement &&
               infData.roulement.map((d, i) => (
-                <td className={`${cltd} w-[24pt] `} key={i} width={20}>
+                <td
+                  className={`${cltd} w-[30pt] max-w-[30pt] min-w-[30pt] `}
+                  key={i}
+                  width={20}
+                >
                   {editidingInf ? (
                     <select
                       value={d}

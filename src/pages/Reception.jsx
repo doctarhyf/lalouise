@@ -305,6 +305,7 @@ function FormNewPat(props) {
           )}
 
           <div>Departement (MAT, SIN, SOP)</div>
+          {props.newPatDep}
           <select
             value={props.newPatDep || DEPARTEMENTS.SIN.code}
             className={StyleInputText}
@@ -385,8 +386,7 @@ function FormNewPat(props) {
                       <option value="-">- Type de payement -</option>
                       {PAYMENTS_TYPES.map(
                         (p, i) =>
-                          p.code !== "DEP" &&
-                          p.code !== "PHA" && (
+                          p.code !== "DEP" && (
                             <option value={p.code}>{p.label}</option>
                           )
                       )}
@@ -936,7 +936,6 @@ export default function Reception() {
     console.log(filterDep);
 
     setFilterDep(filterDep);
-
     if (filterDep === "all") {
       setListPatientsFiltered(listPatients);
       return;
