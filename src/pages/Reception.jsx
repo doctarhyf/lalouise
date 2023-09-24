@@ -385,7 +385,8 @@ function FormNewPat(props) {
                       <option value="-">- Type de payement -</option>
                       {PAYMENTS_TYPES.map(
                         (p, i) =>
-                          p.code !== "DEP" && (
+                          p.code !== "DEP" &&
+                          p.code !== "PHA" && (
                             <option value={p.code}>{p.label}</option>
                           )
                       )}
