@@ -1,5 +1,5 @@
 const options = {
-  year: "2-digit",
+  year: "numeric",
   month: "short",
   day: "numeric",
   hour: "numeric",

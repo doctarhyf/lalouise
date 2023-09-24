@@ -18,6 +18,7 @@ import {
   cltd,
 } from "../helpers/flow";
 import ProgressView from "../comps/ProgressView";
+import ToggleButton from "../comps/ToggleButton";
 
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
 
@@ -42,7 +43,7 @@ function TablePaymentGen({ selectedQuitDate, paymentsFiltered, loadPayments }) {
               colSpan={7}
               className="text-lg border-b border-l  text-center text-sky-500"
             >
-              PAYEMENTS DE ({selectedQuitDate})
+              PAYEMENTS DU ({FormatDate(new Date(selectedQuitDate))})
             </td>
           </tr>
           <tr>
@@ -358,23 +359,34 @@ export default function Finances() {
     <div className="p-8">
       {" "}
       <PageHeader title="Finances" sub="Finances generales du centre" />
-      <button
-        className={` ${
-          showSpendsForm ? "hidden" : "visible"
-        } p-1 border-sky-500 border text-sky-500 hover:text-white my-2 hover:bg-sky-500 rounded-md `}
-        onClick={(e) => {
-          setShowSpendsForm(!showSpendsForm);
-        }}
-      >
-        + INSERER DEPENSE
-      </button>
-      <div>
-        <input
-          type="checkbox"
-          value={showTableGen}
-          onChange={(e) => setShowTableGen(e.target.checked)}
+      <div className="flex  controls gap-4 justify-start items-center">
+        <button
+          className={` ${
+            showSpendsForm ? "hidden" : "visible"
+          } p-1 border-sky-500 border text-sky-500 hover:text-white my-2 hover:bg-sky-500 rounded-md `}
+          onClick={(e) => {
+            setShowSpendsForm(!showSpendsForm);
+          }}
+        >
+          + INSERER DEPENSE
+        </button>
+
+        <ToggleButton
+          titleon="CACHER TABLEAU GEN."
+          titleoff="VOIR TABLEAU GEN."
+          onSetNewState={(newState) => {
+            setPaymentsFiltered(Array.from(payments));
+            setShowTableGen(newState);
+          }}
         />
-        SHOW TABLEAU GEN{" "}
+
+        {!showTableGen && (
+          <ToggleButton
+            titleon="CACHER DETAILS"
+            titleoff="VOIR DETAILS"
+            onSetNewState={(newState) => setViewPaymentsDetailsOnDate(newState)}
+          />
+        )}
       </div>
       <div
         className={` ${
@@ -463,62 +475,59 @@ export default function Finances() {
 
         {!showTableGen && (
           <div>
-            <table>
-              <thead>
-                <tr>
-                  <td
-                    colSpan={5}
-                    align="center"
-                    className="text-lg border-b border-l text-center text-sky-500"
-                  >
-                    TABLEAU QUITANCIER
-                  </td>
-                </tr>
-                <tr className="font-bold">
-                  {[
-                    "TOT. QUITANCIER",
-                    "TOT. PHARMACIE",
-                    /*   "View Details", */
-                    "Date",
-                  ].map((it, i) => (
-                    <td className={cltd}>{it}</td>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(quitancierData).map((qd, i) => (
-                  <tr
-                    className={`  ${
-                      qd[0] === selectedQuitDate ? "bg-sky-500 text-white" : ""
-                    } hover:bg-sky-500 hover:text-white cursor-pointer `}
-                    onClick={(e) => onQuitancierRowClicked(qd)}
-                  >
-                    <td className={cltd}>
-                      {FormatNumberWithCommas(qd[1].quit)} FC
+            {!viewPaymentsDetailsOnDate && (
+              <table>
+                <thead>
+                  <tr>
+                    <td
+                      colSpan={5}
+                      align="center"
+                      className="text-lg border-b border-l text-center text-sky-500"
+                    >
+                      TABLEAU QUITANCIER
                     </td>
-                    <td className={cltd}>
-                      {FormatNumberWithCommas(qd[1].pha)} FC
-                    </td>
-                    {/*   <td className={cltd}>
+                  </tr>
+                  <tr className="font-bold">
+                    {[
+                      "TOT. QUITANCIER",
+                      "TOT. PHARMACIE",
+                      /*   "View Details", */
+                      "Date",
+                    ].map((it, i) => (
+                      <td className={cltd}>{it}</td>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(quitancierData).map((qd, i) => (
+                    <tr
+                      className={`  ${
+                        qd[0] === selectedQuitDate
+                          ? "bg-sky-500 text-white"
+                          : ""
+                      } hover:bg-sky-500 hover:text-white cursor-pointer `}
+                      onClick={(e) => onQuitancierRowClicked(qd)}
+                    >
+                      <td className={cltd}>
+                        {FormatNumberWithCommas(qd[1].quit)} FC
+                      </td>
+                      <td className={cltd}>
+                        {FormatNumberWithCommas(qd[1].pha)} FC
+                      </td>
+                      {/*   <td className={cltd}>
                       <img
                         onClick={(e) => setViewDetailsTable(viewDetailsTable)}
                         src={eye}
                         width={30}
                       />
                     </td> */}
-                    <td className={cltd}>{qd[0]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <td className={cltd}>{FormatDate(new Date(qd[0]))}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
 
-            <div>
-              <input
-                type="checkbox"
-                onChange={(e) => setViewPaymentsDetailsOnDate(e.target.checked)}
-              />{" "}
-              SHOW/HIDE Details{" "}
-            </div>
             {selectedQuitDate && viewPaymentsDetailsOnDate && (
               <TablePaymentGen
                 loadPayments={loadPayments}

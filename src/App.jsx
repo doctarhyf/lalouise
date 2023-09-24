@@ -15,6 +15,7 @@ import Finances from "./pages/Finances";
 import Params from "./pages/Params";
 
 import { createClient } from "@supabase/supabase-js";
+import NotFound from "./pages/NotFoud";
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
           <Route path="/lalouise/infirmiers" element={<Infirmiers />} />
           <Route path="/lalouise/finances" element={<Finances />} />
           <Route path="/lalouise/params" element={<Params />} />
-          <Route path="*" element={<div>Page Not Found</div>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
