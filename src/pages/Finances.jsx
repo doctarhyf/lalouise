@@ -359,35 +359,39 @@ export default function Finances() {
     <div className="p-8">
       {" "}
       <PageHeader title="Finances" sub="Finances generales du centre" />
-      <div className="flex  controls gap-4 justify-start items-center">
-        <button
-          className={` ${
-            showSpendsForm ? "hidden" : "visible"
-          } p-1 border-sky-500 border text-sky-500 hover:text-white my-2 hover:bg-sky-500 rounded-md `}
-          onClick={(e) => {
-            setShowSpendsForm(!showSpendsForm);
-          }}
-        >
-          + INSERER DEPENSE
-        </button>
+      {!showSpendsForm && (
+        <div className="flex  controls gap-4 justify-start items-center">
+          <button
+            className={` ${
+              showSpendsForm ? "hidden" : "visible"
+            } p-1 border-sky-500 border text-sky-500 hover:text-white my-2 hover:bg-sky-500 rounded-md `}
+            onClick={(e) => {
+              setShowSpendsForm(!showSpendsForm);
+            }}
+          >
+            + INSERER DEPENSE
+          </button>
 
-        <ToggleButton
-          titleon="CACHER TABLEAU GEN."
-          titleoff="VOIR TABLEAU GEN."
-          onSetNewState={(newState) => {
-            setPaymentsFiltered(Array.from(payments));
-            setShowTableGen(newState);
-          }}
-        />
-
-        {!showTableGen && (
           <ToggleButton
-            titleon="CACHER DETAILS"
-            titleoff="VOIR DETAILS"
-            onSetNewState={(newState) => setViewPaymentsDetailsOnDate(newState)}
+            titleon="CACHER TABLEAU GEN."
+            titleoff="VOIR TABLEAU GEN."
+            onSetNewState={(newState) => {
+              setPaymentsFiltered(Array.from(payments));
+              setShowTableGen(newState);
+            }}
           />
-        )}
-      </div>
+
+          {!showTableGen && (
+            <ToggleButton
+              titleon="CACHER DETAILS"
+              titleoff="VOIR DETAILS"
+              onSetNewState={(newState) =>
+                setViewPaymentsDetailsOnDate(newState)
+              }
+            />
+          )}
+        </div>
+      )}
       <div
         className={` ${
           showSpendsForm ? "visible" : "hidden"
