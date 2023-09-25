@@ -63,7 +63,7 @@ function Roul({ infData, editidingInf, updateID, loadData, hideTopRows }) {
     data.roulement = roulement;
 
     UpdateItem(TABLE_NAME.INFIRMIERS, infID, data, (d) => {
-      console.log("update finished => ", d);
+      //console.log("update finished => ", d);
       loadData();
     });
   }
@@ -172,7 +172,7 @@ function FormNewInf(props) {
   const [loading, setLoading] = useState(false);
   const [infData, setInfData] = useState([]);
 
-  console.log(props);
+  //console.log(props);
 
   useEffect(() => {
     loadData();
@@ -185,7 +185,7 @@ function FormNewInf(props) {
     inf = inf.length === 1 ? inf[0] : [];
 
     setInfData(inf);
-    console.log(inf.roulement);
+    //console.log(inf.roulement);
 
     setLoading(false);
   }
@@ -234,9 +234,22 @@ function FormNewInf(props) {
         <input
           type="text"
           value={props.infType}
-          onChange={(e) => props.setInfType(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value.toUpperCase();
+
+            if (v === "I") {
+              props.setInfType("INF");
+            } else if (v === "M") {
+              props.setInfType("MED");
+            } else {
+              props.setInfType("");
+            }
+          }}
           className={StyleInputText}
         />
+        <div className="text-sm text-neutral-400 italic serif ">
+          type "I" for INFIRMIER, "M" for MEDECIN
+        </div>
 
         {props.editidingInf && (
           <>
@@ -369,7 +382,7 @@ export default function Infirmiers() {
   function onChangeSection(e) {
     const secName = e.target.name;
     setSelectedSection(secName);
-    console.log(secName);
+    //console.log(secName);
 
     if (secName === "infnew") {
       setEditidingInf(false);
@@ -385,7 +398,7 @@ export default function Infirmiers() {
       return;
     }
 
-    console.log(listInfirmiers);
+    //console.log(listInfirmiers);
 
     const filtered = listInfirmiers.filter((inf, i) =>
       inf.nom.toLowerCase().includes(q.toLowerCase())
@@ -406,7 +419,7 @@ export default function Infirmiers() {
     newInf.type = infType;
     newInf.roulement = new Array(GetNumDaysCurMonth()).fill("J");
 
-    console.log(newInf);
+    //console.log(newInf);
 
     await AddNewItemToTable(newInf, TABLE_NAME.INFIRMIERS);
     resetForm();
@@ -415,7 +428,7 @@ export default function Infirmiers() {
   }
 
   async function onUpdateInf(updateID) {
-    console.log(updateID);
+    //console.log(updateID);
 
     let inf = await GetItemByID(TABLE_NAME.INFIRMIERS, updateID);
     let updInf = {};
@@ -425,6 +438,7 @@ export default function Infirmiers() {
     updInf.grade = infGrade;
     updInf.team = infTeam;
     updInf.roulement = inf.roulement;
+    updInf.type = infType;
 
     await UpdateItem(TABLE_NAME.INFIRMIERS, updateID, updInf);
     loadInfList();
