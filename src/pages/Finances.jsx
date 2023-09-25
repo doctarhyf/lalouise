@@ -147,7 +147,7 @@ function TablePaymentGen({ selectedQuitDate, paymentsFiltered, loadPayments }) {
   );
 }
 
-export default function Finances() {
+export default function Finances({ user }) {
   const [payments, setPayments] = useState([]);
   const [paymentsFiltered, setPaymentsFiltered] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(0);
@@ -161,6 +161,11 @@ export default function Finances() {
     useState(false);
 
   useEffect(() => {
+    if (user.level > 1) {
+      window.location = "/";
+      console.log("user => ", user, "\nUser privilege not allowed here");
+    }
+
     loadPayments();
   }, []);
 

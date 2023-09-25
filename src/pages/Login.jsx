@@ -83,6 +83,11 @@ export default function Login() {
             className="p-2 outline-none rounded-md"
             type="password"
             maxLength={10}
+            onKeyUp={(e) => {
+              if (e.code == "Enter" && phone.length === 10 && pwd.length >= 6) {
+                Login();
+              }
+            }}
           />
 
           <div className={`mx-auto ${loading ? "block" : "hidden"} `}>
@@ -106,14 +111,14 @@ export default function Login() {
             )}
           </div>
 
-          {phone.length === 10 && pwd.length >= 6 && (
-            <button
-              onClick={onLogin}
-              className="border-purple-500 rounded-md bg-purple-400 text-white hover:bg-purple-500  border p-2"
-            >
-              LOGIN
-            </button>
-          )}
+          <button
+            onClick={onLogin}
+            className={` ${
+              phone.length === 10 && pwd.length >= 6 ? "visible" : "invisible"
+            } border-purple-500 rounded-md bg-purple-400 text-white hover:bg-purple-500  border p-2`}
+          >
+            LOGIN
+          </button>
         </div>
       </div>
     </div>
