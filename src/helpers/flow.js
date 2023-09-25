@@ -43,3 +43,5 @@ export const DEPARTEMENTS = {
   SIN: { label: "Soins Intensifs", code: "SIN" },
   SOP: { label: "Salle d'OP", code: "SOP" },
 };
+
+export const USER_LEVELS = ["ADM", "AGE", "REC"];

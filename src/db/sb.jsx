@@ -162,6 +162,7 @@ export const TABLE_NAME = {
   DEPENSES: "dep_",
   MED_SELLS_REC: "sellrec_",
   PAYMENTS: "payments",
+  USERS: "users",
 };
 
 export const BUCKET_NAMES = {
@@ -215,5 +216,26 @@ export async function UploadFile(
 
   console.log();
   onFileUploaded(data);
+  return data;
+}
+
+export async function GetUser(phone, password, onSuccess, onFailure) {
+  console.log("Trying to login ...\nphone ", phone, "\npassword: ", password);
+
+  let { data, error } = await supabase
+    .from(TABLE_NAME.USERS)
+    .select("*")
+    .eq("phone", phone)
+    .eq("password", password);
+
+  if (error || data.length !== 1) {
+    if (onFailure) onFailure({ error: error, data: data });
+    return { error: error, data: data };
+  }
+
+  if (onSuccess && data.length === 1) {
+    localStorage.setItem("llu", data[0]);
+    onSuccess(data[0]);
+  }
   return data;
 }

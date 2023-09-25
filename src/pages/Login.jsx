@@ -4,22 +4,53 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 import hosp from "../assets/hospital.png";
 import ld from "../assets/loading.gif";
+import { GetUser } from "../db/sb";
 
 export default function Login() {
   const [loading, setloading] = useState();
-  const refpwd = useRef();
-  const refnum = useRef();
+  const [phone, setphone] = useState("");
+  const [pwd, setpwd] = useState("");
+  const [error, seterror] = useState(false);
+  const [userdata, setuserdata] = useState();
   const navigate = useNavigate();
 
   function onLogin(e) {
-    setloading(true);
+    Login();
 
-    localStorage.setItem("llu", '{"phone":"0893092849","role":"AG"}');
+    /*  localStorage.setItem("llu", '{"phone":"0893092849","role":"AG"}');
 
     setTimeout(() => {
       window.location.reload();
       // alert("ok");
-    }, 2000);
+    }, 2000); */
+  }
+
+  async function Login() {
+    setuserdata(undefined);
+    setloading(true);
+    seterror(false);
+
+    await GetUser(
+      phone,
+      pwd,
+      (d) => {
+        setuserdata(d);
+        setloading(false);
+
+        console.warn("Found user ...\n", d);
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      },
+      (e) => {
+        setloading(false);
+        seterror(
+          "Error login, verifiez votre mot de passe ou contacter l'admin pour la creation d'un nouveau compte!"
+        );
+        console.log(e);
+      }
+    );
   }
 
   return (
@@ -37,7 +68,8 @@ export default function Login() {
         <div className="flex space-y-4 flex-col">
           <div>Phone</div>
           <input
-            ref={refnum}
+            value={phone}
+            onChange={(e) => setphone(e.target.value)}
             className="p-2 outline-none rounded-md"
             type="text"
             maxLength={10}
@@ -46,9 +78,10 @@ export default function Login() {
 
           <div>Password</div>
           <input
-            ref={refpwd}
+            value={pwd}
+            onChange={(e) => setpwd(e.target.value)}
             className="p-2 outline-none rounded-md"
-            type="text"
+            type="password"
             maxLength={10}
           />
 
@@ -57,15 +90,30 @@ export default function Login() {
           </div>
 
           <div className="text-sm text-center">
-            Veuillez vous connecter votre numero
+            {!error && phone.length === 0 && (
+              <div>Veuillez vous connecter votre numero</div>
+            )}
+            {error && (
+              <div className="bg-red-500 text-white font-bold p-1 rounded-md">
+                {error}
+              </div>
+            )}
+
+            {userdata && (
+              <div className="bg-green-500 text-white font-bold p-1 rounded-md">
+                Login success
+              </div>
+            )}
           </div>
 
-          <button
-            onClick={onLogin}
-            className="border-purple-500 rounded-md bg-purple-400 text-white hover:bg-purple-500  border p-2"
-          >
-            LOGIN
-          </button>
+          {phone.length === 10 && pwd.length >= 6 && (
+            <button
+              onClick={onLogin}
+              className="border-purple-500 rounded-md bg-purple-400 text-white hover:bg-purple-500  border p-2"
+            >
+              LOGIN
+            </button>
+          )}
         </div>
       </div>
     </div>
