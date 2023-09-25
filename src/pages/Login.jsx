@@ -106,7 +106,7 @@ export default function Login() {
 
             {userdata && (
               <div className="bg-green-500 text-white font-bold p-1 rounded-md">
-                Login success
+                Login success, binvenue <b>{userdata.displayname}</b>
               </div>
             )}
           </div>
