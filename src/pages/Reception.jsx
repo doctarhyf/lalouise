@@ -461,12 +461,14 @@ function FormNewPat(props) {
 
             {!showFormNewMed && (
               <div className="CONT-PAYMENTS-ALL outline-neutral-400 outline-[1px] outline-dashed p-2 ">
-                <button
-                  onClick={(e) => setShowFormNewMed(true)}
-                  className={clBtn}
-                >
-                  NOUVEAU PAYEMENT
-                </button>
+                {props.user.level <= 1 && (
+                  <button
+                    onClick={(e) => setShowFormNewMed(true)}
+                    className={clBtn}
+                  >
+                    NOUVEAU PAYEMENT
+                  </button>
+                )}
                 <p className="font-bold text-sm text-sky-500">
                   TABLEAU PAYEMENT
                 </p>
@@ -742,7 +744,7 @@ function FormNewPat(props) {
   );
 }
 
-export default function Reception() {
+export default function Reception({ user }) {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [listPatients, setListPatients] = useState([]);
@@ -1037,6 +1039,7 @@ export default function Reception() {
       {selectedSection === "newpat" && (
         <div className="new-pat-form">
           <FormNewPat
+            user={user}
             loadPatList={loadPatList}
             editing={false}
             newPatNom={newPatNom}
@@ -1079,6 +1082,7 @@ export default function Reception() {
       {selectedSection === "viewpat" && (
         <div className="view-pat">
           <FormNewPat
+            user={user}
             loadPatList={loadPatList}
             updateID={updateID}
             editing={true}
