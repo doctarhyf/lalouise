@@ -4,6 +4,8 @@ import PageHeader from "../comps/PageHeader";
 import { DummyStats } from "../Helper";
 import { CountItemsInTable, TABLE_NAME } from "../db/sb";
 import ProgressView from "../comps/ProgressView";
+import { CheckLogginExpired } from "../helpers/funcs";
+import { USERS_LEVELS } from "../helpers/flow";
 
 function StatItem({ statData }) {
   return (
@@ -16,7 +18,7 @@ function StatItem({ statData }) {
   );
 }
 
-export default function Home() {
+export default function Home({ user }) {
   const [loading, setLoading] = useState(true);
   const [infCount, setInfCount] = useState("-");
   const [medsCount, setMedsCount] = useState("-");
@@ -30,6 +32,8 @@ export default function Home() {
       setMedsCount(await CountItemsInTable());
       setPatsCount(await CountItemsInTable(TABLE_NAME.PATIENTS));
       setLoading(false);
+
+      CheckLogginExpired(user);
     }
 
     loadCounts();
@@ -49,9 +53,15 @@ export default function Home() {
         ).format(new Date())}, ${time}`}
       />
 
+      <div className="my-2">
+        Bienvenue, <span className="text-sky-500">{user.displayname}</span>
+        <span className="text-white bg-sky-400 text-xs p-1 mx-2 rounded-md ">
+          {USERS_LEVELS[user.level]}
+        </span>
+      </div>
       <ProgressView show={loading} />
 
-      <div className="bg-lime-500  h-[160pt] overflow-hidden mb-8 w-fit">
+      <div className="bg-lime-500  h-[240pt] overflow-hidden mb-8 w-fit">
         <img
           className=" object-fit w-[100%] "
           src={

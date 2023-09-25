@@ -21,7 +21,7 @@ import {
   GetNumDaysInMonth,
 } from "../Helper";
 import ProgressView from "../comps/ProgressView";
-import { cltd } from "../helpers/flow";
+import { cltd, MEDS_CATS } from "../helpers/flow";
 const titleClass = `text-xl text-green-500 mb-2`;
 
 function InfirmierItem({ data, onViewInf }) {
@@ -230,6 +230,14 @@ function FormNewInf(props) {
           className={StyleInputText}
         />
 
+        <div>Type</div>
+        <input
+          type="text"
+          value={props.infType}
+          onChange={(e) => props.setInfType(e.target.value)}
+          className={StyleInputText}
+        />
+
         {props.editidingInf && (
           <>
             <div>Programe</div>
@@ -283,6 +291,45 @@ function FormNewInf(props) {
   );
 }
 
+function IconButtonsCont({ data, onRadioButtonSelected }) {
+  const [selectedid, setselectedid] = useState();
+
+  function onClick(dt) {
+    setselectedid(dt.code);
+    onRadioButtonSelected(dt);
+  }
+
+  return (
+    <div className="flex gap-4">
+      {data.map((d, i) => (
+        <div
+          key={d.code}
+          onClick={(e) => onClick(data[i])}
+          className={` group w-fit ${
+            selectedid === d.code
+              ? "bg-sky-500 text-white"
+              : " text-black bg-white"
+          } flex border-1 border p-1 rounded-md cursor-pointer hover:border-sky-500 `}
+        >
+          <div>
+            <img src={nurse} width={40} />
+          </div>
+          <div>
+            <div>{d.title}</div>
+            <div
+              className={` ${
+                selectedid === d.code ? "text-sky-200" : "text-neutral-600"
+              } text-sm  group-hover:text-sky-600`}
+            >
+              {d.sub}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Infirmiers() {
   const [q, setQ] = useState("");
 
@@ -293,6 +340,7 @@ export default function Infirmiers() {
   const [infPhone, setInfPhone] = useState("0892125047");
   const [infGrade, setInfGrade] = useState("IT");
   const [infTeam, setInfTeam] = useState("D");
+  const [infType, setInfType] = useState("MED");
   const [selectedSection, setSelectedSection] = useState("inflist");
   const [updateID, setUpdateID] = useState(-1);
   const [editidingInf, setEditidingInf] = useState(false);
@@ -314,7 +362,7 @@ export default function Infirmiers() {
     setInfPhone(curViewInf.phone);
     setInfGrade(curViewInf.grade);
     setInfTeam(curViewInf.team);
-
+    setInfType(curViewInf.type);
     setSelectedSection("infnew");
   }
 
@@ -355,6 +403,7 @@ export default function Infirmiers() {
     newInf.phone = infPhone;
     newInf.grade = infGrade;
     newInf.team = infTeam;
+    newInf.type = infType;
     newInf.roulement = new Array(GetNumDaysCurMonth()).fill("J");
 
     console.log(newInf);
@@ -410,11 +459,25 @@ export default function Infirmiers() {
     setInfPhone("");
     setInfGrade("");
     setInfTeam("");
+    setInfType("MED");
   }
 
   function onCancel(e) {
     e.preventDefault();
     setSelectedSection("inflist");
+  }
+
+  function onRadioButtonSelected(radioData) {
+    if (radioData.code === "ALL") {
+      setListInfirmersFiltered(listInfirmiers);
+      return;
+    }
+
+    const filtered = listInfirmiers.filter(
+      (inf, i) => inf.type === radioData.code
+    );
+
+    setListInfirmersFiltered(filtered);
   }
 
   return (
@@ -450,11 +513,13 @@ export default function Infirmiers() {
           Nouveau Infirmier
         </button>
       </div>
-
       <ProgressView show={loading} />
-
       {selectedSection === "inflist" && (
         <div className="list-infirmiers mt-8">
+          <IconButtonsCont
+            data={MEDS_CATS}
+            onRadioButtonSelected={onRadioButtonSelected}
+          />
           <div>
             {listInfirmiers && listInfirmiers.length > 0 ? (
               <div>
@@ -494,7 +559,6 @@ export default function Infirmiers() {
           </div>
         </div>
       )}
-
       {selectedSection === "inftt" && (
         <div className="horaire">
           {/* <RoulementGeneral
@@ -504,7 +568,6 @@ export default function Infirmiers() {
           <RoulGen listInfirmiers={listInfirmiers} updateID={updateID} />
         </div>
       )}
-
       {selectedSection === "infnew" && (
         <div className="view-inf">
           <FormNewInf
@@ -522,6 +585,8 @@ export default function Infirmiers() {
             setInfTeam={setInfTeam}
             onNewInf={onNewInf}
             onCancel={onCancel}
+            setInfType={setInfType}
+            infType={infType}
           />
         </div>
       )}

@@ -460,7 +460,7 @@ export default function Pharmacy() {
               placeholder="search ..."
             />
 
-            <div className="md:flex gap-2 flex-wrap">
+            <div className="md:flex gap-2 mb-4 flex-wrap">
               <p className="w-full">AFFICHER</p>
 
               {STOCK_FILTER_LABELS.map((st, i) => (

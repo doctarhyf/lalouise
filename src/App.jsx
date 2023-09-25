@@ -21,25 +21,44 @@ function App() {
   const [user, setuser] = useState();
 
   useEffect(() => {
-    const u = localStorage.getItem("llu");
+    let userFound = localStorage.getItem("llu");
 
-    setuser(u);
+    if (userFound) {
+      userFound = JSON.parse(userFound);
 
-    console.log(u);
+      let expired = userFound.login_expires - new Date().getTime() < 0;
+
+      if (!expired) {
+        setuser(userFound);
+      } else {
+        localStorage.removeItem("llu");
+      }
+    }
+
+    console.log(userFound);
   }, []);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/lalouise/" element={user ? <Layout /> : <Login />}>
-          <Route index element={<Home />} />
-          <Route path="/lalouise/home" element={<Home />} />
-          <Route path="/lalouise/pharmacy" element={<Pharmacy />} />
-          <Route path="/lalouise/reception" element={<Reception />} />
-          <Route path="/lalouise/infirmiers" element={<Infirmiers />} />
-          <Route path="/lalouise/finances" element={<Finances />} />
-          <Route path="/lalouise/params" element={<Params />} />
-          <Route path="*" element={<NotFound />} />
+        <Route
+          path="/lalouise/"
+          element={user ? <Layout user={user} /> : <Login />}
+        >
+          <Route index element={<Home user={user} />} />
+          <Route path="/lalouise/home" element={<Home user={user} />} />
+          <Route path="/lalouise/pharmacy" element={<Pharmacy user={user} />} />
+          <Route
+            path="/lalouise/reception"
+            element={<Reception user={user} />}
+          />
+          <Route
+            path="/lalouise/infirmiers"
+            element={<Infirmiers user={user} />}
+          />
+          <Route path="/lalouise/finances" element={<Finances user={user} />} />
+          <Route path="/lalouise/params" element={<Params user={user} />} />
+          <Route path="*" element={<NotFound user={user} />} />
         </Route>
       </Routes>
     </BrowserRouter>

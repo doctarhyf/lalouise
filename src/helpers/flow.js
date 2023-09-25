@@ -44,4 +44,10 @@ export const DEPARTEMENTS = {
   SOP: { label: "Salle d'OP", code: "SOP" },
 };
 
-export const USER_LEVELS = ["ADM", "AGE", "REC"];
+export const USERS_LEVELS = ["ADM", "AGE", "REC"];
+
+export const MEDS_CATS = [
+  { title: "Tous", sub: "Toute la liste", code: "ALL" },
+  { title: "Infirmiers", sub: "Liste des infirmiers", code: "INF" },
+  { title: "Medecins", sub: "Liste des medecins", code: "MED" },
+];

@@ -219,6 +219,8 @@ export async function UploadFile(
   return data;
 }
 
+const SIXTY_MIN_IN_MILLIS = 3.6e6;
+
 export async function GetUser(phone, password, onSuccess, onFailure) {
   console.log("Trying to login ...\nphone ", phone, "\npassword: ", password);
 
@@ -234,7 +236,10 @@ export async function GetUser(phone, password, onSuccess, onFailure) {
   }
 
   if (onSuccess && data.length === 1) {
-    localStorage.setItem("llu", data[0]);
+    const user = data[0];
+    user.last_login = new Date().getTime();
+    user.login_expires = user.last_login + SIXTY_MIN_IN_MILLIS;
+    localStorage.setItem("llu", JSON.stringify(user));
     onSuccess(data[0]);
   }
   return data;

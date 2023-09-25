@@ -1,31 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ReactDOM } from "react";
 import { Link, Outlet } from "react-router-dom";
 import hosp from "../assets/hospital.png";
+/* import { UpdateSessionExpirationTime } from "../helpers/funcs"; */
 
-function LinkItem({ link }) {
+function LinkItem({ link, show }) {
   return (
-    <li className="p-2 ml-0">
-      <Link
-        className="hover:bg-white p-2 ml-0 hover:text-sky-500 px-2 rounded-[4pt]"
-        to={link.path}
-      >
-        {link.title}
-      </Link>
-    </li>
+    <>
+      {show && (
+        <li className="p-2 ml-0">
+          <Link
+            className="hover:bg-white p-2 ml-0 hover:text-sky-500 px-2 rounded-[4pt]"
+            to={link.path}
+          >
+            {link.title}
+          </Link>
+        </li>
+      )}
+    </>
   );
 }
 
-export default function Layout() {
+export default function Layout({ user }) {
   const [showMenu, setShowMenu] = useState(false);
 
+  /* useEffect(() => {
+    window.addEventListener("mousemove", (e) => {
+      UpdateSessionExpirationTime();
+    });
+  }, []); */
+
   const links = [
-    { title: "Home", path: "/lalouise/" },
-    { title: "Reception", path: "/lalouise/reception" },
-    { title: "Pharmacy", path: "/lalouise/pharmacy" },
-    { title: "Infirmiers", path: "/lalouise/infirmiers" },
-    { title: "Finances", path: "/lalouise/finances" },
-    { title: "Paramtres", path: "/lalouise/params" },
+    { title: "Home", path: "/lalouise/", level: 2 },
+    { title: "Reception", path: "/lalouise/reception", level: 2 },
+    { title: "Pharmacy", path: "/lalouise/pharmacy", level: 2 },
+    { title: "Infirmiers", path: "/lalouise/infirmiers", level: 2 },
+    { title: "Finances", path: "/lalouise/finances", level: 1 },
+    { title: "Paramtres", path: "/lalouise/params", level: 0 },
   ];
 
   return (
@@ -56,7 +67,7 @@ export default function Layout() {
             </li>
 
             {links.map((link, idx) => (
-              <LinkItem link={link} key={idx} />
+              <LinkItem link={link} key={idx} show={user.level <= link.level} />
             ))}
 
             <button
