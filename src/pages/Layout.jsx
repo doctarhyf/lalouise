@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ReactDOM } from "react";
 import { Link, Outlet } from "react-router-dom";
 import hosp from "../assets/hospital.png";
+import { Logout } from "../helpers/funcs";
 /* import { UpdateSessionExpirationTime } from "../helpers/funcs"; */
 
 function LinkItem({ link, show }) {
@@ -72,10 +73,7 @@ export default function Layout({ user }) {
 
             <button
               className="w-full bg-red-400 hover:bg-red-500 text-white p-1 text-center"
-              onClick={(e) => {
-                localStorage.removeItem("llu");
-                window.location.reload();
-              }}
+              onClick={(e) => Logout()}
             >
               LOGOUT
             </button>

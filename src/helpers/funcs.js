@@ -27,14 +27,17 @@ export function FormatNumberWithCommas(number) {
 export function Login(userdata) {
   console.log("Loggin in with userdata ... \n", userdata);
   localStorage.setItem("llu", JSON.stringify(userdata));
+
   setTimeout(() => {
-    window.location.reload();
+    let path = window.location.origin + "/lalouise/";
+    window.location = path;
   }, 2000);
 }
 
 export function Logout() {
   localStorage.removeItem("llu");
-  window.location.reload();
+  const path = window.location.origin + "/lalouise/";
+  window.location = path;
 }
 
 /* export function CheckLogginExpired(user) {

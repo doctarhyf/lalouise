@@ -35,7 +35,7 @@ export default function Home({ user }) {
 
       //CheckLogginExpired(user);
 
-      alert(window.location);
+      //alert(window.location);
     }
 
     loadCounts();
