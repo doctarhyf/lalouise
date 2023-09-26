@@ -4,7 +4,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 import hosp from "../assets/hospital.png";
 import ld from "../assets/loading.gif";
-import { GetUser } from "../db/sb";
+import { CheckUserExists } from "../db/sb";
 import { Login as SBLogin } from "../helpers/funcs";
 
 export default function Login() {
@@ -20,7 +20,7 @@ export default function Login() {
     setloading(true);
     seterror(false);
 
-    await GetUser(
+    await CheckUserExists(
       phone,
       pwd,
       (userdata) => {

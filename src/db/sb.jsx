@@ -220,7 +220,7 @@ export async function UploadFile(
 
 const SIXTY_MIN_IN_MILLIS = 3.6e6;
 
-export async function GetUser(phone, password, onSuccess, onFailure) {
+export async function CheckUserExists(phone, password, onSuccess, onFailure) {
   // console.log("Trying to login ...\nphone ", phone, "\npassword: ", password);
 
   let { data, error } = await supabase
