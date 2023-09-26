@@ -4,7 +4,7 @@ import PageHeader from "../comps/PageHeader";
 import { DummyStats } from "../Helper";
 import { CountItemsInTable, TABLE_NAME } from "../db/sb";
 import ProgressView from "../comps/ProgressView";
-import { CheckLogginExpired } from "../helpers/funcs";
+//import { CheckLogginExpired } from "../helpers/funcs";
 import { USERS_LEVELS } from "../helpers/flow";
 
 function StatItem({ statData }) {
@@ -33,7 +33,7 @@ export default function Home({ user }) {
       setPatsCount(await CountItemsInTable(TABLE_NAME.PATIENTS));
       setLoading(false);
 
-      CheckLogginExpired(user);
+      //CheckLogginExpired(user);
     }
 
     loadCounts();

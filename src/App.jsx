@@ -21,7 +21,9 @@ function App() {
   const [user, setuser] = useState();
 
   useEffect(() => {
-    let userFound = localStorage.getItem("llu");
+    localStorage.removeItem("llu");
+
+    /* let userFound = localStorage.getItem("llu");
 
     if (userFound) {
       userFound = JSON.parse(userFound);
@@ -35,7 +37,7 @@ function App() {
       }
     }
 
-    console.log(userFound);
+    console.log(userFound); */
   }, []);
 
   return (

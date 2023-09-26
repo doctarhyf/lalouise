@@ -24,7 +24,7 @@ export function FormatNumberWithCommas(number) {
     : number;
 }
 
-export function CheckLogginExpired(user) {
+/* export function CheckLogginExpired(user) {
   const expired = user.login_expires - new Date().getTime() <= 0;
 
   console.log(
@@ -43,7 +43,7 @@ export function CheckLogginExpired(user) {
     localStorage.removeItem("llu");
     window.location.reload();
   }
-}
+} */
 
 /* export function UpdateSessionExpirationTime() {
   //console.log("UpdateSessionExpirationTime");
@@ -52,6 +52,7 @@ export function CheckLogginExpired(user) {
 function pad(num) {
   return ("0" + num).slice(-2);
 }
+
 function hhmmss(secs) {
   var minutes = Math.floor(secs / 60);
   secs = secs % 60;
