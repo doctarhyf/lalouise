@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import hosp from "../assets/hospital.png";
 import ld from "../assets/loading.gif";
 import { GetUser } from "../db/sb";
+import { Login as SBLogin } from "../helpers/funcs";
 
 export default function Login() {
   const [loading, setloading] = useState();
@@ -14,18 +15,7 @@ export default function Login() {
   const [userdata, setuserdata] = useState();
   const navigate = useNavigate();
 
-  function onLogin(e) {
-    Login();
-
-    /*  localStorage.setItem("llu", '{"phone":"0893092849","role":"AG"}');
-
-    setTimeout(() => {
-      window.location.reload();
-      // alert("ok");
-    }, 2000); */
-  }
-
-  async function Login() {
+  async function onLogin() {
     setuserdata(undefined);
     setloading(true);
     seterror(false);
@@ -33,22 +23,16 @@ export default function Login() {
     await GetUser(
       phone,
       pwd,
-      (d) => {
-        setuserdata(d);
+      (userdata) => {
+        setuserdata(userdata);
         setloading(false);
-
-        console.warn("Found user ...\n", d);
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        SBLogin(userdata);
       },
       (e) => {
         setloading(false);
         seterror(
           "Error login, verifiez votre mot de passe ou contacter l'admin pour la creation d'un nouveau compte!"
         );
-        console.log(e);
       }
     );
   }
@@ -85,7 +69,7 @@ export default function Login() {
             maxLength={10}
             onKeyUp={(e) => {
               if (e.code == "Enter" && phone.length === 10 && pwd.length >= 6) {
-                Login();
+                onLogin();
               }
             }}
           />
@@ -106,7 +90,7 @@ export default function Login() {
 
             {userdata && (
               <div className="bg-green-500 text-white font-bold p-1 rounded-md">
-                Login success, binvenue <b>{userdata.displayname}</b>
+                Login success, bienvenue <b>{userdata.displayname}</b>
               </div>
             )}
           </div>

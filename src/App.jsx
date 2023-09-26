@@ -16,28 +16,29 @@ import Params from "./pages/Params";
 
 import { createClient } from "@supabase/supabase-js";
 import NotFound from "./pages/NotFoud";
+import { Logout as SBLogout } from "./helpers/funcs";
 
 function App() {
   const [user, setuser] = useState();
 
   useEffect(() => {
-    localStorage.removeItem("llu");
+    //localStorage.removeItem("llu");
 
-    /* let userFound = localStorage.getItem("llu");
+    let userDataString, userData;
+    try {
+      userDataString = localStorage.getItem("llu");
+      userData = JSON.parse(userDataString);
+      setuser(userData);
+    } catch (e) {
+      const msg =
+        "Error parsing LALOUISE user data from localstorage.\n Found data => " +
+        userDataString;
 
-    if (userFound) {
-      userFound = JSON.parse(userFound);
+      alert(msg);
 
-      let expired = userFound.login_expires - new Date().getTime() < 0;
-
-      if (!expired) {
-        setuser(userFound);
-      } else {
-        localStorage.removeItem("llu");
-      }
+      console.error(msg);
+      SBLogout();
     }
-
-    console.log(userFound); */
   }, []);
 
   return (
