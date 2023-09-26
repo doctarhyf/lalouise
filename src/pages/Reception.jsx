@@ -6,6 +6,7 @@ import EmptyList from "../comps/EmptyList";
 import PageHeader from "../comps/PageHeader";
 import ProgressView from "../comps/ProgressView";
 import patient from "../assets/patient.png";
+import IconButtonsCont from "../comps/IconButtonsCont";
 import {
   GetAllItemsFromTable,
   TABLE_NAME,
@@ -17,7 +18,13 @@ import {
   BUCKET_NAMES,
   GetBucketFilePublicUrl,
 } from "../db/sb";
-import { DEPARTEMENTS, PAYMENTS_TYPES, cltd } from "../helpers/flow";
+import {
+  DEPARTEMENTS,
+  CATEGORIES_MEDECINS,
+  CATEGORIES_PATIENTS,
+  PAYMENTS_TYPES,
+  cltd,
+} from "../helpers/flow";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 import { Link } from "react-router-dom";
 
@@ -776,6 +783,8 @@ export default function Reception({ user }) {
 
   //const [curViewPat, setCurViewPat] = useState(null)
   const [updateID, setUpdateID] = useState(-1);
+  const [selectedPatientsCategorieData, setSelectedPatientsCategorieData] =
+    useState(CATEGORIES_PATIENTS[0]);
 
   useEffect(() => {
     loadPatList();
@@ -865,6 +874,17 @@ export default function Reception({ user }) {
     setListPatientsFiltered(Array.from(list));
     setSelectedSection("lspat");
     setLoading(false);
+
+    ParsePatientsCategories();
+  }
+
+  function ParsePatientsCategories(list) {
+    let cats = {};
+    setPatientsCategories([]);
+
+    list.forEach((v, k, m) => {
+      console.log(v, k);
+    });
   }
 
   function onCancel(e) {
@@ -946,6 +966,20 @@ export default function Reception({ user }) {
     setListPatientsFiltered(listPatients.filter((p, i) => p.dep === filterDep));
   }
 
+  function onRadioButtonSelected(dt) {
+    setSelectedPatientsCategorieData(dt);
+
+    const { title, sub, code } = dt;
+
+    if (code === "ALL") {
+      setListPatientsFiltered([...listPatients]);
+      return;
+    }
+
+    const filtered = listPatients.filter((p, i) => p.dep === code);
+    setListPatientsFiltered(filtered);
+  }
+
   return (
     <div className="p-8">
       <PageHeader
@@ -961,7 +995,7 @@ export default function Reception({ user }) {
             selectedSection === "lspat" ? selClass : "hover:text-sky-500"
           }  hover:border-b-sky-500   rounded-tl-[6pt] rounded-tr-[6pt] `}
         >
-          Liste des Patients ({patsCount})
+          Liste des Patients ({listPatientsFiltered.length})
         </button>
 
         <button
@@ -979,21 +1013,28 @@ export default function Reception({ user }) {
         <div className="lspat mt-8">
           <ProgressView show={loading} />
 
-          <div>
-            Afficher patients de :
-            <select
-              value={filterDep || DEPARTEMENTS.SIN.code}
-              className={StyleInputText}
-              onChange={(e) => onSelectedFilterDep(e.target.value)}
-            >
-              <option value="all">Tous les patients</option>
-              {Object.values(DEPARTEMENTS).map((dep, i) => (
-                <option key={i} value={dep.code}>
-                  {dep.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {false && (
+            <div>
+              Afficher patients de :
+              <select
+                value={filterDep || DEPARTEMENTS.SIN.code}
+                className={StyleInputText}
+                onChange={(e) => onSelectedFilterDep(e.target.value)}
+              >
+                <option value="all">Tous les patients</option>
+                {Object.values(DEPARTEMENTS).map((dep, i) => (
+                  <option key={i} value={dep.code}>
+                    {dep.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <IconButtonsCont
+            data={CATEGORIES_PATIENTS}
+            onRadioButtonSelected={onRadioButtonSelected}
+          />
 
           <div>
             {listPatients && listPatients.length > 0 ? (
@@ -1006,6 +1047,11 @@ export default function Reception({ user }) {
                     onChange={onSearchPat}
                     placeholder="Search ..."
                   />
+                </div>
+
+                <div className="text-purple-500 text-xl font-mono pr-2 my-2">
+                  {selectedPatientsCategorieData.title}(
+                  {listPatientsFiltered.length})
                 </div>
 
                 <div className="md:flex gap-2 flex-wrap">

@@ -3,7 +3,7 @@ import logo from "../assets/react.svg";
 import PageHeader from "../comps/PageHeader";
 import { StyleButton, StyleInputText } from "../Styles";
 import nurse from "../assets/nurse.png";
-
+import IconButtonsCont from "../comps/IconButtonsCont";
 import {
   AddNewItemToTable,
   DeleteItem,
@@ -21,7 +21,11 @@ import {
   GetNumDaysInMonth,
 } from "../Helper";
 import ProgressView from "../comps/ProgressView";
-import { cltd, MEDS_CATS } from "../helpers/flow";
+import {
+  cltd,
+  CATEGORIES_MEDECINS,
+  CATEGORIES_PATIENTS,
+} from "../helpers/flow";
 const titleClass = `text-xl text-green-500 mb-2`;
 
 function InfirmierItem({ data, onViewInf }) {
@@ -262,13 +266,6 @@ function FormNewInf(props) {
               updateID={props.updateID}
               loadData={loadData}
             />
-
-            {/* <Roulement
-              editidingInf={props.editidingInf}
-              showDates
-              showData
-              updateID={props.updateID}
-            /> */}
           </>
         )}
 
@@ -301,45 +298,6 @@ function FormNewInf(props) {
         </div>
       </form>
     </>
-  );
-}
-
-function IconButtonsCont({ data, onRadioButtonSelected }) {
-  const [selectedid, setselectedid] = useState();
-
-  function onClick(dt) {
-    setselectedid(dt.code);
-    onRadioButtonSelected(dt);
-  }
-
-  return (
-    <div className="flex gap-4">
-      {data.map((d, i) => (
-        <div
-          key={d.code}
-          onClick={(e) => onClick(data[i])}
-          className={` group w-fit ${
-            selectedid === d.code
-              ? "bg-sky-500 text-white"
-              : " text-black bg-white"
-          } flex border-1 border p-1 rounded-md cursor-pointer hover:border-sky-500 `}
-        >
-          <div>
-            <img src={nurse} width={40} />
-          </div>
-          <div>
-            <div>{d.title}</div>
-            <div
-              className={` ${
-                selectedid === d.code ? "text-sky-200" : "text-neutral-600"
-              } text-sm  group-hover:text-sky-600`}
-            >
-              {d.sub}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -531,7 +489,7 @@ export default function Infirmiers() {
       {selectedSection === "inflist" && (
         <div className="list-infirmiers mt-8">
           <IconButtonsCont
-            data={MEDS_CATS}
+            data={CATEGORIES_PATIENTS}
             onRadioButtonSelected={onRadioButtonSelected}
           />
           <div>

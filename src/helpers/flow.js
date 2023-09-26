@@ -46,8 +46,15 @@ export const DEPARTEMENTS = {
 
 export const USERS_LEVELS = ["ADM", "AGE", "REC"];
 
-export const MEDS_CATS = [
+export const CATEGORIES_MEDECINS = [
   { title: "Tous", sub: "Toute la liste", code: "ALL" },
   { title: "Infirmiers", sub: "Liste des infirmiers", code: "INF" },
   { title: "Medecins", sub: "Liste des medecins", code: "MED" },
+];
+
+export const CATEGORIES_PATIENTS = [
+  { title: "Tous", sub: "Tous les patients", code: "ALL" },
+  { title: "Maternite", sub: "", code: "MAT" },
+  { title: "Soins Intensifs", sub: "", code: "SIN" },
+  { title: "Salle d'OP", sub: "", code: "SOP" },
 ];
