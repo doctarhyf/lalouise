@@ -69,15 +69,11 @@ export default function Home({ user }) {
       <ProgressView show={loading} />
 
       <div className="bg-neutral-100  max-h-[280pt] overflow-hidden mb-8 w-fit">
-        {/*  <img
+        <img
           className=" object-fit w-[100%] "
           src={
             "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg"
           }
-        /> */}
-        <ImageGallery
-          className=" object-fit w-[100%] "
-          items={GALLERY_IMAGES_URL}
         />
         ;
       </div>

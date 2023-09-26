@@ -72,7 +72,7 @@ export default function Layout({ user }) {
             ))}
 
             <button
-              className="w-full bg-red-400 hover:bg-red-500 text-white p-1 text-center"
+              className="w-full bg-red-400 hover:bg-red-500 rounded-md hover:border-red-600 text-white p-1 text-center"
               onClick={(e) => Logout()}
             >
               LOGOUT

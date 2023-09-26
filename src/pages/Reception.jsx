@@ -163,7 +163,7 @@ function MultiFileUploaderCont({ notifyUploadDone, count = 3 }) {
 
 function PatientItem({ data, onViewPatient }) {
   return (
-    <div className=" md:w-[280px] md:border flex gap-x-4 hover:bg-sky-100  rounded-md p-2 cursor-pointer ">
+    <div className=" md:w-[280px] md:border flex gap-x-4 hover:bg-sky-200/50 hover:border-sky-500  rounded-md p-2 cursor-pointer ">
       <div className=" w-[30pt] h-[30pt] rounded-md overflow-hidden">
         <img src={data.photo || logo} className=" h-[100%] " />
       </div>
@@ -201,6 +201,7 @@ function FormNewPat(props) {
     payed: false,
   });
   const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
@@ -284,6 +285,31 @@ function FormNewPat(props) {
     console.log(dt);
     const { code } = dt;
     props.setNewPatDep(code);
+  }
+
+  function onSortieHopital() {
+    setLoading(true);
+    const { updateID } = props;
+
+    const upd = {
+      exit_hospital_at: new Date().toISOString(),
+    };
+
+    UpdateItem(
+      TABLE_NAME.PATIENTS,
+      updateID,
+      upd,
+      (res) => {
+        setLoading(false);
+        alert("Update Success!");
+        console.log(res);
+      },
+      (e) => {
+        setLoading(false);
+        alert("Error\n" + e);
+        console.log(e);
+      }
+    );
   }
 
   return (
@@ -754,6 +780,15 @@ function FormNewPat(props) {
       >
         ANNULER
       </button>
+
+      <button
+        className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-gray-500 hover:text-white text-gray-500  border border-gray-500 `}
+        onClick={(e) => onSortieHopital()}
+      >
+        SORTIE HOPITAL
+      </button>
+
+      <ProgressView show={loading} />
     </>
   );
 }

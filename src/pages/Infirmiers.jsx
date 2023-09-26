@@ -489,7 +489,7 @@ export default function Infirmiers() {
       {selectedSection === "inflist" && (
         <div className="list-infirmiers mt-8">
           <IconButtonsCont
-            data={CATEGORIES_PATIENTS}
+            data={CATEGORIES_MEDECINS}
             onRadioButtonSelected={onRadioButtonSelected}
           />
           <div>
