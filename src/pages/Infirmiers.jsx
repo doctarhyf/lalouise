@@ -301,7 +301,7 @@ function FormNewInf(props) {
   );
 }
 
-export default function Infirmiers() {
+export default function Infirmiers({ user }) {
   const [q, setQ] = useState("");
 
   const [listInfirmiers, setListInfirmers] = useState([]);
@@ -475,15 +475,17 @@ export default function Infirmiers() {
         >
           Horaire
         </button>
-        <button
-          name="infnew"
-          onClick={onChangeSection}
-          className={`px-2 mx-4 border border-white ${
-            selectedSection === "infnew" ? selClass : "hover:text-sky-500"
-          }  hover:border-b-sky-500   rounded-tl-[6pt] rounded-tr-[6pt] `}
-        >
-          Nouveau Infirmier
-        </button>
+        {user.level <= 1 && (
+          <button
+            name="infnew"
+            onClick={onChangeSection}
+            className={`px-2 mx-4 border border-white ${
+              selectedSection === "infnew" ? selClass : "hover:text-sky-500"
+            }  hover:border-b-sky-500   rounded-tl-[6pt] rounded-tr-[6pt] `}
+          >
+            Nouveau Infirmier
+          </button>
+        )}
       </div>
       <ProgressView show={loading} />
       {selectedSection === "inflist" && (
