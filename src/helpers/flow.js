@@ -58,3 +58,16 @@ export const CATEGORIES_PATIENTS = [
   { title: "Soins Intensifs", sub: "", code: "SIN" },
   { title: "Salle d'OP", sub: "", code: "SOP" },
 ];
+
+export const GALLERY_IMAGES_URL = [
+  {
+    original:
+      "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg",
+    thumbnail:
+      "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg",
+  },
+  {
+    original: "https://picsum.photos/id/1015/1000/600/",
+    thumbnail: "https://picsum.photos/id/1015/250/150/",
+  },
+];

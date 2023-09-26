@@ -5,7 +5,9 @@ import { DummyStats } from "../Helper";
 import { CountItemsInTable, TABLE_NAME } from "../db/sb";
 import ProgressView from "../comps/ProgressView";
 //import { CheckLogginExpired } from "../helpers/funcs";
-import { USERS_LEVELS } from "../helpers/flow";
+import { GALLERY_IMAGES_URL, USERS_LEVELS } from "../helpers/flow";
+import ImageGallery from "react-image-gallery";
+import "../App.css";
 
 function StatItem({ statData }) {
   return (
@@ -56,20 +58,28 @@ export default function Home({ user }) {
       />
 
       <div className="my-2">
-        Bienvenue, <span className="text-sky-500">{user.displayname}</span>
+        Bienvenue,{" "}
+        <span className="text-sky-500">
+          {user.displayname} ({user.phone})
+        </span>
         <span className="text-white bg-sky-400 text-xs p-1 mx-2 rounded-md ">
           {USERS_LEVELS[user.level]}
         </span>
       </div>
       <ProgressView show={loading} />
 
-      <div className="bg-lime-500  h-[240pt] overflow-hidden mb-8 w-fit">
-        <img
+      <div className="bg-neutral-100  max-h-[280pt] overflow-hidden mb-8 w-fit">
+        {/*  <img
           className=" object-fit w-[100%] "
           src={
             "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg"
           }
+        /> */}
+        <ImageGallery
+          className=" object-fit w-[100%] "
+          items={GALLERY_IMAGES_URL}
         />
+        ;
       </div>
 
       <div className="stats-cont flex flex-wrap gap-8 align-middle justify-center">
