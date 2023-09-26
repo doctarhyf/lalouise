@@ -1,7 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import nurse from "../assets/nurse.png";
-export default function IconButtonsCont({ data, onRadioButtonSelected }) {
+
+export default function IconButtonsCont({
+  data,
+  onRadioButtonSelected,
+  hidefirst,
+  selectedcode,
+}) {
   const [selectedid, setselectedid] = useState();
+
+  useEffect(() => {
+    if (selectedcode) setselectedid(selectedcode);
+  }, []);
 
   function onClick(dt) {
     setselectedid(dt.code);
@@ -9,12 +19,16 @@ export default function IconButtonsCont({ data, onRadioButtonSelected }) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row my-4 gap-4">
+    <div className={`flex flex-col md:flex-row my-4 gap-4`}>
       {data.map((d, i) => (
         <div
           key={d.code}
           onClick={(e) => onClick(data[i])}
-          className={` group w-full md:w-fit ${
+          className={` group w-full md:w-fit
+          
+          ${i === 0 && hidefirst ? "hidden" : ""}
+          
+          ${
             selectedid === d.code
               ? "bg-sky-500 text-white"
               : " text-black bg-white"

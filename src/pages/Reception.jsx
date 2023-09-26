@@ -171,8 +171,11 @@ function PatientItem({ data, onViewPatient }) {
       <div className="grow">
         <div className="text-black">{data.nom}</div>
         <div className=" text-sm">
-          <span className="text-slate-500">{data.emergContact.phone}</span>
-          <span>{`, ${CalcAge(new Date(data.dob))} ans`}</span>
+          {/* <span className="text-slate-500">{data.emergContact.phone}</span> */}
+          <span className="bg-sky-500 text-xs text-white p-1 font-bold rounded-md">
+            {DEPARTEMENTS[data.dep].label}
+          </span>
+          {/* <span>{`, ${CalcAge(new Date(data.dob))} ans`}</span> */}
         </div>
       </div>
 
@@ -218,20 +221,7 @@ function FormNewPat(props) {
   }
 
   async function onSaveNewPayement(e) {
-    /* {
-    created_at: '2023-09-21T19:19:21.234Z',
-    type: 'FCM',
-    foreign_table: 'pat_',
-    foreign_key: 70,
-    amount: 5000,
-    cash: false,
-    payed: false
-  }
- */
-
     newPayment.payed_at = newPayment.cash ? newPayment.created_at : null;
-
-    // console.log(newPayment);
 
     AddNewItemToTable(newPayment, TABLE_NAME.PAYMENTS, (data) => {
       loadPayments();
@@ -289,6 +279,13 @@ function FormNewPat(props) {
       }
     );
   }
+
+  function onRadioButtonSelected(dt) {
+    console.log(dt);
+    const { code } = dt;
+    props.setNewPatDep(code);
+  }
+
   return (
     <>
       <div className=" flex-col md:flex-row">
@@ -313,17 +310,27 @@ function FormNewPat(props) {
 
           <div>Departement (MAT, SIN, SOP)</div>
           {props.newPatDep}
-          <select
-            value={props.newPatDep || DEPARTEMENTS.SIN.code}
-            className={StyleInputText}
-            onChange={(e) => props.setNewPatDep(e.target.value)}
-          >
-            {Object.values(DEPARTEMENTS).map((dep, i) => (
-              <option key={i} value={dep.code}>
-                {dep.label}
-              </option>
-            ))}
-          </select>
+
+          <IconButtonsCont
+            data={CATEGORIES_PATIENTS}
+            onRadioButtonSelected={onRadioButtonSelected}
+            hidefirst
+            selectedcode={props.newPatDep}
+          />
+
+          {false && (
+            <select
+              value={props.newPatDep || DEPARTEMENTS.SIN.code}
+              className={StyleInputText}
+              onChange={(e) => props.setNewPatDep(e.target.value)}
+            >
+              {Object.values(DEPARTEMENTS).map((dep, i) => (
+                <option key={i} value={dep.code}>
+                  {dep.label}
+                </option>
+              ))}
+            </select>
+          )}
 
           <div>Nom</div>
           <input
@@ -875,17 +882,17 @@ export default function Reception({ user }) {
     setSelectedSection("lspat");
     setLoading(false);
 
-    ParsePatientsCategories();
+    //ParsePatientsCategories();
   }
 
-  function ParsePatientsCategories(list) {
+  /*  function ParsePatientsCategories(list) {
     let cats = {};
-    setPatientsCategories([]);
+    //setPatientsCategories([]);
 
     list.forEach((v, k, m) => {
       console.log(v, k);
     });
-  }
+  } */
 
   function onCancel(e) {
     e.preventDefault();
