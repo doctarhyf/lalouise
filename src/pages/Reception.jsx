@@ -162,6 +162,8 @@ function MultiFileUploaderCont({ notifyUploadDone, count = 3 }) {
 }
 
 function PatientItem({ data, onViewPatient }) {
+  console.log(data.dep);
+
   return (
     <div className=" md:w-[280px] md:border flex gap-x-4 hover:bg-sky-200/50 hover:border-sky-500  rounded-md p-2 cursor-pointer ">
       <div className=" w-[30pt] h-[30pt] rounded-md overflow-hidden">
@@ -173,7 +175,7 @@ function PatientItem({ data, onViewPatient }) {
         <div className=" text-sm">
           {/* <span className="text-slate-500">{data.emergContact.phone}</span> */}
           <span className="bg-sky-500 text-xs text-white p-1 font-bold rounded-md">
-            {DEPARTEMENTS[data.dep].label}
+            {DEPARTEMENTS[data.dep] && DEPARTEMENTS[data.dep].label}
           </span>
           {/* <span>{`, ${CalcAge(new Date(data.dob))} ans`}</span> */}
         </div>
