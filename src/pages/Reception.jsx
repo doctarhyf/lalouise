@@ -35,6 +35,7 @@ import ok from "../assets/ok.png";
 import debt from "../assets/debt.png";
 import loading from "../assets/loading.gif";
 import { IconButton } from "@mui/material";
+import DOBInput from "./DOBInput";
 
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
 
@@ -204,6 +205,7 @@ function FormNewPat(props) {
   });
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [dobisvalid, setdobisvalid] = useState();
 
   useEffect(() => {
     setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
@@ -383,11 +385,21 @@ function FormNewPat(props) {
           />
 
           <h5>Date de Naissance</h5>
-          <input
+          {/* <input
             type="date"
             value={props.newPatDOB}
             onChange={(e) => props.setNewPatDOB(e.target.value)}
+          /> */}
+
+          <DOBInput
+            setDateIsValid={(v) => setdobisvalid(v)}
+            initDate={props.newPatDOB}
+            onNewDate={(d) => {
+              console.log(d);
+              props.setNewPatDOB(d);
+            }}
           />
+
           <div>Poids</div>
           <input
             className={StyleInputText}
@@ -752,7 +764,7 @@ function FormNewPat(props) {
         </details>
       </div>
 
-      {!props.editing && (
+      {!props.editing && dobisvalid && (
         <button
           className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `}
           onClick={props.onSaveNewPat}
