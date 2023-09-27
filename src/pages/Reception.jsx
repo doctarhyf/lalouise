@@ -876,8 +876,19 @@ export default function Reception({ user }) {
 
       newPat.autre = autre;
 
-      UpdateItem(TABLE_NAME.PATIENTS, id, newPat);
-      loadPatList();
+      UpdateItem(
+        TABLE_NAME.PATIENTS,
+        id,
+        newPat,
+        (d) => {
+          loadPatList();
+        },
+        (e) => {
+          alert("Error\n", e);
+          console.log(e);
+        }
+      );
+
       console.log(newPat);
     }
   }
@@ -911,10 +922,18 @@ export default function Reception({ user }) {
 
       console.log(newPat);
 
-      await AddNewItemToTable(newPat, TABLE_NAME.PATIENTS, (d) => {
-        loadPatList();
-        console.log(d);
-      });
+      await AddNewItemToTable(
+        newPat,
+        TABLE_NAME.PATIENTS,
+        (d) => {
+          loadPatList();
+          console.log(d);
+        },
+        (e) => {
+          alert("Error\n" + e);
+          console.log(e);
+        }
+      );
     }
   }
 
