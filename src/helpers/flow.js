@@ -40,7 +40,7 @@ export const MOIS = [
 
 export const DEPARTEMENTS = {
   MAT: { label: "Maternite", code: "MAT", sub: "MAT" },
-  SIN: { label: "Soins Intensifs", code: "SIN", sub: "SIN" },
+  SIN: { label: "Soins Curatifs", code: "SIN", sub: "SIN" },
   SOP: { label: "Salle d'OP", code: "SOP", sub: "SOP" },
 };
 
