@@ -805,7 +805,7 @@ export default function Reception({ user }) {
 
   const [newPatPhoto, setNewPatPhoto] = useState("");
 
-  const [newPatDep, setNewPatDep] = useState(DEPARTEMENTS.SIN.label);
+  const [newPatDep, setNewPatDep] = useState(DEPARTEMENTS.SIN.code);
   const [newPatNom, setNewPatNom] = useState("Franvale Mutunda");
   const [newPatPhone, setNewPatPhone] = useState("0893092849");
   const [newPatAdd, setNewPatAdd] = useState("2220 Av des aviat II");
@@ -921,15 +921,6 @@ export default function Reception({ user }) {
 
     //ParsePatientsCategories();
   }
-
-  /*  function ParsePatientsCategories(list) {
-    let cats = {};
-    //setPatientsCategories([]);
-
-    list.forEach((v, k, m) => {
-      console.log(v, k);
-    });
-  } */
 
   function onCancel(e) {
     e.preventDefault();
