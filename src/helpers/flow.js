@@ -55,7 +55,7 @@ export const CATEGORIES_MEDECINS = [
 export const CATEGORIES_PATIENTS = [
   { title: "Tous", sub: "Tous les patients", code: "ALL" },
   { title: "Maternite", sub: "", code: "MAT" },
-  { title: "Soins Intensifs", sub: "", code: "SIN" },
+  { title: "Soins Curatifs", sub: "", code: "SIN" },
   { title: "Salle d'OP", sub: "", code: "SOP" },
 ];
 
