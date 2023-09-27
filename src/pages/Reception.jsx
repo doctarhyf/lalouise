@@ -205,7 +205,7 @@ function FormNewPat(props) {
   });
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [dobisvalid, setdobisvalid] = useState();
+  const [dobisvalid, setdobisvalid] = useState(false);
 
   useEffect(() => {
     setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
