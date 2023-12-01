@@ -9,9 +9,8 @@ export default function MyCarousel() {
       <Carousel className="-mt-[120pt]" autoPlay>
         {[1, 2, 3, 4].map((p, i) => (
           <div className="lg:h-[380pt]   ">
-            <div className="">
-              <img className="   " src={`ph${p}.jpg`} />
-            </div>
+            <img className="   " src={`ph${p}.jpg`} />
+
             <p className="legend">Pharmacy {p}</p>
           </div>
         ))}
