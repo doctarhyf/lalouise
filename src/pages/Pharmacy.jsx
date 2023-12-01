@@ -20,6 +20,7 @@ import SectionMenu from "../comps/SectionMenu";
 import { Td, Tr } from "../comps/Table";
 import ProgressView from "../comps/ProgressView";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
+import Swiper from "../comps/Swiper";
 
 const SECTIONS = {
   MEDS_TABLE: { title: "Liste produits", name: "lsmeds" },
@@ -422,6 +423,18 @@ export default function Pharmacy() {
   return (
     <div className="p-8">
       <PageHeader title="Pharmacie" sub="Liste de tous les medicaments" />
+
+      {/* <div className="bg-neutral-100  max-h-[280pt] overflow-hidden mb-8 w-fit">
+        <img
+          className=" object-fit w-[100%] "
+          src={
+            "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg"
+          }
+        />
+        ;
+      </div> */}
+
+      <Swiper />
 
       <SectionMenu
         sectionsData={SECTIONS}
