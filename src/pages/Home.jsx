@@ -51,7 +51,7 @@ export default function Home({ user }) {
   return (
     <div className="p-8">
       <PageHeader
-        title="Home"
+        title="Home (Upd v1.0.0)"
         sub={`Statistics du centre, le ${new Intl.DateTimeFormat(
           "fr-FR"
         ).format(new Date())}, ${time}`}
