@@ -5,16 +5,16 @@ import { Carousel } from "react-responsive-carousel";
 
 export default function Swiper() {
   return (
-    <Carousel>
-      <div>
-        <img src="hospital.png" />
-        <p className="legend">Legend 1</p>
-      </div>
-      <div>
-        <img src="vite.svg" />
-        <p className="legend">Legend 2</p>
-      </div>
-    </Carousel>
+    <div className="w-[640pt]">
+      <Carousel>
+        {[1, 2, 3, 4].map((p, i) => (
+          <div>
+            <img src={`ph${p}.jpg`} />
+            <p className="legend">Pharmacy {p}</p>
+          </div>
+        ))}
+      </Carousel>
+    </div>
   );
 }
 
