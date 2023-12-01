@@ -20,7 +20,7 @@ import SectionMenu from "../comps/SectionMenu";
 import { Td, Tr } from "../comps/Table";
 import ProgressView from "../comps/ProgressView";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
-import Swiper from "../comps/Swiper";
+import MyCarousel from "../comps/MyCarousel";
 
 const SECTIONS = {
   MEDS_TABLE: { title: "Liste produits", name: "lsmeds" },
@@ -434,7 +434,7 @@ export default function Pharmacy() {
         ;
       </div> */}
 
-      <Swiper />
+      <MyCarousel />
 
       <SectionMenu
         sectionsData={SECTIONS}

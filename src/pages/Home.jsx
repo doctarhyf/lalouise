@@ -8,6 +8,7 @@ import ProgressView from "../comps/ProgressView";
 import { GALLERY_IMAGES_URL, USERS_LEVELS } from "../helpers/flow";
 import ImageGallery from "react-image-gallery";
 import "../App.css";
+import MyCarousel from "../comps/MyCarousel";
 
 function StatItem({ statData }) {
   return (
@@ -68,15 +69,19 @@ export default function Home({ user }) {
       </div>
       <ProgressView show={loading} />
 
-      <div className="bg-neutral-100  max-h-[280pt] overflow-hidden mb-8 w-fit">
-        <img
-          className=" object-fit w-[100%] "
-          src={
-            "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg"
-          }
-        />
-        ;
-      </div>
+      {false && (
+        <div className="bg-neutral-100  max-h-[280pt] overflow-hidden mb-8 w-fit">
+          <img
+            className=" object-fit w-[100%] "
+            src={
+              "https://cdn-prod.medicalnewstoday.com/content/images/articles/327/327331/a-radiologist-busy-looking-at-some-x-rays.jpg"
+            }
+          />
+          ;
+        </div>
+      )}
+
+      <MyCarousel />
 
       <div className="stats-cont flex flex-wrap gap-8 align-middle justify-center">
         <StatItem
