@@ -52,7 +52,7 @@ export default function Home({ user }) {
   return (
     <div className="p-8">
       <PageHeader
-        title="Home (Upd v1.0.0)"
+        title="Home (Upd v1.0.0) - cool "
         sub={`Statistics du centre, le ${new Intl.DateTimeFormat(
           "fr-FR"
         ).format(new Date())}, ${time}`}
