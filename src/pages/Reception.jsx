@@ -15,7 +15,7 @@ const SECTIONS = {
   VIEW_PAT: "viewpat",
 };
 
-export default function Reception() {
+export default function Reception({ user }) {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [listPatients, setListPatients] = useState([]);
@@ -187,6 +187,7 @@ export default function Reception() {
         </div>
       ) : (
         <FormPatient
+          user={user}
           patient={selectedPatient}
           updating={SECTIONS.VIEW_PAT === selectedSection}
         />
