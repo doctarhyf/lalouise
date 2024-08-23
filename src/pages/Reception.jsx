@@ -60,9 +60,17 @@ export default function Reception({ user }) {
   }
 
   function onRadioButtonSelected(dt) {
-    console.log(dt);
-    const { code } = dt;
-    props.setNewPatDep(code);
+    setSelectedPatientsCategorieData(dt);
+
+    const { title, sub, code } = dt;
+
+    if (code === "ALL") {
+      setListPatientsFiltered([...listPatients]);
+      return;
+    }
+
+    const filtered = listPatients.filter((p, i) => p.dep === code);
+    setListPatientsFiltered(filtered);
   }
 
   function onSearchPat(e) {
