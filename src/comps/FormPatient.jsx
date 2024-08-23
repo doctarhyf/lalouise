@@ -182,8 +182,9 @@ export default function FormPatient({
               : "Information du Patient"}
           </summary>
 
-          <div>Selectioner Departement</div>
-          {DEPARTEMENTS[patientData.dep].label}
+          <div className=" text-sky-500 font-bold mt-2  ">
+            Veuillez Selectioner Departement
+          </div>
 
           <IconButtonsCont
             data={CATEGORIES_PATIENTS}
@@ -191,6 +192,11 @@ export default function FormPatient({
             hidefirst
             selectedcode={patientData.dep}
           />
+
+          <div>Departement</div>
+          <div className={` ${StyleInputText} cursor-not-allowed   `}>
+            {DEPARTEMENTS[patientData.dep].label}
+          </div>
 
           <div>Nom</div>
           <input

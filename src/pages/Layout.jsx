@@ -25,12 +25,6 @@ function LinkItem({ link, show }) {
 export default function Layout({ user }) {
   const [showMenu, setShowMenu] = useState(false);
 
-  /* useEffect(() => {
-    window.addEventListener("mousemove", (e) => {
-      UpdateSessionExpirationTime();
-    });
-  }, []); */
-
   const links = [
     { title: "Home", path: "/lalouise/", level: 2 },
     { title: "Reception", path: "/lalouise/reception", level: 2 },
@@ -52,7 +46,7 @@ export default function Layout({ user }) {
         <img
           onClick={(e) => setShowMenu(!showMenu)}
           src={hosp}
-          className="min-w-[28pt]  h-[28pt] inline-block cursor-pointer"
+          className="max-w-[28pt]  h-[28pt] inline-block cursor-pointer"
         />
 
         {!showMenu && (
@@ -64,7 +58,7 @@ export default function Layout({ user }) {
         {showMenu && (
           <ul onClick={(e) => setShowMenu(false)}>
             <li className="text-white font-extrabold align-center text-3xl mb-4">
-              <span>LaLouise</span>
+              <span>LaLouise </span>
             </li>
 
             {links.map((link, idx) => (
