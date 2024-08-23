@@ -1,40 +1,34 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CalcAge } from "../Helper";
+import { Link } from "react-router-dom";
 import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
-import logo from "../assets/patient.png";
+import { default as logo, default as patient } from "../assets/patient.png";
 import EmptyList from "../comps/EmptyList";
+import IconButtonsCont from "../comps/IconButtonsCont";
 import PageHeader from "../comps/PageHeader";
 import ProgressView from "../comps/ProgressView";
-import patient from "../assets/patient.png";
-import IconButtonsCont from "../comps/IconButtonsCont";
 import {
+  AddNewItemToTable,
+  DeleteItem,
   GetAllItemsFromTable,
+  GetAllItemsFromTableByColEqVal,
+  GetBucketFilePublicUrl,
   TABLE_NAME,
   UpdateItem,
-  DeleteItem,
-  AddNewItemToTable,
-  GetAllItemsFromTableByColEqVal,
   UploadFile,
-  BUCKET_NAMES,
-  GetBucketFilePublicUrl,
 } from "../db/sb";
 import {
-  DEPARTEMENTS,
-  CATEGORIES_MEDECINS,
   CATEGORIES_PATIENTS,
+  DEPARTEMENTS,
   PAYMENTS_TYPES,
   cltd,
 } from "../helpers/flow";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
-import { Link } from "react-router-dom";
 
 import cash from "../assets/cash.png";
 import check from "../assets/check.png";
 import close from "../assets/close.png";
-import ok from "../assets/ok.png";
 import debt from "../assets/debt.png";
-import loading from "../assets/loading.gif";
-import { IconButton } from "@mui/material";
+import ok from "../assets/ok.png";
 import DOBInput from "./DOBInput";
 
 const clBtn = `cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `;
