@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { cltd, PAYMENTS_TYPES } from "../helpers/flow";
-import { StyleFormBlockTitle } from "../Styles";
+import { StyleFormBlockTitle, StyleInputText } from "../Styles";
 import { GetAllItemsFromTableByColEqVal, TABLE_NAME } from "../db/sb";
 import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 import { Link } from "react-router-dom";
@@ -18,6 +18,8 @@ export default function PaymenDetails({
   user,
   onDeletePayment,
   onConfirmPayment,
+  setShowFormNewMed,
+  onSaveNewPayement,
 }) {
   const [newPayment, setNewPayment] = useState({
     created_at: new Date().toISOString(),
@@ -135,8 +137,10 @@ export default function PaymenDetails({
             {newPayment.amount >= 100 && (
               <button
                 type="button"
-                onClick={onSaveNewPayement}
-                className={clBtn}
+                onClick={(e) => onSaveNewPayement(newPayment)}
+                className={
+                  "cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 "
+                }
               >
                 ENREGISTRER PAYMENT
               </button>

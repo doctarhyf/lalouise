@@ -9,6 +9,7 @@ import DOBInput from "./DOBInput";
 import IconButtonsCont from "./IconButtonsCont";
 import ProgressView from "./ProgressView";
 import PaymenDetails from "./PaymentDetails";
+import { AddNewItemToTable, TABLE_NAME } from "../db/sb";
 
 const DEFAULT_PATIENT = {
   //"id": 816,
@@ -44,10 +45,10 @@ export default function FormPatient({
   onCancel,
   onSaveNewPat,
 }) {
-  const [dobisvalid, setdobisvalid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [patientData, setPatientData] = useState(patient || DEFAULT_PATIENT);
   const [showFormNewMed, setShowFormNewMed] = useState(false);
+  const [rdk, setrdk] = useState(Math.random());
 
   function onRadioButtonSelected(dt) {
     console.log(dt);
@@ -109,6 +110,22 @@ export default function FormPatient({
         console.log(e);
       }
     );
+  }
+
+  async function onSaveNewPayement(newPayment) {
+    newPayment.payed_at = newPayment.cash ? newPayment.created_at : null;
+
+    AddNewItemToTable(newPayment, TABLE_NAME.PAYMENTS, (data) => {
+      // loadPayments();
+      alert("Payment added successfuly!");
+      setShowFormNewMed(false);
+      console.log(data);
+      GenRDK();
+    });
+  }
+
+  function GenRDK() {
+    setrdk(Math.random());
   }
 
   return (
@@ -198,6 +215,9 @@ export default function FormPatient({
 
         {updating && (
           <PaymenDetails
+            key={rdk}
+            onSaveNewPayement={onSaveNewPayement}
+            setShowFormNewMed={setShowFormNewMed}
             onDeletePayment={onDeletePayment}
             onConfirmPayment={onConfirmPayment}
             user={user}
