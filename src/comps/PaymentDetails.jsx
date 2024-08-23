@@ -12,7 +12,13 @@ import debt from "../assets/debt.png";
 import ok from "../assets/ok.png";
 import DOBInput from "./DOBInput";
 
-export default function PaymenDetails({ showFormNewMed, updatingPat, user }) {
+export default function PaymenDetails({
+  showFormNewMed,
+  updatingPat,
+  user,
+  onDeletePayment,
+  onConfirmPayment,
+}) {
   const [newPayment, setNewPayment] = useState({
     created_at: new Date().toISOString(),
     type: PAYMENTS_TYPES[0].code,
@@ -213,7 +219,7 @@ export default function PaymenDetails({ showFormNewMed, updatingPat, user }) {
                     ) : (
                       <>
                         <button
-                          className={clBtn}
+                          className={`cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `}
                           onClick={(e) => onConfirmPayment(p)}
                         >
                           CONFIRMER
@@ -272,7 +278,7 @@ export default function PaymenDetails({ showFormNewMed, updatingPat, user }) {
                         <>
                           NON PAYE,{" "}
                           <button
-                            className={clBtn}
+                            className={`cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `}
                             onClick={(e) => onConfirmPayment(p)}
                           >
                             CONFIRMER

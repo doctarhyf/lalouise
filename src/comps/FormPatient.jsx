@@ -34,7 +34,15 @@ const DEFAULT_PATIENT = {
   exit: null,
 };
 
-export default function FormPatient({ patient, updating, user }) {
+export default function FormPatient({
+  patient,
+  onUpdatePat,
+  onDelPat,
+  updating,
+  user,
+  onSortieHopital,
+  onCancel,
+}) {
   const [dobisvalid, setdobisvalid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updatingPat, setUpdatingPat] = useState(patient || DEFAULT_PATIENT);
@@ -63,6 +71,43 @@ export default function FormPatient({ patient, updating, user }) {
 
     console.log("updPat => \n", updPat);
     setUpdatingPat(updPat);
+  }
+
+  async function onDeletePayment(p) {
+    if (!confirm("Etes-vous sur de vouloir supprimer ce payement?")) {
+      return;
+    }
+
+    DeleteItem(TABLE_NAME.PAYMENTS, p.id, (r) => {
+      alert("Item deleted!Res : ", r);
+      loadPayments();
+    });
+  }
+
+  async function onConfirmPayment(p) {
+    if (!confirm("Etes vous sure de vouloir confirmer ce payement?")) {
+      return;
+    }
+
+    let upd = { ...p, payed: true, payed_at: new Date().toISOString() };
+
+    // console.dir(upd);
+
+    //return;
+    UpdateItem(
+      TABLE_NAME.PAYMENTS,
+      p.id,
+      upd,
+      (r) => {
+        alert("Credit paye!");
+        loadPayments();
+        console.log(r);
+      },
+      (e) => {
+        alert("Error confirmation\n" + e);
+        console.log(e);
+      }
+    );
   }
 
   return (
@@ -152,6 +197,8 @@ export default function FormPatient({ patient, updating, user }) {
 
         {updating && (
           <PaymenDetails
+            onDeletePayment={onDeletePayment}
+            onConfirmPayment={onConfirmPayment}
             user={user}
             showFormNewMed={showFormNewMed}
             updatingPat={updatingPat}
@@ -248,22 +295,22 @@ export default function FormPatient({ patient, updating, user }) {
         <>
           <button
             className={StyleButton("green-500")}
-            onClick={(e) => updatingPat.onUpdatePat(updatingPat.updateID)}
+            onClick={(e) => onUpdatePat(updatingPat.id)}
           >
-            UPDATE
+            METTRE A JOURs
           </button>
 
           <button
             className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-red-500 hover:text-white text-red-500  border border-red-500 `}
-            onClick={(e) => updatingPat.onDelPat(updatingPat.updateID)}
+            onClick={(e) => onDelPat(updatingPat.updateID)}
           >
-            DELETE RECORD
+            SUPPRIMER PATIENT
           </button>
         </>
       )}
       <button
         className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-gray-500 hover:text-white text-gray-500  border border-gray-500 `}
-        onClick={updatingPat.onCancel}
+        onClick={onCancel}
       >
         ANNULER
       </button>

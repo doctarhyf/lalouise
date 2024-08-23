@@ -5,7 +5,12 @@ import { CATEGORIES_PATIENTS, DEPARTEMENTS } from "../helpers/flow";
 import IconButtonsCont from "../comps/IconButtonsCont";
 import EmptyList from "../comps/EmptyList";
 import { StyleButton, StyleInputText } from "../Styles";
-import { GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
+import {
+  DeleteItem,
+  GetAllItemsFromTable,
+  TABLE_NAME,
+  UpdateItem,
+} from "../db/sb";
 import PatientItem from "../comps/PatientItem";
 import FormPatient from "../comps/FormPatient";
 
@@ -80,6 +85,70 @@ export default function Reception({ user }) {
     console.log(pat);
     setSelectedPatient(pat);
     setSelectedSection("viewpat");
+  }
+
+  function onCancel(e) {
+    e.preventDefault();
+    setSelectedSection("lspat");
+  }
+
+  function onUpdatePat(pat) {
+    // console.log("updating id : " + id);
+
+    const yes = confirm("Are you sure you want to update?");
+
+    if (yes) {
+      UpdateItem(
+        TABLE_NAME.PATIENTS,
+        pat.id,
+        pat,
+        (d) => {
+          loadPatList();
+        },
+        (e) => {
+          alert("Error\n", e);
+          console.log(e);
+        }
+      );
+
+      console.log(pat);
+    }
+  }
+
+  function onDelPat(id) {
+    if (confirm("Are you sure you want to delete?")) {
+      DeleteItem(TABLE_NAME.PATIENTS, id);
+      loadPatList();
+      setSelectedSection(SECTIONS.LIST_PATIENTS);
+    }
+  }
+
+  function onSortieHopital(updateID) {
+    setLoading(true);
+
+    if (!window.confirm("Le patient est sorti?")) {
+    } else {
+      const updateData = {
+        exit_hospital_at: new Date().toISOString(),
+        exit: new Date().getTime(),
+      };
+
+      UpdateItem(
+        TABLE_NAME.PATIENTS,
+        updateID,
+        updateData,
+        (res) => {
+          setLoading(false);
+          alert("Update Success!");
+          console.log(res);
+        },
+        (e) => {
+          setLoading(false);
+          alert("Error\n" + e);
+          console.log(e);
+        }
+      );
+    }
   }
 
   return (
@@ -187,6 +256,10 @@ export default function Reception({ user }) {
         </div>
       ) : (
         <FormPatient
+          onSortieHopital={onSortieHopital}
+          onDelPat={onDelPat}
+          onUpdatePat={onUpdatePat}
+          onCancel={onCancel}
           user={user}
           patient={selectedPatient}
           updating={SECTIONS.VIEW_PAT === selectedSection}
