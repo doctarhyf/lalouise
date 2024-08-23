@@ -49,6 +49,7 @@ export default function FormPatient({
   const [patientData, setPatientData] = useState(patient || DEFAULT_PATIENT);
   const [showFormNewMed, setShowFormNewMed] = useState(false);
   const [rdk, setrdk] = useState(Math.random());
+  const [exitDateTime, setExitDateTime] = useState({});
 
   function onRadioButtonSelected(dt) {
     console.log(dt);
@@ -131,6 +132,28 @@ export default function FormPatient({
   return (
     <>
       <div className=" flex-col md:flex-row">
+        {patientData.exit && (
+          <div role="alert" className="alert my-1 alert-error">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>
+              A quitte lhopital en date du{" "}
+              <b>{patientData.exit.replace("|", " a ")}</b>
+            </span>
+          </div>
+        )}
+
         {!updating && (
           <div role="alert" className="alert my-1 alert-warning">
             <svg
@@ -350,12 +373,70 @@ export default function FormPatient({
           >
             SUPPRIMER PATIENT
           </button>
-          <button
+          {/* <button
             className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-gray-500 hover:text-white text-gray-500  border border-gray-500 `}
             onClick={(e) => onSortieHopital()}
           >
             SORTIE HOPITAL
+          </button> */}
+          <button
+            className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-gray-500 hover:text-white text-gray-500  border border-gray-500 `}
+            onClick={() => document.getElementById("my_modal_1").showModal()}
+          >
+            SORTIE HOPITAL
           </button>
+          <dialog id="my_modal_1" className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">
+                SORTIE HOPITAL de " {` ${patientData.nom} `} "
+              </h3>
+              <div className="py-4">
+                <div>Le patient est sortie</div>
+                <div>Heure</div>
+                <div>
+                  <input
+                    type="time"
+                    value={exitDateTime.time || new Date()}
+                    onChange={(e) =>
+                      setExitDateTime((prev) => ({
+                        ...prev,
+                        time: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div>Date</div>
+                <div>
+                  <input
+                    type="date"
+                    value={exitDateTime.date || new Date()}
+                    onChange={(e) =>
+                      setExitDateTime((prev) => ({
+                        ...prev,
+                        date: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+              <div className="modal-action">
+                <form method="dialog">
+                  {/* if there is a button in form, it will close the modal */}
+                  <button className="btn">CANCEL</button>
+                  <button
+                    className="btn"
+                    onClick={(e) => {
+                      // e.preventDefault();
+                      onSortieHopital(patientData, exitDateTime);
+                      // document.getElementById("my_modal_1");
+                    }}
+                  >
+                    SAVE
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
         </>
       )}
       <button

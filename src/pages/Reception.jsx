@@ -140,14 +140,27 @@ export default function Reception({ user }) {
     }
   }
 
-  function onSortieHopital(updateID) {
+  function onSortieHopital(patientData, exitDateTime) {
     setLoading(true);
 
-    if (!window.confirm("Le patient est sorti?")) {
+    console.log(exitDateTime);
+    const { id: updateID } = patientData;
+    const { date, time } = exitDateTime;
+
+    if (date === undefined || time === undefined) {
+      alert(`Veuillez bien selectioner la date et l'heure de sortie`);
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Confirmez-vous que le patient " ${patientData.nom} " est sorti le " ${date} a ${time} "?`
+      )
+    ) {
     } else {
       const updateData = {
         exit_hospital_at: new Date().toISOString(),
-        exit: new Date().getTime(),
+        exit: `${date}|${time}`,
       };
 
       UpdateItem(

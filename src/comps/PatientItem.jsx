@@ -15,7 +15,11 @@ export default function PatientItem({ data, onViewPatient }) {
           <span className="bg-sky-500 text-xs text-white p-1 font-bold rounded-md">
             {DEPARTEMENTS[data.dep] && DEPARTEMENTS[data.dep].label}
           </span>
-          {/* <span>{`, ${CalcAge(new Date(data.dob))} ans`}</span> */}
+          {data.exit && (
+            <span className="bg-red-500 inline-block mx-1 text-xs text-white p-1 font-bold rounded-md">
+              SORTI
+            </span>
+          )}
         </div>
       </div>
 
