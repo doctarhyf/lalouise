@@ -297,7 +297,7 @@ export default function FormPatient({
             className={StyleButton("green-500")}
             onClick={(e) => onUpdatePat(updatingPat.id)}
           >
-            METTRE A JOURs
+            ENREGISTER MIS A JOUR
           </button>
 
           <button
@@ -305,6 +305,12 @@ export default function FormPatient({
             onClick={(e) => onDelPat(updatingPat.updateID)}
           >
             SUPPRIMER PATIENT
+          </button>
+          <button
+            className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-gray-500 hover:text-white text-gray-500  border border-gray-500 `}
+            onClick={(e) => onSortieHopital()}
+          >
+            SORTIE HOPITAL
           </button>
         </>
       )}
@@ -314,12 +320,7 @@ export default function FormPatient({
       >
         ANNULER
       </button>
-      <button
-        className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-gray-500 hover:text-white text-gray-500  border border-gray-500 `}
-        onClick={(e) => onSortieHopital()}
-      >
-        SORTIE HOPITAL
-      </button>
+
       <ProgressView show={loading} />
     </>
   );
