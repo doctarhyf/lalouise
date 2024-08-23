@@ -188,7 +188,7 @@ export default function Reception() {
       ) : (
         <FormPatient
           patient={selectedPatient}
-          updating={SECTIONS.VIEW_PAT === selectedPatient}
+          updating={SECTIONS.VIEW_PAT === selectedSection}
         />
       )}
     </div>

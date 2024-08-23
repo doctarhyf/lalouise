@@ -2,8 +2,6 @@ import logo from "../assets/patient.png";
 import { DEPARTEMENTS } from "../helpers/flow";
 
 export default function PatientItem({ data, onViewPatient }) {
-  console.log(data.dep);
-
   return (
     <div className=" md:w-[280px] md:border flex gap-x-4 hover:bg-sky-200/50 hover:border-sky-500  rounded-md p-2 cursor-pointer ">
       <div className=" w-[30pt] h-[30pt] rounded-md overflow-hidden">
