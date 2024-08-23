@@ -1,12 +1,96 @@
-import { CATEGORIES_PATIENTS } from "../helpers/flow";
-import { StyleFormBlockTitle, StyleInputText } from "../Styles";
-import DOBInput from "./DOBInput";
-import IconButtonsCont from "./IconButtonsCont";
-import ProgressView from "./ProgressView";
+function FormNewPat(props) {
+  const [showFormNewMed, setShowFormNewMed] = useState(false);
+  let refPaymentAmount = useRef();
+  const [newPayment, setNewPayment] = useState({
+    created_at: new Date().toISOString(),
+    type: PAYMENTS_TYPES[0].code,
+    foreign_table: TABLE_NAME.PATIENTS,
+    foreign_key: "",
+    amount: "",
+    cash: false,
+    payed: false,
+  });
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [dobisvalid, setdobisvalid] = useState(false);
 
-export default function FormPatient({ patient, updating }) {
-  const props = {};
-  console.log(patient);
+  useEffect(() => {
+    setNewPayment((old) => ({ ...old, foreign_key: props.updateID }));
+    loadPayments();
+    console.log("form props : ", props);
+  }, []);
+
+  async function loadPayments() {
+    const p = await GetAllItemsFromTableByColEqVal(
+      TABLE_NAME.PAYMENTS,
+      "foreign_key",
+      props.updateID
+    );
+
+    console.log(`Payments of id : ${props.updateID} \n`, p);
+
+    setPayments(p);
+  }
+
+  async function onSaveNewPayement(e) {
+    newPayment.payed_at = newPayment.cash ? newPayment.created_at : null;
+
+    AddNewItemToTable(newPayment, TABLE_NAME.PAYMENTS, (data) => {
+      loadPayments();
+      alert("Payment added successfuly!");
+      setShowFormNewMed(false);
+      console.log(data);
+    });
+    // setShowFormNewMed(false);
+  }
+
+  function notifyUploadDone(storeInfo, id) {
+    console.log(storeInfo, id);
+
+    let { publicUrl } = GetBucketFilePublicUrl(storeInfo.path);
+
+    props.setNewPatPhoto(publicUrl);
+
+    console.log("file uploaded => \n", publicUrl);
+    props.loadPatList();
+  }
+
+  async function onDeletePayment(p) {
+    if (!confirm("Etes-vous sur de vouloir supprimer ce payement?")) {
+      return;
+    }
+
+    DeleteItem(TABLE_NAME.PAYMENTS, p.id, (r) => {
+      alert("Item deleted!Res : ", r);
+      loadPayments();
+    });
+  }
+
+  async function onConfirmPayment(p) {
+    if (!confirm("Etes vous sure de vouloir confirmer ce payement?")) {
+      return;
+    }
+
+    let upd = { ...p, payed: true, payed_at: new Date().toISOString() };
+
+    // console.dir(upd);
+
+    //return;
+    UpdateItem(
+      TABLE_NAME.PAYMENTS,
+      p.id,
+      upd,
+      (r) => {
+        alert("Credit paye!");
+        loadPayments();
+        console.log(r);
+      },
+      (e) => {
+        alert("Error confirmation\n" + e);
+        console.log(e);
+      }
+    );
+  }
 
   function onRadioButtonSelected(dt) {
     console.log(dt);
@@ -14,14 +98,52 @@ export default function FormPatient({ patient, updating }) {
     props.setNewPatDep(code);
   }
 
+  function onSortieHopital() {
+    setLoading(true);
+    const { updateID } = props;
+
+    const upd = {
+      exit_hospital_at: new Date().toISOString(),
+    };
+
+    UpdateItem(
+      TABLE_NAME.PATIENTS,
+      updateID,
+      upd,
+      (res) => {
+        setLoading(false);
+        alert("Update Success!");
+        console.log(res);
+      },
+      (e) => {
+        setLoading(false);
+        alert("Error\n" + e);
+        console.log(e);
+      }
+    );
+  }
+
   return (
     <>
-      <div>Form Patient {updating && "Updating"}</div>;
       <div className=" flex-col md:flex-row">
         <details className="info-blk w-full ">
           <summary className={StyleFormBlockTitle()}>
             Information du Patient
           </summary>
+
+          {false && (
+            <div>
+              <div>Photo</div>
+              <div>
+                <img src={props.newPatPhoto || patient} width={200} />
+              </div>
+
+              <MultiFileUploaderCont
+                count={1}
+                notifyUploadDone={notifyUploadDone}
+              />
+            </div>
+          )}
 
           <div>Departement (MAT, SIN, SOP)</div>
           {props.newPatDep}
@@ -32,6 +154,20 @@ export default function FormPatient({ patient, updating }) {
             hidefirst
             selectedcode={props.newPatDep}
           />
+
+          {false && (
+            <select
+              value={props.newPatDep || DEPARTEMENTS.SIN.code}
+              className={StyleInputText}
+              onChange={(e) => props.setNewPatDep(e.target.value)}
+            >
+              {Object.values(DEPARTEMENTS).map((dep, i) => (
+                <option key={i} value={dep.code}>
+                  {dep.label}
+                </option>
+              ))}
+            </select>
+          )}
 
           <div>Nom</div>
           <input
@@ -434,6 +570,7 @@ export default function FormPatient({ patient, updating }) {
           ></textarea>
         </details>
       </div>
+
       {!props.editing && dobisvalid && (
         <button
           className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `}
@@ -464,12 +601,14 @@ export default function FormPatient({ patient, updating }) {
       >
         ANNULER
       </button>
+
       <button
         className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-gray-500 hover:text-white text-gray-500  border border-gray-500 `}
         onClick={(e) => onSortieHopital()}
       >
         SORTIE HOPITAL
       </button>
+
       <ProgressView show={loading} />
     </>
   );
