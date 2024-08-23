@@ -45,7 +45,7 @@ export default function FormPatient({
   onCancel,
   onSaveNewPat,
 }) {
-  const [loading, setLoading] = useState(false);
+  /* const [loading, setLoading] = useState(false); */
   const [patientData, setPatientData] = useState(patient || DEFAULT_PATIENT);
   const [showFormNewMed, setShowFormNewMed] = useState(false);
   const [rdk, setrdk] = useState(Math.random());
@@ -131,12 +131,35 @@ export default function FormPatient({
   return (
     <>
       <div className=" flex-col md:flex-row">
+        {!updating && (
+          <div role="alert" className="alert my-1 alert-warning">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>
+              Veuillez entrer toutes les identites du nouveau patient SVP!
+            </span>
+          </div>
+        )}
+
         <details className="info-blk w-full ">
           <summary className={StyleFormBlockTitle()}>
-            Information du Patient
+            {!updating
+              ? "Identites du Nouveau Patient"
+              : "Information du Patient"}
           </summary>
 
-          <div>Departement (MAT, SIN, SOP)</div>
+          <div>Selectioner Departement</div>
           {DEPARTEMENTS[patientData.dep].label}
 
           <IconButtonsCont
@@ -342,7 +365,7 @@ export default function FormPatient({
         ANNULER
       </button>
 
-      <ProgressView show={loading} />
+      {/*  <ProgressView show={loading} /> */}
     </>
   );
 }

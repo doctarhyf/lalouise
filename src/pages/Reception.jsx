@@ -57,14 +57,11 @@ export default function Reception({ user }) {
   function onChangeSection(e) {
     const secName = e.target.name;
     setSelectedSection(secName);
-    
-    if(secName === 'newpat'){
-      
-      setSelectedPatient(undefined)
-      
-      }
-    
-    
+
+    if (secName === "newpat") {
+      setSelectedPatient(undefined);
+    }
+
     console.log(secName);
   }
 
@@ -115,16 +112,19 @@ export default function Reception({ user }) {
     const yes = confirm("Are you sure you want to update?");
 
     if (yes) {
+      setLoading(true);
       UpdateItem(
         TABLE_NAME.PATIENTS,
         pat.id,
         pat,
         (d) => {
           loadPatList();
+          setLoading(false);
         },
         (e) => {
           alert("Error\n", e);
           console.log(e);
+          setLoading(false);
         }
       );
 
@@ -197,6 +197,7 @@ export default function Reception({ user }) {
   return (
     <div className="p-8">
       <PageHeader
+        loading={loading}
         title="Bienvenue chez LaLouise"
         sub="Enregistrement nouveux patients et liste de tous les patients"
       />
