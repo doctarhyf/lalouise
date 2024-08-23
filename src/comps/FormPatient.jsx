@@ -358,7 +358,7 @@ export default function FormPatient({
           ENREGISTRER
         </button>
       )}
-      {updating && (
+      {updating && !patientData.exit && (
         <>
           <button
             className={StyleButton("green-500")}
