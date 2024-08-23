@@ -42,10 +42,11 @@ export default function FormPatient({
   user,
   onSortieHopital,
   onCancel,
+  onSaveNewPat,
 }) {
   const [dobisvalid, setdobisvalid] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [updatingPat, setUpdatingPat] = useState(patient || DEFAULT_PATIENT);
+  const [patientData, setPatientData] = useState(patient || DEFAULT_PATIENT);
   const [showFormNewMed, setShowFormNewMed] = useState(false);
 
   function onRadioButtonSelected(dt) {
@@ -66,11 +67,11 @@ export default function FormPatient({
       data = parseInt(data);
     }
 
-    const updPat = { ...updatingPat };
+    const updPat = { ...patientData };
     updPat[dataKey] = data;
 
     console.log("updPat => \n", updPat);
-    setUpdatingPat(updPat);
+    setPatientData(updPat);
   }
 
   async function onDeletePayment(p) {
@@ -119,20 +120,20 @@ export default function FormPatient({
           </summary>
 
           <div>Departement (MAT, SIN, SOP)</div>
-          {DEPARTEMENTS[updatingPat.dep].label}
+          {DEPARTEMENTS[patientData.dep].label}
 
           <IconButtonsCont
             data={CATEGORIES_PATIENTS}
             onRadioButtonSelected={onRadioButtonSelected}
             hidefirst
-            selectedcode={updatingPat.dep}
+            selectedcode={patientData.dep}
           />
 
           <div>Nom</div>
           <input
             className={StyleInputText}
             name="nom"
-            value={updatingPat.nom}
+            value={patientData.nom}
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
             type="text"
           />
@@ -140,7 +141,7 @@ export default function FormPatient({
           <input
             className={StyleInputText}
             name="phone"
-            value={updatingPat.phone}
+            value={patientData.phone}
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
             type="tel"
           />
@@ -148,7 +149,7 @@ export default function FormPatient({
           <input
             className={StyleInputText}
             name="add"
-            value={updatingPat.add}
+            value={patientData.add}
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
             type="text"
           />
@@ -156,12 +157,12 @@ export default function FormPatient({
           <h5>Date de Naissance</h5>
           <input
             type="date"
-            value={updatingPat.dob}
+            value={patientData.dob}
             name="dob"
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
           />
-          {updatingPat.dob && (
-            <div className=" font-bold   ">{updatingPat.dob}</div>
+          {patientData.dob && (
+            <div className=" font-bold   ">{patientData.dob}</div>
           )}
 
           {/* <DOBInput
@@ -176,7 +177,7 @@ export default function FormPatient({
           <div>Poids</div>
           <input
             className={StyleInputText}
-            value={updatingPat.poids}
+            value={patientData.poids}
             onChange={(e) =>
               onUpdatePatientData(e.target.name, e.target.value, "int")
             }
@@ -187,7 +188,7 @@ export default function FormPatient({
           <input
             className={StyleInputText}
             name="taille"
-            value={updatingPat.taille}
+            value={patientData.taille}
             onChange={(e) =>
               onUpdatePatientData(e.target.name, e.target.value, "float")
             }
@@ -201,7 +202,7 @@ export default function FormPatient({
             onConfirmPayment={onConfirmPayment}
             user={user}
             showFormNewMed={showFormNewMed}
-            updatingPat={updatingPat}
+            updatingPat={patientData}
           />
         )}
 
@@ -211,7 +212,7 @@ export default function FormPatient({
           <input
             className={StyleInputText}
             name="emergContact.nom"
-            value={updatingPat.emergContact.nom}
+            value={patientData.emergContact.nom}
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
             type="text"
           />
@@ -219,7 +220,7 @@ export default function FormPatient({
           <input
             className={StyleInputText}
             name="emergContact.phone"
-            value={updatingPat.emergContact.phone}
+            value={patientData.emergContact.phone}
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
             type="tel"
           />
@@ -227,7 +228,7 @@ export default function FormPatient({
           <input
             className={StyleInputText}
             name="emergContact.add"
-            value={updatingPat.emergContact.add}
+            value={patientData.emergContact.add}
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
             type="text"
           />
@@ -241,8 +242,8 @@ export default function FormPatient({
             <input
               type="checkbox"
               name="vaccVaricelle"
-              value={updatingPat.vaccVaricelle}
-              checked={updatingPat.vaccVaricelle}
+              value={patientData.vaccVaricelle}
+              checked={patientData.vaccVaricelle}
               onChange={(e) =>
                 onUpdatePatientData(e.target.name, e.target.value)
               }
@@ -253,8 +254,8 @@ export default function FormPatient({
             <input
               type="checkbox"
               name="vaccMeasles"
-              value={updatingPat.vaccMeasles}
-              checked={updatingPat.vaccMeasles}
+              value={patientData.vaccMeasles}
+              checked={patientData.vaccMeasles}
               onChange={(e) =>
                 onUpdatePatientData(e.target.name, e.target.value)
               }
@@ -264,9 +265,9 @@ export default function FormPatient({
           <div>
             <input
               type="checkbox"
-              value={updatingPat.hepC}
+              value={patientData.hepC}
               name="hepC"
-              checked={updatingPat.hepC}
+              checked={patientData.hepC}
               onChange={(e) =>
                 onUpdatePatientData(e.target.name, e.target.value)
               }
@@ -278,15 +279,15 @@ export default function FormPatient({
           <textarea
             className={StyleInputText}
             name="autre"
-            value={updatingPat.autre}
+            value={patientData.autre}
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
           ></textarea>
         </details>
       </div>
-      {!updating && dobisvalid && (
+      {!updating && (
         <button
           className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 `}
-          onClick={updatingPat.onSaveNewPat}
+          onClick={(e) => onSaveNewPat(patientData)}
         >
           ENREGISTRER
         </button>
@@ -295,14 +296,14 @@ export default function FormPatient({
         <>
           <button
             className={StyleButton("green-500")}
-            onClick={(e) => onUpdatePat(updatingPat.id)}
+            onClick={(e) => onUpdatePat(patientData)}
           >
             ENREGISTER MIS A JOUR
           </button>
 
           <button
             className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-red-500 hover:text-white text-red-500  border border-red-500 `}
-            onClick={(e) => onDelPat(updatingPat.updateID)}
+            onClick={(e) => onDelPat(patientData.updateID)}
           >
             SUPPRIMER PATIENT
           </button>

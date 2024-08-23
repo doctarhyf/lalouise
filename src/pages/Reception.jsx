@@ -6,6 +6,7 @@ import IconButtonsCont from "../comps/IconButtonsCont";
 import EmptyList from "../comps/EmptyList";
 import { StyleButton, StyleInputText } from "../Styles";
 import {
+  AddNewItemToTable,
   DeleteItem,
   GetAllItemsFromTable,
   TABLE_NAME,
@@ -159,6 +160,32 @@ export default function Reception({ user }) {
     }
   }
 
+  async function onSaveNewPat(newpat) {
+    // e.preventDefault();
+
+    if (newpat.nom === "" || newpat.phone === "") {
+      alert("Please type the patient name and phone number!");
+      return;
+    }
+
+    const yes = confirm("Are you sure with the details provided?");
+
+    if (yes) {
+      await AddNewItemToTable(
+        newpat,
+        TABLE_NAME.PATIENTS,
+        (d) => {
+          loadPatList();
+          console.log(d);
+        },
+        (e) => {
+          alert("Error\n" + e);
+          console.log(e);
+        }
+      );
+    }
+  }
+
   return (
     <div className="p-8">
       <PageHeader
@@ -264,6 +291,7 @@ export default function Reception({ user }) {
         </div>
       ) : (
         <FormPatient
+          onSaveNewPat={onSaveNewPat}
           onSortieHopital={onSortieHopital}
           onDelPat={onDelPat}
           onUpdatePat={onUpdatePat}
