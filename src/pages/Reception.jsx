@@ -7,16 +7,26 @@ import EmptyList from "../comps/EmptyList";
 import { StyleButton, StyleInputText } from "../Styles";
 import { GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
 import PatientItem from "../comps/PatientItem";
+import FormPatient from "../comps/FormPatient";
+
+const SECTIONS = {
+  LIST_PATIENTS: "lspat",
+  NEW_PAT: "newpat",
+  VIEW_PAT: "viewpat",
+};
 
 export default function Reception() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [listPatients, setListPatients] = useState([]);
   const [listPatientsFiltered, setListPatientsFiltered] = useState([]);
-  const [selectedSection, setSelectedSection] = useState("lspat");
+  const [selectedSection, setSelectedSection] = useState(
+    SECTIONS.LIST_PATIENTS
+  );
   const [patsCount, setPatsCount] = useState(0);
   const [selectedPatientsCategorieData, setSelectedPatientsCategorieData] =
     useState(CATEGORIES_PATIENTS[0]);
+  const [selectedPatient, setSelectedPatient] = useState(undefined);
 
   useEffect(() => {
     loadPatList();
@@ -66,6 +76,12 @@ export default function Reception() {
     setListPatientsFiltered(filtered);
   }
 
+  function onViewPatient(pat) {
+    console.log(pat);
+    setSelectedPatient(pat);
+    setSelectedSection("viewpat");
+  }
+
   return (
     <div className="p-8">
       <PageHeader
@@ -98,7 +114,7 @@ export default function Reception() {
         </button>
       </div>
 
-      {selectedSection === "lspat" && (
+      {SECTIONS.LIST_PATIENTS === selectedSection ? (
         <div className="lspat mt-8">
           <ProgressView show={loading} />
 
@@ -169,6 +185,11 @@ export default function Reception() {
             )}
           </div>
         </div>
+      ) : (
+        <FormPatient
+          patient={selectedPatient}
+          updating={SECTIONS.VIEW_PAT === selectedPatient}
+        />
       )}
     </div>
   );
