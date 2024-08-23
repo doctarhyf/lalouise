@@ -45,7 +45,8 @@ export default function FormPatient({ patient, updating }) {
     //(e) => updatingPat.setNewPatNom(e.target.value)
     if (arguments.length < 2)
       throw new Error(`Arguments "dataKey & data" must be defined!`);
-    console.log(`Data Key : ${dataKey}\nData : ${data}`);
+    console.log(`Data Key : ${dataKey}\n
+        Data : ${data}`);
   }
 
   return (
