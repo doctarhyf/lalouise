@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CATEGORIES_PATIENTS, PAYMENTS_TYPES } from "../helpers/flow";
-import { StyleFormBlockTitle, StyleInputText } from "../Styles";
+import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
 import DOBInput from "./DOBInput";
 import IconButtonsCont from "./IconButtonsCont";
 import ProgressView from "./ProgressView";
@@ -38,12 +38,14 @@ export default function FormPatient({ patient, updating }) {
   function onRadioButtonSelected(dt) {
     console.log(dt);
     const { code } = dt;
-    updatingPat.setNewPatDep(code);
+    onUpdatePatientData("code", code);
   }
 
-  function onUpdatePatientData(d) {
+  function onUpdatePatientData(dataKey, data) {
     //(e) => updatingPat.setNewPatNom(e.target.value)
-    console.log(d);
+    if (arguments.length < 2)
+      throw new Error(`Arguments "dataKey & data" must be defined!`);
+    console.log(`Data Key : ${dataKey}\nData : ${data}`);
   }
 
   return (
@@ -87,7 +89,11 @@ export default function FormPatient({ patient, updating }) {
           />
 
           <h5>Date de Naissance</h5>
-          <input type="date" value={props.dob} onChange={onUpdatePatientData} />
+          <input
+            type="date"
+            value={updatingPat.dob}
+            onChange={onUpdatePatientData}
+          />
 
           {/* <DOBInput
             setDateIsValid={(v) => setdobisvalid(v)}
