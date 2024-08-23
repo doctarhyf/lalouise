@@ -10,6 +10,20 @@ const options = {
   timeZone: "America/Santiago",
 };
 
+export function GetDateYYYYMMDD(date) {
+  const dateString = "12/05/2002";
+  const [day, month, year] = dateString.split("/"); // Split the string into day, month, and year
+  const dateObject = new Date(`${year}-${month}-${day}`);
+
+  const dt = dateObject;
+  const y = dt.getFullYear();
+  let m = dt.getMonth() + 1;
+  m = m < 10 ? "0" + m : m;
+  const d = dt.getDate();
+
+  return `${y}-${m}-${d}`;
+}
+
 export function FormatDate(date = new Date()) {
   if (date.getHours) {
     // date = date.setHours(date.getHours() + 7);
