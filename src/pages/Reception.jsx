@@ -57,6 +57,14 @@ export default function Reception({ user }) {
   function onChangeSection(e) {
     const secName = e.target.name;
     setSelectedSection(secName);
+    
+    if(secName === 'newpat'){
+      
+      setSelectedPatient(undefined)
+      
+      }
+    
+    
     console.log(secName);
   }
 
