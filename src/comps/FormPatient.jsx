@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CATEGORIES_PATIENTS,
   DEPARTEMENTS,
@@ -32,7 +32,7 @@ const DEFAULT_PATIENT = {
   photo: null,
   dep: "MAT",
   exit_hospital_at: null,
-  exit: null,
+  exit: undefined,
 };
 
 export default function FormPatient({
@@ -45,7 +45,6 @@ export default function FormPatient({
   onCancel,
   onSaveNewPat,
 }) {
-  /* const [loading, setLoading] = useState(false); */
   const [patientData, setPatientData] = useState(patient || DEFAULT_PATIENT);
   const [showFormNewMed, setShowFormNewMed] = useState(false);
   const [rdk, setrdk] = useState(Math.random());
@@ -94,9 +93,6 @@ export default function FormPatient({
 
     let upd = { ...p, payed: true, payed_at: new Date().toISOString() };
 
-    // console.dir(upd);
-
-    //return;
     UpdateItem(
       TABLE_NAME.PAYMENTS,
       p.id,
@@ -129,10 +125,14 @@ export default function FormPatient({
     setrdk(Math.random());
   }
 
+  useEffect(() => {
+    if (patient === undefined) setPatientData(DEFAULT_PATIENT);
+  }, [patient]);
+
   return (
     <>
       <div className=" flex-col md:flex-row">
-        {patientData.exit && (
+        {patient && patient.exit && (
           <div role="alert" className="alert my-1 alert-error">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -227,15 +227,6 @@ export default function FormPatient({
           {patientData.dob && (
             <div className=" font-bold   ">{patientData.dob}</div>
           )}
-
-          {/* <DOBInput
-            setDateIsValid={(v) => setdobisvalid(v)}
-            initDate={updatingPat.newPatDOB}
-            onNewDate={(d) => {
-              console.log(d);
-              updatingPat.setNewPatDOB(d);
-            }}
-          /> */}
 
           <div>Poids</div>
           <input
