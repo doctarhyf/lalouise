@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { CATEGORIES_PATIENTS, PAYMENTS_TYPES } from "../helpers/flow";
+import {
+  CATEGORIES_PATIENTS,
+  DEPARTEMENTS,
+  PAYMENTS_TYPES,
+} from "../helpers/flow";
 import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
 import DOBInput from "./DOBInput";
 import IconButtonsCont from "./IconButtonsCont";
 import ProgressView from "./ProgressView";
-import { GetDateYYYYMMDD } from "../helpers/funcs";
 
 const DEFAULT_PATIENT = {
   //"id": 816,
@@ -41,12 +44,23 @@ export default function FormPatient({ patient, updating }) {
     onUpdatePatientData("dep", code);
   }
 
-  function onUpdatePatientData(dataKey, data) {
-    //(e) => updatingPat.setNewPatNom(e.target.value)
+  function onUpdatePatientData(dataKey, data, type) {
     if (arguments.length < 2)
       throw new Error(`Arguments "dataKey & data" must be defined!`);
-    console.log(`Data Key : ${dataKey}\n
-        Data : ${data}`);
+
+    if (type === "float") {
+      data = parseFloat(data);
+    }
+
+    if (type === "int") {
+      data = parseInt(data);
+    }
+
+    const updPat = { ...updatingPat };
+    updPat[dataKey] = data;
+
+    console.log("updPat => \n", updPat);
+    setUpdatingPat(updPat);
   }
 
   return (
@@ -58,7 +72,7 @@ export default function FormPatient({ patient, updating }) {
           </summary>
 
           <div>Departement (MAT, SIN, SOP)</div>
-          {updatingPat.dep}
+          {DEPARTEMENTS[updatingPat.dep].label}
 
           <IconButtonsCont
             data={CATEGORIES_PATIENTS}
@@ -95,10 +109,13 @@ export default function FormPatient({ patient, updating }) {
           <h5>Date de Naissance</h5>
           <input
             type="date"
-            value={GetDateYYYYMMDD(updatingPat.dob)}
+            value={updatingPat.dob}
             name="dob"
             onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
           />
+          {updatingPat.dob && (
+            <div className=" font-bold   ">{updatingPat.dob}</div>
+          )}
 
           {/* <DOBInput
             setDateIsValid={(v) => setdobisvalid(v)}
@@ -113,7 +130,9 @@ export default function FormPatient({ patient, updating }) {
           <input
             className={StyleInputText}
             value={updatingPat.poids}
-            onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
+            onChange={(e) =>
+              onUpdatePatientData(e.target.name, e.target.value, "int")
+            }
             name="poids"
             type="number"
           />
@@ -122,7 +141,9 @@ export default function FormPatient({ patient, updating }) {
             className={StyleInputText}
             name="taille"
             value={updatingPat.taille}
-            onChange={(e) => onUpdatePatientData(e.target.name, e.target.value)}
+            onChange={(e) =>
+              onUpdatePatientData(e.target.name, e.target.value, "float")
+            }
             type="Number"
           />
         </details>

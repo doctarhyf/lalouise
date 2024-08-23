@@ -10,8 +10,11 @@ const options = {
   timeZone: "America/Santiago",
 };
 
-export function GetDateYYYYMMDD(date) {
-  const dateString = "12/05/2002";
+/* export function GetDateYYYYMMDD(date) {
+  return date;
+  console.log(`Parsing dateString "${date}"`);
+
+  const dateString = date;
   const [day, month, year] = dateString.split("/"); // Split the string into day, month, and year
   const dateObject = new Date(`${year}-${month}-${day}`);
 
@@ -22,7 +25,7 @@ export function GetDateYYYYMMDD(date) {
   const d = dt.getDate();
 
   return `${y}-${m}-${d}`;
-}
+} */
 
 export function FormatDate(date = new Date()) {
   if (date.getHours) {
