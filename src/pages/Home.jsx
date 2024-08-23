@@ -35,10 +35,6 @@ export default function Home({ user }) {
       setMedsCount(await CountItemsInTable());
       setPatsCount(await CountItemsInTable(TABLE_NAME.PATIENTS));
       setLoading(false);
-
-      //CheckLogginExpired(user);
-
-      //alert(window.location);
     }
 
     loadCounts();
