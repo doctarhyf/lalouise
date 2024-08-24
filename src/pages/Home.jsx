@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ReactDOM } from "react";
 import PageHeader from "../comps/PageHeader";
 import { DummyStats } from "../Helper";
-import { CountItemsInTable, TABLE_NAME } from "../db/sb";
+import { CountItemsInTable, GetAllItemsFromTable, TABLE_NAME } from "../db/sb";
 import ProgressView from "../comps/ProgressView";
 //import { CheckLogginExpired } from "../helpers/funcs";
 import { GALLERY_IMAGES_URL, USERS_LEVELS } from "../helpers/flow";
@@ -25,15 +25,23 @@ export default function Home({ user }) {
   const [loading, setLoading] = useState(true);
   const [infCount, setInfCount] = useState("-");
   const [medsCount, setMedsCount] = useState("-");
-  const [patsCount, setPatsCount] = useState("-");
+  const [patsLen, setPatsLen] = useState("-");
+  const [patsExitLen, setPatsExitLen] = useState("-");
   const [time, setTime] = useState();
 
   useEffect(() => {
     async function loadCounts() {
       setLoading(true);
+
+      const pats = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
+      const patslen = pats.filter((p) => p.exit === null).length;
+      const patsexitlen = pats.filter((p) => p.exit !== null).length;
+
       setInfCount(await CountItemsInTable(TABLE_NAME.INFIRMIERS));
       setMedsCount(await CountItemsInTable());
-      setPatsCount(await CountItemsInTable(TABLE_NAME.PATIENTS));
+      setPatsLen(patslen);
+      setPatsExitLen(patsexitlen);
+
       setLoading(false);
     }
 
@@ -90,7 +98,12 @@ export default function Home({ user }) {
         />
         <StatItem
           key={2}
-          statData={{ title: `Nombre de patients`, data: patsCount }}
+          statData={{ title: `Nombre de patients`, data: patsLen }}
+        />
+
+        <StatItem
+          key={2}
+          statData={{ title: `Nombre de patients sortis`, data: patsExitLen }}
         />
       </div>
     </div>
