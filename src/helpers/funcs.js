@@ -10,6 +10,19 @@ const options = {
   timeZone: "America/Santiago",
 };
 
+export function formatCDF(amount) {
+  // Create a formatter for the 'fr-CD' locale with 'CDF' currency
+  const formatter = new Intl.NumberFormat("fr-CD", {
+    style: "currency",
+    currency: "CDF",
+    minimumFractionDigits: 0, // No decimal points
+    maximumFractionDigits: 0,
+  });
+
+  // Format the amount and return it
+  return formatter.format(amount);
+}
+
 /* export function GetDateYYYYMMDD(date) {
   return date;
   console.log(`Parsing dateString "${date}"`);
