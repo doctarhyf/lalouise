@@ -140,6 +140,7 @@ export default function Finances() {
   }, [perpage, payments, curpage]);
 
   useEffect(() => {}, [curpage]);
+  // this is cool
 
   async function loadPayments() {
     setloading(true);
