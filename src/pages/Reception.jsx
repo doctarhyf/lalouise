@@ -287,6 +287,7 @@ export default function Reception({ user }) {
               value={showSortis}
               onChange={(e) => setShowSortis(e.target.checked)}
               type="checkbox"
+              defaultChecked={showSortis}
               className="toggle"
             />
             <span>SORTIS HIPTAL</span>
