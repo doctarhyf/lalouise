@@ -23,21 +23,21 @@ import { formatCDF } from "../helpers/funcs";
 
 const HEADERS = {
   IDX: "idx",
-  "PYT. ID.": "id",
+  PYT_ID: "id",
   DATE: "created_at",
-  //"PYT. TP.": "type",
-  "AMT.": "amount",
+  PYT_TYPE: "type",
+  AMT: "amount",
   CASH: "cash",
   PAYED: "payed",
 };
 
 const BOOL = { TRUE: "OUI", FALSE: "NON" };
 
-const BOOLS_COLS = [4, 5];
+const BOOLS_COLS = [5, 6];
 
 const ITEMS_PER_PAGE = [10, 20, 50];
 
-const TOTAL_ROW_IDX = 3;
+const TOTAL_ROW_IDX = 4;
 
 function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
   return (
@@ -164,9 +164,10 @@ export default function Finances() {
                         ? paymentData[1]
                           ? BOOL.TRUE
                           : BOOL.FALSE
-                        : TOTAL_ROW_IDX === i
-                        ? formatCDF(paymentData[1])
-                        : paymentData[1]}
+                        : //TOTAL_ROW_IDX === i
+                          //? formatCDF(paymentData[1])
+                          //:
+                          paymentData[1]}
                     </td>
                   ))}
               </tr>
