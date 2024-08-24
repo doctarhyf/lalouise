@@ -159,7 +159,7 @@ export default function Finances() {
       curslicedpayments = payments.filter((p) =>
         p.created_at.includes(datefilter)
       );
-      //console.log(payments[0].created_at.includes(datefilter));
+      console.log(payments[0].created_at.includes(datefilter));
     }
 
     const totalAmount = curslicedpayments.reduce(
