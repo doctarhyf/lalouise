@@ -65,41 +65,6 @@ function Pagination({
   return (
     <div className=" flex gap-4 py-2 ">
       <div>
-        <div className=" text-xs font-bold uppercase ">
-          Current Page ({curpage}/{numpages})
-        </div>
-
-        <select
-          className="border p-1 rounded-md"
-          onChange={(e) => {
-            let parsedValue = parseInt(e.target.value);
-
-            if (parsedValue < 0) parsedValue = numpages;
-            if (parsedValue > numpages) parsedValue = 0;
-            setcurpage(parsedValue);
-          }}
-        >
-          {[...Array(numpages)].map((it, i) => (
-            <option value={i}>{i}</option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <div className=" text-xs font-bold uppercase ">Items Per Page</div>
-        <select
-          className="border p-1 rounded-md"
-          onChange={(e) => setperpage(parseInt(e.target.value))}
-        >
-          {ITEMS_PER_PAGE.map((it) => (
-            <option selected={it === perpage} value={it}>
-              {it}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
         <div className="flex flex-row-reverse">
           <div className=" text-xs font-bold uppercase ">Filter by Date</div>
           <input
@@ -111,6 +76,42 @@ function Pagination({
         {filterbydate && (
           <input type="date" value={date} onChange={onDateChange} />
         )}
+      </div>
+      <div className={` flex gap-4 ${filterbydate ? " hidden " : "block"}  `}>
+        <div>
+          <div className=" text-xs font-bold uppercase ">
+            Current Page ({curpage}/{numpages})
+          </div>
+
+          <select
+            className="border p-1 rounded-md"
+            onChange={(e) => {
+              let parsedValue = parseInt(e.target.value);
+
+              if (parsedValue < 0) parsedValue = numpages;
+              if (parsedValue > numpages) parsedValue = 0;
+              setcurpage(parsedValue);
+            }}
+          >
+            {[...Array(numpages)].map((it, i) => (
+              <option value={i}>{i}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div className=" text-xs font-bold uppercase ">Items Per Page</div>
+          <select
+            className="border p-1 rounded-md"
+            onChange={(e) => setperpage(parseInt(e.target.value))}
+          >
+            {ITEMS_PER_PAGE.map((it) => (
+              <option selected={it === perpage} value={it}>
+                {it}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );
