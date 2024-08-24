@@ -54,11 +54,12 @@ export default function Reception({ user }) {
     setQ("");
     setListPatients(list);
     setListPatientsFiltered(Array.from(list));
-    setSelectedSection("lspat");
+    setSelectedSection(SECTIONS.LIST_PATIENTS);
   }
 
   async function loadPatList() {
     setLoading(true);
+    setlist([]);
     setListPatients([]);
     setListPatients([]);
 
