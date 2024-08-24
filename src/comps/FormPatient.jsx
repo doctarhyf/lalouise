@@ -9,7 +9,12 @@ import DOBInput from "./DOBInput";
 import IconButtonsCont from "./IconButtonsCont";
 import ProgressView from "./ProgressView";
 import PaymenDetails from "./PaymentDetails";
-import { AddNewItemToTable, TABLE_NAME } from "../db/sb";
+import {
+  AddNewItemToTable,
+  DeleteItem,
+  TABLE_NAME,
+  UpdateItem,
+} from "../db/sb";
 
 const DEFAULT_PATIENT = {
   //"id": 816,
@@ -44,6 +49,7 @@ export default function FormPatient({
   onSortieHopital,
   onCancel,
   onSaveNewPat,
+  loadPayments,
 }) {
   const [patientData, setPatientData] = useState(patient || DEFAULT_PATIENT);
   const [showFormNewMed, setShowFormNewMed] = useState(false);
@@ -82,7 +88,7 @@ export default function FormPatient({
 
     DeleteItem(TABLE_NAME.PAYMENTS, p.id, (r) => {
       alert("Item deleted!Res : ", r);
-      loadPayments();
+      GenRDK();
     });
   }
 
@@ -99,7 +105,7 @@ export default function FormPatient({
       upd,
       (r) => {
         alert("Credit paye!");
-        loadPayments();
+        GenRDK();
         console.log(r);
       },
       (e) => {

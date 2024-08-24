@@ -11,6 +11,7 @@ import close from "../assets/close.png";
 import debt from "../assets/debt.png";
 import ok from "../assets/ok.png";
 import DOBInput from "./DOBInput";
+import ProgressView from "./ProgressView";
 
 export default function PaymenDetails({
   showFormNewMed,
@@ -41,6 +42,8 @@ export default function PaymenDetails({
   }, [updatingPat]);
 
   async function loadPayments() {
+    setLoading(true);
+    setPayments([]);
     const p = await GetAllItemsFromTableByColEqVal(
       TABLE_NAME.PAYMENTS,
       "foreign_key",
@@ -50,11 +53,14 @@ export default function PaymenDetails({
     //console.log(`Payments of id : ${updatingPat.id} \n`, p);
 
     setPayments(p);
+    setLoading(false);
   }
 
   return (
     <details className="info-blk w-full">
       <summary className={StyleFormBlockTitle()}>Payment</summary>
+
+      <ProgressView show={loading} />
 
       {showFormNewMed && (
         <div className="CONT-NEW_PAYMENT  p-2 shadow outline outline-[1px]">
@@ -152,14 +158,27 @@ export default function PaymenDetails({
       {!showFormNewMed && (
         <div className="CONT-PAYMENTS-ALL outline-neutral-400 outline-[1px] outline-dashed p-2 ">
           {user.level <= 1 && (
-            <button
-              onClick={(e) => setShowFormNewMed(true)}
-              className={
-                "cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 "
-              }
-            >
-              NOUVEAU PAYEMENT
-            </button>
+            <>
+              <button
+                onClick={(e) => setShowFormNewMed(true)}
+                className={
+                  "cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 "
+                }
+              >
+                NOUVEAU PAYEMENT
+              </button>
+              <button
+                onClick={(e) => {
+                  setLoading(true);
+                  loadPayments();
+                }}
+                className={
+                  "cool p-1 m-1 rounded-[4pt] text-[8pt] px-2 mx-2 hover:bg-green-500 hover:text-white text-green-500  border border-green-500 "
+                }
+              >
+                ACTUALISER
+              </button>
+            </>
           )}
           <p className="font-bold text-sm text-sky-500">TABLEAU PAYEMENT</p>
           <table className="w-full hidden md:block">
@@ -167,6 +186,7 @@ export default function PaymenDetails({
               <tr>
                 {[
                   "No",
+                  "PMT. ID",
                   "Amount",
                   "Type",
                   "CASH/CREDIT.",
@@ -182,10 +202,11 @@ export default function PaymenDetails({
             <tbody>
               {payments.map((p, i) => (
                 <tr
-                  key={i}
+                  key={p.payed_at}
                   className={` ${!p.payed ? "text-red-500 italic" : ""} `}
                 >
                   <td className={cltd}>{i + 1}</td>
+                  <td className={cltd}>{p.id}</td>
                   <td className={cltd}>
                     {FormatNumberWithCommas(p.amount)}
                     {" FC"}
