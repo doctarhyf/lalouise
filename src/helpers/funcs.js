@@ -10,6 +10,57 @@ const options = {
   timeZone: "America/Santiago",
 };
 
+export const DATE_TYPE = {
+  DDMMYYYY: "ddmmyyyy",
+  DATE_TIME_OBJECT: "dtobj",
+};
+
+export function formatFrenchDateTime(dateString, type) {
+  // Create a Date object from the date string
+  const date = new Date(dateString);
+
+  if (DATE_TYPE.DATE_TIME_OBJECT === type) {
+    // Extract the day, month, and year for the date
+    const day = String(date.getDate()).padStart(2, "0"); // Ensures 2 digits for day
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based, so add 1
+    const year = date.getFullYear();
+
+    // Format the date as 'dd/mm/yyyy'
+    const formattedDate = `${day}/${month}/${year}`;
+
+    // Extract hours and minutes for the time
+    const hours = String(date.getHours()).padStart(2, "0"); // Ensures 2 digits for hours
+    const minutes = String(date.getMinutes()).padStart(2, "0"); // Ensures 2 digits for minutes
+
+    // Format the time as 'hh:mm'
+    const formattedTime = `${hours}:${minutes}`;
+
+    // Return an object with formatted date and time
+    return {
+      date: formattedDate,
+      time: formattedTime,
+    };
+  }
+
+  if (DATE_TYPE.DDMMYYYY === type) {
+    const day = String(date.getDate()).padStart(2, "0"); // Ensures 2 digits
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based, so we add 1
+    const year = date.getFullYear();
+
+    // Format the date as 'dd/mm/yyyy'
+    return `${day}/${month}/${year}`;
+  }
+
+  // Create a formatter for the 'fr-FR' locale
+  const formatter = new Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "full", // Full date style (e.g., "lundi 1 janvier 2024")
+    timeStyle: "medium", // Medium time style (e.g., "07:46:44")
+  });
+
+  // Format the date and return it
+  return formatter.format(date);
+}
+
 export function formatCDF(amount) {
   // Create a formatter for the 'fr-CD' locale with 'CDF' currency
   const formatter = new Intl.NumberFormat("fr-CD", {

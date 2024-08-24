@@ -46,7 +46,10 @@ export async function UpdateInfRoulement(updateID, day, val) {
 export async function GetAllItemsFromTable(tableName = TABLE_NAME.MEDS) {
   let items = [];
 
-  let { data, error } = await supabase.from(tableName).select("*");
+  let { data, error } = await supabase
+    .from(tableName)
+    .select("*")
+    .order("created_at", { ascending: false });
   items = data;
 
   if (error) return error;

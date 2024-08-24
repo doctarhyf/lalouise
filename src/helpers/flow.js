@@ -12,6 +12,10 @@ export const PAYMENTS_TYPES = [
   { label: "Other", code: "OTH" },
 ];
 
+export const GET_PAYMENT_TYPE = (code) => {
+  return PAYMENTS_TYPES.filter((it) => it.code === code)[0];
+};
+
 export function GetPaymentTypeLableFromCode(code) {
   return (
     (PAYMENTS_TYPES.find((it, i) => it.code === code) &&

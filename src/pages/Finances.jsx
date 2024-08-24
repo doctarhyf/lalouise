@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../comps/PageHeader";
 import * as SB from "../db/sb";
-import { formatCDF } from "../helpers/funcs";
+
+import { DATE_TYPE, formatCDF, formatFrenchDateTime } from "../helpers/funcs";
+import { GET_PAYMENT_TYPE } from "../helpers/flow";
 
 /*
 {
@@ -23,21 +25,21 @@ import { formatCDF } from "../helpers/funcs";
 
 const HEADERS = {
   IDX: "idx",
-  PYT_ID: "id",
+  "ID PAYMENT": "id",
   DATE: "created_at",
-  PYT_TYPE: "type",
-  AMT: "amount",
+  "TYPE PAYMENT": "type",
+  MONTANT: "amount",
   CASH: "cash",
-  PAYED: "payed",
+  "DAJA PAYE": "payed",
 };
 
-const BOOL = { TRUE: "OUI", FALSE: "NON" };
+const ITEMS_PER_PAGE = [10, 20, 50, 100];
 
-const BOOLS_COLS = [5, 6];
-
-const ITEMS_PER_PAGE = [10, 20, 50];
-
-const TOTAL_ROW_IDX = 4;
+const ROW_INDEX = {
+  TOTAL: 4,
+  DATE: 2,
+  PAYMENT_TYPE: 3,
+};
 
 function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
   return (
@@ -46,7 +48,22 @@ function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
         <div className=" text-xs font-bold uppercase ">
           Current Page ({curpage}/{numpages})
         </div>
-        <input
+
+        <select
+          className="border p-1 rounded-md"
+          onChange={(e) => {
+            let parsedValue = parseInt(e.target.value);
+
+            if (parsedValue < 0) parsedValue = numpages;
+            if (parsedValue > numpages) parsedValue = 0;
+            setcurpage(parsedValue);
+          }}
+        >
+          {[...Array(numpages)].map((it, i) => (
+            <option value={i}>{i}</option>
+          ))}
+        </select>
+        {/* <input
           className="border p-1 rounded-md"
           type="number"
           value={curpage}
@@ -57,7 +74,7 @@ function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
             if (parsedValue > numpages) parsedValue = 0;
             setcurpage(parsedValue);
           }}
-        />
+        /> */}
       </div>
       <div>
         <div className=" text-xs font-bold uppercase ">Items Per Page</div>
@@ -73,6 +90,22 @@ function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
         </select>
       </div>
     </div>
+  );
+}
+
+function RowTotal({ total }) {
+  return (
+    <tr className={` hover:bg-slate-300 cursor-pointer  `}>
+      {Object.values(HEADERS).map((paymentData, i) => (
+        <td key={i} className={` ${"border-slate-500"} border  `}>
+          {i === ROW_INDEX.TOTAL
+            ? total
+            : ROW_INDEX.PAYMENT_TYPE === i
+            ? "TOTAL"
+            : ""}
+        </td>
+      ))}
+    </tr>
   );
 }
 
@@ -98,7 +131,7 @@ export default function Finances() {
     );
 
     const totalAmount = curslicedpayments.reduce(
-      (sum, item) => sum + item.amount,
+      (sum, item) => sum + parseFloat(item.amount),
       0
     );
     settotal(formatCDF(totalAmount));
@@ -111,7 +144,13 @@ export default function Finances() {
   async function loadPayments() {
     setloading(true);
     let pts = await SB.GetAllItemsFromTable(SB.TABLE_NAME.PAYMENTS);
-    pts = pts.map((it, i) => ({ idx: i, ...it }));
+    pts = pts.map((it, i) => ({
+      idx: i,
+      ...it,
+      cash: it.cash ? "OUI" : "NON",
+      payed: it.payed ? "OUI" : "NON",
+      type: GET_PAYMENT_TYPE(it.type).label,
+    }));
 
     setpayments(pts);
     setloading(false);
@@ -145,6 +184,7 @@ export default function Finances() {
             </tr>
           </thead>
           <tbody>
+            <RowTotal total={total} />
             {slicedpayments.map((payment) => (
               <tr className={` hover:bg-slate-300 cursor-pointer  `}>
                 {Object.entries(payment)
@@ -155,31 +195,32 @@ export default function Finances() {
                     <td
                       key={i}
                       className={` ${
-                        payment.payed
+                        payment.payed === "OUI"
                           ? "border-green-500 bg-green-100 text-green-800"
                           : "border-slate-500"
                       } border  `}
                     >
-                      {BOOLS_COLS.includes(i)
-                        ? paymentData[1]
-                          ? BOOL.TRUE
-                          : BOOL.FALSE
-                        : //TOTAL_ROW_IDX === i
-                          //? formatCDF(paymentData[1])
-                          //:
-                          paymentData[1]}
+                      {ROW_INDEX.TOTAL === i
+                        ? formatCDF(paymentData[1])
+                        : ROW_INDEX.DATE === i
+                        ? `${
+                            formatFrenchDateTime(
+                              paymentData[1],
+                              DATE_TYPE.DATE_TIME_OBJECT
+                            ).date
+                          } - ${
+                            formatFrenchDateTime(
+                              paymentData[1],
+                              DATE_TYPE.DATE_TIME_OBJECT
+                            ).time
+                          }`
+                        : paymentData[1]}
                     </td>
                   ))}
               </tr>
             ))}
 
-            <tr className={` hover:bg-slate-300 cursor-pointer  `}>
-              {Object.values(HEADERS).map((paymentData, i) => (
-                <td key={i} className={` ${"border-slate-500"} border  `}>
-                  {i === TOTAL_ROW_IDX ? total : ""}
-                </td>
-              ))}
-            </tr>
+            <RowTotal total={total} />
           </tbody>
         </table>
       </div>
