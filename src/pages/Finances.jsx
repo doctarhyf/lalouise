@@ -41,7 +41,27 @@ const ROW_INDEX = {
   PAYMENT_TYPE: 3,
 };
 
-function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
+function Pagination({
+  curpage,
+  perpage,
+  numpages,
+  setcurpage,
+  setperpage,
+  filterbydate,
+  setfilterbydate,
+  datefilter,
+  setdatefilter,
+}) {
+  const [date, setdate] = useState();
+
+  function onDateChange(e) {
+    const val = e.target.value;
+    const [y, m, d] = val.split("-");
+    const dt = `${d}/${m}/${y}`;
+    console.log(dt);
+
+    setdatefilter(val);
+  }
   return (
     <div className=" flex gap-4 py-2 ">
       <div>
@@ -63,19 +83,8 @@ function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
             <option value={i}>{i}</option>
           ))}
         </select>
-        {/* <input
-          className="border p-1 rounded-md"
-          type="number"
-          value={curpage}
-          onChange={(e) => {
-            let parsedValue = parseInt(e.target.value);
-
-            if (parsedValue < 0) parsedValue = numpages;
-            if (parsedValue > numpages) parsedValue = 0;
-            setcurpage(parsedValue);
-          }}
-        /> */}
       </div>
+
       <div>
         <div className=" text-xs font-bold uppercase ">Items Per Page</div>
         <select
@@ -88,6 +97,20 @@ function Pagination({ curpage, perpage, numpages, setcurpage, setperpage }) {
             </option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <div className="flex flex-row-reverse">
+          <div className=" text-xs font-bold uppercase ">Filter by Date</div>
+          <input
+            type="checkbox"
+            value={filterbydate}
+            onChange={(e) => setfilterbydate(e.target.checked)}
+          />
+        </div>
+        {filterbydate && (
+          <input type="date" value={date} onChange={onDateChange} />
+        )}
       </div>
     </div>
   );
@@ -117,6 +140,8 @@ export default function Finances() {
   const [numpages, setnumpages] = useState(0);
   const [slicedpayments, setslicedpayments] = useState([]);
   const [total, settotal] = useState(0);
+  const [filterbydate, setfilterbydate] = useState(false);
+  const [datefilter, setdatefilter] = useState();
 
   useEffect(() => {
     loadPayments();
@@ -125,10 +150,17 @@ export default function Finances() {
   useEffect(() => {
     const pgslen = Math.floor(payments.length / perpage);
     setnumpages(pgslen);
-    const curslicedpayments = payments.slice(
+    let curslicedpayments = payments.slice(
       curpage * perpage,
       curpage * perpage + perpage
     );
+
+    if (filterbydate) {
+      curslicedpayments = payments.filter((p) =>
+        p.created_at.includes(datefilter)
+      );
+      //console.log(payments[0].created_at.includes(datefilter));
+    }
 
     const totalAmount = curslicedpayments.reduce(
       (sum, item) => sum + parseFloat(item.amount),
@@ -137,7 +169,7 @@ export default function Finances() {
     settotal(formatCDF(totalAmount));
 
     setslicedpayments(curslicedpayments);
-  }, [perpage, payments, curpage]);
+  }, [perpage, payments, curpage, filterbydate, datefilter]);
 
   useEffect(() => {}, [curpage]);
   // this is cool
@@ -171,6 +203,10 @@ export default function Finances() {
         setcurpage={setcurpage}
         setperpage={setperpage}
         perpage={perpage}
+        filterbydate={filterbydate}
+        setfilterbydate={setfilterbydate}
+        datefilter={datefilter}
+        setdatefilter={setdatefilter}
       />
 
       <div>
@@ -232,6 +268,10 @@ export default function Finances() {
         setcurpage={setcurpage}
         setperpage={setperpage}
         perpage={perpage}
+        filterbydate={filterbydate}
+        setfilterbydate={setfilterbydate}
+        datefilter={datefilter}
+        setdatefilter={setdatefilter}
       />
     </div>
   );
