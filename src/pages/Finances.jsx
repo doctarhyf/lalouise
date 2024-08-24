@@ -120,7 +120,10 @@ function RowTotal({ total }) {
   return (
     <tr className={` hover:bg-slate-300 cursor-pointer  `}>
       {Object.values(HEADERS).map((paymentData, i) => (
-        <td key={i} className={` ${"border-slate-500"} border  `}>
+        <td
+          key={i}
+          className={` ${"border-slate-500"} border bg-black text-white  `}
+        >
           {i === ROW_INDEX.TOTAL
             ? total
             : ROW_INDEX.PAYMENT_TYPE === i
@@ -162,10 +165,14 @@ export default function Finances() {
       console.log(payments[0].created_at.includes(datefilter));
     }
 
+    //calculate total
     const totalAmount = curslicedpayments.reduce(
-      (sum, item) => sum + parseFloat(item.amount),
+      (sum, item) =>
+        item.payed === "OUI" ? sum + parseFloat(item.amount) : sum + 0,
       0
     );
+
+    console.log(curslicedpayments[0].payed);
     settotal(formatCDF(totalAmount));
 
     setslicedpayments(curslicedpayments);
