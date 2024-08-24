@@ -51,6 +51,7 @@ function Pagination({
   setfilterbydate,
   datefilter,
   setdatefilter,
+  reload,
 }) {
   const [date, setdate] = useState();
 
@@ -113,6 +114,13 @@ function Pagination({
           </select>
         </div>
       </div>
+
+      <button
+        className=" text-xs font-bold uppercase hover:bg-sky-600 hover:text-white inline-block px-2 rounded-md"
+        onClick={reload}
+      >
+        REALOAD
+      </button>
     </div>
   );
 }
@@ -139,7 +147,7 @@ function RowTotal({ total }) {
 export default function Finances() {
   const [loading, setloading] = useState(false);
   const [payments, setpayments] = useState([]);
-  const [curpage, setcurpage] = useState(1);
+  const [curpage, setcurpage] = useState(0);
   const [perpage, setperpage] = useState(ITEMS_PER_PAGE[0]);
   const [numpages, setnumpages] = useState(0);
   const [slicedpayments, setslicedpayments] = useState([]);
@@ -163,7 +171,7 @@ export default function Finances() {
       curslicedpayments = payments.filter((p) =>
         p.created_at.includes(datefilter)
       );
-      console.log(payments[0].created_at.includes(datefilter));
+      //console.log(payments[0].created_at.includes(datefilter));
     }
 
     //calculate total
@@ -173,7 +181,6 @@ export default function Finances() {
       0
     );
 
-    console.log(curslicedpayments[0].payed);
     settotal(formatCDF(totalAmount));
 
     setslicedpayments(curslicedpayments);
@@ -184,6 +191,8 @@ export default function Finances() {
 
   async function loadPayments() {
     setloading(true);
+    setpayments([]);
+    setslicedpayments([]);
     let pts = await SB.GetAllItemsFromTable(SB.TABLE_NAME.PAYMENTS);
     pts = pts.map((it, i) => ({
       idx: i,
@@ -215,6 +224,7 @@ export default function Finances() {
         setfilterbydate={setfilterbydate}
         datefilter={datefilter}
         setdatefilter={setdatefilter}
+        reload={loadPayments}
       />
 
       <div>
@@ -280,6 +290,7 @@ export default function Finances() {
         setfilterbydate={setfilterbydate}
         datefilter={datefilter}
         setdatefilter={setdatefilter}
+        reload={loadPayments}
       />
     </div>
   );
