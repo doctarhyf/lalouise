@@ -24,6 +24,7 @@ const SECTIONS = {
 export default function Reception({ user }) {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [list, setlist] = useState([]);
   const [listPatients, setListPatients] = useState([]);
   const [listPatientsFiltered, setListPatientsFiltered] = useState([]);
   const [selectedSection, setSelectedSection] = useState(
@@ -37,7 +38,24 @@ export default function Reception({ user }) {
 
   useEffect(() => {
     loadPatList();
+  }, []);
+
+  useEffect(() => {
+    initData(list, showSortis);
   }, [showSortis]);
+
+  function initData(list, showSortis) {
+    if (showSortis) {
+      list = list.filter((p) => p.exit !== null);
+    } else {
+      list = list.filter((p) => p.exit === null);
+    }
+
+    setQ("");
+    setListPatients(list);
+    setListPatientsFiltered(Array.from(list));
+    setSelectedSection("lspat");
+  }
 
   async function loadPatList() {
     setLoading(true);
@@ -45,20 +63,9 @@ export default function Reception({ user }) {
     setListPatients([]);
 
     let list = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
-
-    if (showSortis) {
-      list = list.filter((p) => p.exit !== null);
-    } else {
-      list = list.filter((p) => p.exit === null);
-    }
-
-    //setPatsCount(list.length);
-    setListPatients(list);
-    setListPatientsFiltered(Array.from(list));
-    setSelectedSection("lspat");
+    setlist(list);
+    initData(list, showSortis);
     setLoading(false);
-
-    //ParsePatientsCategories();
   }
 
   function onChangeSection(e) {
@@ -280,7 +287,6 @@ export default function Reception({ user }) {
               onChange={(e) => setShowSortis(e.target.checked)}
               type="checkbox"
               className="toggle"
-              defaultChecked
             />
             <span>SORTIS HIPTAL</span>
           </div>
