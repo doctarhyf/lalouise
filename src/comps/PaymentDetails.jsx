@@ -181,9 +181,9 @@ export default function PaymenDetails({
             </>
           )}
           <p className="font-bold text-sm text-sky-500">TABLEAU PAYEMENT</p>
-          <table className="w-full hidden md:block">
+          <table className="w-full hidden md:block table">
             <thead>
-              <tr>
+              <tr className=" table-row tab ">
                 {[
                   "No",
                   "PMT. ID",
@@ -203,7 +203,9 @@ export default function PaymenDetails({
               {payments.map((p, i) => (
                 <tr
                   key={p.payed_at}
-                  className={` ${!p.payed ? "text-red-500 italic" : ""} `}
+                  className={` table-row ${
+                    !p.payed ? "text-red-500 italic" : ""
+                  } `}
                 >
                   <td className={cltd}>{i + 1}</td>
                   <td className={cltd}>{p.id}</td>

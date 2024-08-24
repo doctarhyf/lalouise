@@ -75,8 +75,13 @@ export default function FormPatient({
     }
 
     const updPat = { ...patientData };
-    updPat[dataKey] = data;
 
+    if (dataKey.includes("emergContact")) {
+      const [path, key] = dataKey.split(".");
+      updPat.emergContact[key] = data;
+    } else {
+      updPat[dataKey] = data;
+    }
     console.log("updPat => \n", updPat);
     setPatientData(updPat);
   }
