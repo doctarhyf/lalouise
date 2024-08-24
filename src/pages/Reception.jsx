@@ -33,17 +33,24 @@ export default function Reception({ user }) {
   const [selectedPatientsCategorieData, setSelectedPatientsCategorieData] =
     useState(CATEGORIES_PATIENTS[0]);
   const [selectedPatient, setSelectedPatient] = useState(undefined);
+  const [showSortis, setShowSortis] = useState(false);
 
   useEffect(() => {
     loadPatList();
-  }, []);
+  }, [showSortis]);
 
   async function loadPatList() {
     setLoading(true);
     setListPatients([]);
     setListPatients([]);
 
-    const list = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
+    let list = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
+
+    if (showSortis) {
+      list = list.filter((p) => p.exit !== null);
+    } else {
+      list = list.filter((p) => p.exit === null);
+    }
 
     //setPatsCount(list.length);
     setListPatients(list);
@@ -266,6 +273,17 @@ export default function Reception({ user }) {
             data={CATEGORIES_PATIENTS}
             onRadioButtonSelected={onRadioButtonSelected}
           />
+
+          <div className=" flex gap-2  ">
+            <input
+              value={showSortis}
+              onChange={(e) => setShowSortis(e.target.checked)}
+              type="checkbox"
+              className="toggle"
+              defaultChecked
+            />
+            <span>SORTIS HIPTAL</span>
+          </div>
 
           <div>
             {listPatients && listPatients.length > 0 ? (
