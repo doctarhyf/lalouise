@@ -77,7 +77,17 @@ export function formatFrenchDateTime(dateString, type) {
   return formatter.format(date);
 }
 
-export function formatCDF(amount) {
+export function formatNumberWithCDF(number) {
+  // Convert the number to a string and use regex to add commas followed by a space every three digits
+  let formattedNumber = number
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ", ");
+  // Add ".00", a space, and "CDF" at the end
+  formattedNumber += " CDF";
+  return formattedNumber;
+}
+
+export function formatCDF(amount, debug) {
   // Create a formatter for the 'fr-CD' locale with 'CDF' currency
   const formatter = new Intl.NumberFormat("fr-CD", {
     style: "currency",
@@ -87,6 +97,7 @@ export function formatCDF(amount) {
   });
 
   // Format the amount and return it
+  if (debug) return parseFloat(amount) + " CDF";
   return formatter.format(amount);
 }
 

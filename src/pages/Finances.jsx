@@ -6,6 +6,7 @@ import {
   DATE_TYPE,
   formatCDF,
   formatFrenchDateTime,
+  formatNumberWithCDF,
 } from "../helpers/funcs";
 import { GET_PAYMENT_TYPE } from "../helpers/flow";
 import print from "../assets/print.png";
@@ -30,6 +31,7 @@ const ROW_INDEX = {
   DATE: 2,
   PAYMENT_TYPE: 3,
   PAYED: 6,
+  AMOUNT: 4,
 };
 
 function Pagination({
@@ -208,6 +210,7 @@ export default function Finances() {
 
   function onPrint(payments) {
     const TABLE_HEADERS = [Object.keys(HEADERS)];
+    TABLE_HEADERS[0][ROW_INDEX.DATE] = "HEURE";
 
     let paymentsToPrint = payments.map((payment) =>
       Object.entries(payment).filter((paymentItemData) =>
@@ -215,22 +218,41 @@ export default function Finances() {
       )
     );
 
-    const DATA = paymentsToPrint.map((payment) =>
-      payment.map((paymentVal) => paymentVal[1])
-    );
+    console.log(paymentsToPrint[0][ROW_INDEX.DATE][1]);
 
-    const total = DATA.reduce((sum, item) => sum + item[4], 0);
-    const totalRow = [, , , "TOTAL", total, ,];
+    const [date, time] = formatFrenchDateTime(
+      paymentsToPrint[0][ROW_INDEX.DATE][1]
+    ).split("à");
+    const TITLE = `Payment du ${date}`.toUpperCase();
+    console.log(TITLE);
+
+    let total = 0;
+    let DATA = paymentsToPrint.map((payment) => {
+      const p = payment.map((paymentVal, i) => {
+        const v =
+          ROW_INDEX.DATE === i
+            ? formatFrenchDateTime(paymentVal[1], DATE_TYPE.DATE_TIME_OBJECT)
+                .time
+            : ROW_INDEX.AMOUNT === i
+            ? formatNumberWithCDF(paymentVal[1])
+            : paymentVal[1];
+
+        return v;
+      });
+      if (p[ROW_INDEX.PAYED] === "OUI")
+        total += parseInt(
+          p[ROW_INDEX.AMOUNT].replaceAll(", ", "").replace(" CDF", "")
+        );
+      return p;
+    });
+
+    const totalRow = [, , , "TOTAL", formatNumberWithCDF(total), ,];
+
     DATA.push(totalRow);
 
-    const [date, time] = formatFrenchDateTime(DATA[0][2]).split("à");
-    const TITLE = `Payment du ${date}`.toUpperCase();
     const FILE_NAME = `${TITLE.replaceAll(" ", "_")}.pdf`;
-    console.log(TABLE_HEADERS);
-    console.log(DATA);
-    console.log(TITLE);
-    console.log(FILE_NAME);
-    printTable(DATA, TITLE, TABLE_HEADERS);
+
+    printTable(DATA, TITLE, TABLE_HEADERS, FILE_NAME);
   }
 
   return (
