@@ -143,7 +143,9 @@ export default function FormPatient({
   return (
     <>
       <div className=" flex-col md:flex-row">
-        <ActionButton icon={print} title={"Print"} onClick={onPrint} />
+        {patient && (
+          <ActionButton icon={print} title={"Print"} onClick={onPrint} />
+        )}
         {patient && patient.exit && (
           <div role="alert" className="alert my-1 alert-error">
             <svg
