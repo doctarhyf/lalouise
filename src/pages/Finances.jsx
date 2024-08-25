@@ -1,27 +1,11 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../comps/PageHeader";
 import * as SB from "../db/sb";
-
 import { DATE_TYPE, formatCDF, formatFrenchDateTime } from "../helpers/funcs";
 import { GET_PAYMENT_TYPE } from "../helpers/flow";
-
-/*
-{
-    "id": 840,
-    "created_at": "2024-01-05T08:26:24.145",
-    "type": "MAT",
-    "foreign_key": 471,
-    "foreign_table": "pat_",
-    "amount": 75000,
-    "description": null,
-    "cash": false,
-    "payed": true,
-    "payed_at": "2024-01-06T08:49:43.5",
-    "data": null,
-    "cache_received": false
-}
-
-*/
+import print from "../assets/print.png";
+import refresh from "../assets/refresh.png";
+import check from "../assets/check.png";
 
 const HEADERS = {
   IDX: "idx",
@@ -39,6 +23,7 @@ const ROW_INDEX = {
   TOTAL: 4,
   DATE: 2,
   PAYMENT_TYPE: 3,
+  PAYED: 6,
 };
 
 function Pagination({
@@ -52,6 +37,7 @@ function Pagination({
   datefilter,
   setdatefilter,
   reload,
+  onPrint,
 }) {
   const [date, setdate] = useState();
 
@@ -64,62 +50,75 @@ function Pagination({
     setdatefilter(val);
   }
   return (
-    <div className=" flex gap-4 py-2 ">
+    <div className=" flex md:flex-row flex-col gap-4 py-2 ">
       <div>
-        <div className="flex flex-row-reverse">
-          <div className=" text-xs font-bold uppercase ">Filter by Date</div>
+        <div className="flex ">
           <input
             type="checkbox"
             value={filterbydate}
             onChange={(e) => setfilterbydate(e.target.checked)}
           />
+          <div className=" text-xs font-bold uppercase ">Filter by Date</div>
         </div>
         {filterbydate && (
-          <input type="date" value={date} onChange={onDateChange} />
+          <input
+            type="date"
+            className="border border-purple-600 rounded-md p-1"
+            value={date}
+            onChange={onDateChange}
+          />
         )}
       </div>
-      <div className={` flex gap-4 ${filterbydate ? " hidden " : "block"}  `}>
-        <div>
-          <div className=" text-xs font-bold uppercase ">
-            Current Page ({curpage}/{numpages})
-          </div>
-
-          <select
-            className="border p-1 rounded-md"
-            onChange={(e) => {
-              let parsedValue = parseInt(e.target.value);
-
-              if (parsedValue < 0) parsedValue = numpages;
-              if (parsedValue > numpages) parsedValue = 0;
-              setcurpage(parsedValue);
-            }}
-          >
-            {[...Array(numpages)].map((it, i) => (
-              <option value={i}>{i}</option>
-            ))}
-          </select>
+      {/* <div className={` flex gap-4 ${filterbydate ? " hidden " : "block"}  `}> */}
+      <div className={`  ${filterbydate ? " hidden " : "block"} `}>
+        <div className={` text-xs font-bold uppercase `}>
+          Current Page ({curpage}/{numpages})
         </div>
 
-        <div>
-          <div className=" text-xs font-bold uppercase ">Items Per Page</div>
-          <select
-            className="border p-1 rounded-md"
-            onChange={(e) => setperpage(parseInt(e.target.value))}
-          >
-            {ITEMS_PER_PAGE.map((it) => (
-              <option selected={it === perpage} value={it}>
-                {it}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          className="border p-1 rounded-md"
+          onChange={(e) => {
+            let parsedValue = parseInt(e.target.value);
+
+            if (parsedValue < 0) parsedValue = numpages;
+            if (parsedValue > numpages) parsedValue = 0;
+            setcurpage(parsedValue);
+          }}
+        >
+          {[...Array(numpages)].map((it, i) => (
+            <option value={i}>{i}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className={` ${filterbydate ? " hidden " : "block"} `}>
+        <div className={` text-xs font-bold uppercase  `}>Items Per Page</div>
+        <select
+          className="border p-1 rounded-md"
+          onChange={(e) => setperpage(parseInt(e.target.value))}
+        >
+          {ITEMS_PER_PAGE.map((it) => (
+            <option selected={it === perpage} value={it}>
+              {it}
+            </option>
+          ))}
+        </select>
       </div>
 
       <button
-        className=" text-xs font-bold uppercase hover:bg-sky-600 hover:text-white inline-block px-2 rounded-md"
+        className=" hover:bg-sky-700 hover:text-white  flex gap-2 justify-center items-center border rounded-md px-2 my-auto h-fit"
         onClick={reload}
       >
-        REALOAD
+        <img src={refresh} className=" w-4 h-4  " />
+        Refresh
+      </button>
+
+      <button
+        className=" hover:bg-sky-700 hover:text-white flex gap-2 justify-center items-center border rounded-md px-2 my-auto h-fit"
+        onClick={onPrint}
+      >
+        <img src={print} className=" w-4 h-4  " />
+        print
       </button>
     </div>
   );
@@ -171,10 +170,8 @@ export default function Finances() {
       curslicedpayments = payments.filter((p) =>
         p.created_at.includes(datefilter)
       );
-      //console.log(payments[0].created_at.includes(datefilter));
     }
 
-    //calculate total
     const totalAmount = curslicedpayments.reduce(
       (sum, item) =>
         item.payed === "OUI" ? sum + parseFloat(item.amount) : sum + 0,
@@ -187,7 +184,6 @@ export default function Finances() {
   }, [perpage, payments, curpage, filterbydate, datefilter]);
 
   useEffect(() => {}, [curpage]);
-  // this is cool
 
   async function loadPayments() {
     setloading(true);
@@ -206,6 +202,10 @@ export default function Finances() {
     setloading(false);
   }
 
+  function onPrint() {
+    console.log("print ...");
+  }
+
   return (
     <div className=" p-8 container ">
       <PageHeader
@@ -215,6 +215,7 @@ export default function Finances() {
       />
 
       <Pagination
+        onPrint={onPrint}
         curpage={curpage}
         numpages={numpages}
         setcurpage={setcurpage}
@@ -255,21 +256,29 @@ export default function Finances() {
                           : "border-slate-500"
                       } border  `}
                     >
-                      {ROW_INDEX.TOTAL === i
-                        ? formatCDF(paymentData[1])
-                        : ROW_INDEX.DATE === i
-                        ? `${
-                            formatFrenchDateTime(
-                              paymentData[1],
-                              DATE_TYPE.DATE_TIME_OBJECT
-                            ).date
-                          } - ${
-                            formatFrenchDateTime(
-                              paymentData[1],
-                              DATE_TYPE.DATE_TIME_OBJECT
-                            ).time
-                          }`
-                        : paymentData[1]}
+                      {ROW_INDEX.TOTAL === i ? (
+                        formatCDF(paymentData[1])
+                      ) : ROW_INDEX.DATE === i ? (
+                        `${
+                          formatFrenchDateTime(
+                            paymentData[1],
+                            DATE_TYPE.DATE_TIME_OBJECT
+                          ).date
+                        } - ${
+                          formatFrenchDateTime(
+                            paymentData[1],
+                            DATE_TYPE.DATE_TIME_OBJECT
+                          ).time
+                        }`
+                      ) : ROW_INDEX.PAYED === i ? (
+                        paymentData[1] === "OUI" ? (
+                          <img src={check} className="w-4 h-4" />
+                        ) : (
+                          paymentData[1]
+                        )
+                      ) : (
+                        paymentData[1]
+                      )}
                     </td>
                   ))}
               </tr>
@@ -281,6 +290,7 @@ export default function Finances() {
       </div>
 
       <Pagination
+        onPrint={onPrint}
         curpage={curpage}
         numpages={numpages}
         setcurpage={setcurpage}
