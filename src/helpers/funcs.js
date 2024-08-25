@@ -15,6 +15,22 @@ export const DATE_TYPE = {
   DATE_TIME_OBJECT: "dtobj",
 };
 
+export function arrayToObject(arr) {
+  const obj = {};
+  for (let i = 0; i < arr.length; i++) {
+    obj[arr[i][0]] = arr[i][1];
+  }
+  return obj;
+}
+
+export const swapKeysAndValues = (obj) => {
+  const swapped = {};
+  for (const [key, value] of Object.entries(obj)) {
+    swapped[value] = key;
+  }
+  return swapped;
+};
+
 export function formatFrenchDateTime(dateString, type) {
   // Create a Date object from the date string
   const date = new Date(dateString);

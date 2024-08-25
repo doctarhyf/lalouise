@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../comps/PageHeader";
 import * as SB from "../db/sb";
-import { DATE_TYPE, formatCDF, formatFrenchDateTime } from "../helpers/funcs";
+import {
+  arrayToObject,
+  DATE_TYPE,
+  formatCDF,
+  formatFrenchDateTime,
+} from "../helpers/funcs";
 import { GET_PAYMENT_TYPE } from "../helpers/flow";
 import print from "../assets/print.png";
 import refresh from "../assets/refresh.png";
 import check from "../assets/check.png";
+import { printTable } from "../helpers/print";
 
 const HEADERS = {
   IDX: "idx",
   "ID PAYMENT": "id",
   DATE: "created_at",
   "TYPE PAYMENT": "type",
-  MONTANT: "amount",
+  "MONTANT(CDF)": "amount",
   CASH: "cash",
   "DAJA PAYE": "payed",
 };
@@ -183,8 +189,6 @@ export default function Finances() {
     setslicedpayments(curslicedpayments);
   }, [perpage, payments, curpage, filterbydate, datefilter]);
 
-  useEffect(() => {}, [curpage]);
-
   async function loadPayments() {
     setloading(true);
     setpayments([]);
@@ -202,8 +206,31 @@ export default function Finances() {
     setloading(false);
   }
 
-  function onPrint() {
-    console.log("print ...");
+  function onPrint(payments) {
+    const TABLE_HEADERS = [Object.keys(HEADERS)];
+
+    let paymentsToPrint = payments.map((payment) =>
+      Object.entries(payment).filter((paymentItemData) =>
+        Object.values(HEADERS).includes(paymentItemData[0])
+      )
+    );
+
+    const DATA = paymentsToPrint.map((payment) =>
+      payment.map((paymentVal) => paymentVal[1])
+    );
+
+    const total = DATA.reduce((sum, item) => sum + item[4], 0);
+    const totalRow = [, , , "TOTAL", total, ,];
+    DATA.push(totalRow);
+
+    const [date, time] = formatFrenchDateTime(DATA[0][2]).split("à");
+    const TITLE = `Payment du ${date}`.toUpperCase();
+    const FILE_NAME = `${TITLE.replaceAll(" ", "_")}.pdf`;
+    console.log(TABLE_HEADERS);
+    console.log(DATA);
+    console.log(TITLE);
+    console.log(FILE_NAME);
+    printTable(DATA, TITLE, TABLE_HEADERS);
   }
 
   return (
@@ -215,7 +242,7 @@ export default function Finances() {
       />
 
       <Pagination
-        onPrint={onPrint}
+        onPrint={(e) => onPrint(slicedpayments)}
         curpage={curpage}
         numpages={numpages}
         setcurpage={setcurpage}
@@ -290,7 +317,7 @@ export default function Finances() {
       </div>
 
       <Pagination
-        onPrint={onPrint}
+        onPrint={(e) => onPrint(slicedpayments)}
         curpage={curpage}
         numpages={numpages}
         setcurpage={setcurpage}
