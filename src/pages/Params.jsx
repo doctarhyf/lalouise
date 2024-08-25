@@ -1,61 +1,79 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PageHeader from "../comps/PageHeader";
+import ImageItemContainer from "../comps/ImageItemContainer";
+import { UploadFile } from "../helpers/FileUpload";
+import { supabase, AddNewItemToTable, TABLE_NAME, Upsert } from "../db/sb";
 import ActionButton from "../comps/ActionButton";
 import cloud from "../assets/cloud.png";
 
 export default function Params() {
   const refs = [useRef(), useRef(), useRef(), useRef()];
+  const [images, setimages] = useState();
+  const [loading, setloading] = useState(false);
 
-  function onUpdateSlide(idx) {
-    const ref = refs[idx];
-    const input = ref.current;
+  async function uploadFiles(supabase) {
+    try {
+      setloading(true);
+      const [img1, img2, img3] = Object.values(images);
+      //1.upload images
+      const pms1 = await UploadFile(supabase, img1.file, "lalouise", true);
+      const pms2 = await UploadFile(supabase, img2.file, "lalouise", true);
+      const pms3 = await UploadFile(supabase, img3.file, "lalouise", true);
+      //2.save data
+      const photos = [pms1.publicUrl, pms2.publicUrl, pms3.publicUrl];
 
-    input.click();
-    //console.log(ref);
+      const r = photos.map(
+        async (p, i) =>
+          await Upsert({ id: i, url: p, active: true }, TABLE_NAME.PROMO)
+      );
+      console.log(r);
+      const pr = await Promise.all(r);
+
+      console.log(pr);
+      setloading(false);
+    } catch (e) {
+      alert(`Error upload data \n ${JSON.stringify(e)} `);
+      setloading(false);
+    }
   }
 
-  function handleChange(e) {
-    const { name, files } = e.target;
-    const file = files[0];
-    const [, id] = name.split("_");
+  useEffect(() => {
+    console.log(images);
+  }, [images]);
 
-    console.log("Selected files:", name, file, id);
+  function onImageSelectChange(d) {
+    setimages(d);
   }
 
   return (
     <div className="p-8 container">
-      <PageHeader title="Parametres" sub="Tous les parametres du systems" />
+      <PageHeader
+        title="Parametres"
+        sub="Tous les parametres du systems"
+        loading={loading}
+      />
 
-      <div className=" flex gap-4 flex-col sm:flex-row ">
+      <ImageItemContainer
+        count={3}
+        titles={["Bon", "Truck Front", "Truck Side"]}
+        onImageSelectChange={onImageSelectChange}
+      />
+
+      <ActionButton
+        icon={cloud}
+        title={"SAVE"}
+        onClick={(e) => uploadFiles(supabase)}
+      />
+
+      {/* <div className=" flex gap-4 flex-col sm:flex-row ">
         {[...Array(4)].map((promoSlide, i) => (
-          <div key={i}>
-            <div className=" font-bold ">IMG {i + 1}</div>
-            <div className=" relative w-full object-cover sm:w-40 h-48 sm:h-28 bg-slate-700 rounded-md overflow-hidden">
-              <div className=" absolute inset-0 flex items-center justify-center   ">
-                <progress max={100} value={75} />
-              </div>
-              <img
-                className=" object-contain "
-                src="https://cdn.britannica.com/15/136315-050-EB55175C/50-Cent-Eminem-Dr-Dre-2004.jpg"
-              />
-            </div>
-            <input
-              accept=".png, .jpg, .jpeg"
-              onChange={handleChange}
-              type="file"
-              name={`file_${i}`}
-              hidden
-              ref={refs[i]}
-            />
-
-            <ActionButton
-              icon={cloud}
-              title={"UPDATE"}
-              onClick={(e) => onUpdateSlide(i)}
-            />
-          </div>
+          <ImageItem
+            idx={i}
+            title={`Image ${i}`}
+            onImageDataSet={(e) => console.log(e)}
+          />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

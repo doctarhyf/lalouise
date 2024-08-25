@@ -7,6 +7,8 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrdHRkcmdndmV5cmV0Y3Zram1xIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY0NDkxOTEsImV4cCI6MTk5MjAyNTE5MX0.TRlHZBaUdW_xbeGapzEJSgqMFiThymQqLsGGYEhRL5Q"
 );
 
+export { supabase };
+
 export async function RemoveAllItemsFromTable(tableName) {
   const { error } = await supabase.from(tableName).delete();
 
@@ -134,12 +136,39 @@ export async function DeleteItem(tableName, id, onItemDeleted) {
   return error;
 }
 
+export async function Upsert(
+  newItem,
+  tableName = TABLE_NAME.MEDS,
+  onItemAdded = null,
+  onAddItemError
+) {
+  console.log("adding item ", newItem);
+
+  const { data, error } = await supabase
+    .from(tableName)
+    .upsert([newItem])
+    .select();
+
+  ////console.log("AddNewItemToTable", data, error);
+  if (error) {
+    console.log(error);
+    if (onAddItemError) onAddItemError(error);
+    return;
+  }
+
+  if (onItemAdded) onItemAdded(data);
+
+  return data;
+}
+
 export async function AddNewItemToTable(
   newItem,
   tableName = TABLE_NAME.MEDS,
   onItemAdded = null,
   onAddItemError
 ) {
+  console.log("adding item ", newItem);
+
   const { data, error } = await supabase
     .from(tableName)
     .insert([newItem])
@@ -147,7 +176,7 @@ export async function AddNewItemToTable(
 
   ////console.log("AddNewItemToTable", data, error);
   if (error) {
-    //console.log(error);
+    console.log(error);
     if (onAddItemError) onAddItemError(error);
     return;
   }
@@ -165,6 +194,7 @@ export const TABLE_NAME = {
   MED_SELLS_REC: "sellrec_",
   PAYMENTS: "payments",
   USERS: "users",
+  PROMO: "promo",
 };
 
 export const BUCKET_NAMES = {
