@@ -135,7 +135,11 @@ export default function FormPatient({
   }
 
   useEffect(() => {
-    if (patient === undefined) setPatientData(DEFAULT_PATIENT);
+    if (patient === undefined) {
+      setPatientData(DEFAULT_PATIENT);
+    } else {
+      GenRDK();
+    }
   }, [patient]);
 
   function onPrint() {
