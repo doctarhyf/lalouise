@@ -129,16 +129,18 @@ export function printPatienInfo(patientData, patientPayments, filename) {
 }
 
 function drawLogo(doc, logo, margin, yspacefactor = 4) {
+  const ofs = doc.getFontSize();
   const text = "LaLouise © 2024";
-  const LOGO = { W: 30, H: 30 };
+  const LOGO = { W: 15, H: 15 };
   doc.addImage(logo, "PNG", margin, margin, LOGO.W, LOGO.H);
   const logotexty = margin + LOGO.H * 1.5;
 
+  doc.setFontSize(10);
   doc.text(text, margin, logotexty);
   const textdims = doc.getTextDimensions(text);
 
-  console.log(textdims);
-
+  //console.log(textdims);
+  doc.setFontSize(ofs);
   return {
     x: margin,
     y: margin,
