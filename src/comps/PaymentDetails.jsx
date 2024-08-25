@@ -21,6 +21,7 @@ export default function PaymenDetails({
   onConfirmPayment,
   setShowFormNewMed,
   onSaveNewPayement,
+  onPaymentsLoaded,
 }) {
   const [newPayment, setNewPayment] = useState({
     created_at: new Date().toISOString(),
@@ -53,6 +54,7 @@ export default function PaymenDetails({
     //console.log(`Payments of id : ${updatingPat.id} \n`, p);
 
     setPayments(p);
+    onPaymentsLoaded(p);
     setLoading(false);
   }
 

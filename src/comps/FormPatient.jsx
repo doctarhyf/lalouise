@@ -11,6 +11,7 @@ import ActionButton from "./ActionButton";
 import IconButtonsCont from "./IconButtonsCont";
 import PaymenDetails from "./PaymentDetails";
 import print from "../assets/print.png";
+import { printPatienInfo } from "../helpers/print";
 
 const DEFAULT_PATIENT = {
   //"id": 816,
@@ -48,6 +49,7 @@ export default function FormPatient({
   loadPayments,
 }) {
   const [patientData, setPatientData] = useState(patient || DEFAULT_PATIENT);
+  const [patientPayments, setPatientPayments] = useState([]);
   const [showFormNewMed, setShowFormNewMed] = useState(false);
   const [rdk, setrdk] = useState(Math.random());
   const [exitDateTime, setExitDateTime] = useState({});
@@ -137,7 +139,14 @@ export default function FormPatient({
   }, [patient]);
 
   function onPrint() {
-    alert("Print patient info ...");
+    //alert("Print patient info ...");
+    //console.log(patientData, patientPayments);
+    printPatienInfo(patientData, patientPayments);
+  }
+
+  function onPaymentsLoaded(payments) {
+    setPatientPayments(payments);
+    //console.log("payments loaded ->", payments);
   }
 
   return (
@@ -272,6 +281,7 @@ export default function FormPatient({
 
         {updating && (
           <PaymenDetails
+            onPaymentsLoaded={onPaymentsLoaded}
             key={rdk}
             onSaveNewPayement={onSaveNewPayement}
             setShowFormNewMed={setShowFormNewMed}
