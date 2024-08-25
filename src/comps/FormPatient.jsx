@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
 import {
-  CATEGORIES_PATIENTS,
-  DEPARTEMENTS,
-  PAYMENTS_TYPES,
-} from "../helpers/flow";
-import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
-import DOBInput from "./DOBInput";
-import IconButtonsCont from "./IconButtonsCont";
-import ProgressView from "./ProgressView";
-import PaymenDetails from "./PaymentDetails";
-import {
   AddNewItemToTable,
   DeleteItem,
   TABLE_NAME,
   UpdateItem,
 } from "../db/sb";
+import { CATEGORIES_PATIENTS, DEPARTEMENTS } from "../helpers/flow";
+import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
+import ActionButton from "./ActionButton";
+import IconButtonsCont from "./IconButtonsCont";
+import PaymenDetails from "./PaymentDetails";
+import print from "../assets/print.png";
 
 const DEFAULT_PATIENT = {
   //"id": 816,
@@ -140,9 +136,14 @@ export default function FormPatient({
     if (patient === undefined) setPatientData(DEFAULT_PATIENT);
   }, [patient]);
 
+  function onPrint() {
+    alert("Print patient info ...");
+  }
+
   return (
     <>
       <div className=" flex-col md:flex-row">
+        <ActionButton icon={print} title={"Print"} onClick={onPrint} />
         {patient && patient.exit && (
           <div role="alert" className="alert my-1 alert-error">
             <svg

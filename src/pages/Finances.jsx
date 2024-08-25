@@ -13,6 +13,7 @@ import print from "../assets/print.png";
 import refresh from "../assets/refresh.png";
 import check from "../assets/check.png";
 import { printTable } from "../helpers/print";
+import ActionButton from "../comps/ActionButton";
 
 const HEADERS = {
   IDX: "idx",
@@ -113,21 +114,8 @@ function Pagination({
         </select>
       </div>
 
-      <button
-        className=" hover:bg-sky-700 hover:text-white  flex gap-2 justify-center items-center border rounded-md px-2 my-auto h-fit"
-        onClick={reload}
-      >
-        <img src={refresh} className=" w-4 h-4  " />
-        Refresh
-      </button>
-
-      <button
-        className=" hover:bg-sky-700 hover:text-white flex gap-2 justify-center items-center border rounded-md px-2 my-auto h-fit"
-        onClick={onPrint}
-      >
-        <img src={print} className=" w-4 h-4  " />
-        print
-      </button>
+      <ActionButton icon={refresh} title={"Refresh"} onClick={reload} />
+      <ActionButton icon={print} title={"print"} onClick={onPrint} />
     </div>
   );
 }
