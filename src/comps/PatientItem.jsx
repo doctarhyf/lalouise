@@ -9,7 +9,7 @@ export default function PatientItem({ data, onViewPatient }) {
       </div>
 
       <div className="grow">
-        <div className="text-black">{data.nom}</div>
+        <div className="text-black  dark:text-white ">{data.nom}</div>
         <div className=" text-sm">
           {/* <span className="text-slate-500">{data.emergContact.phone}</span> */}
           <span className="bg-sky-500 text-xs text-white p-1 font-bold rounded-md">
