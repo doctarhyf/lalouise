@@ -38,5 +38,19 @@ people: [
 
   doc.text(title, marginLeft, 40);
   doc.autoTable(content);
+  printWatermark(doc, marginLeft);
   doc.save(filename);
+}
+
+function printWatermark(doc, margin, watermark) {
+  const oldfs = doc.getFontSize();
+  doc.setFontSize(8);
+  const text = watermark || "https://doctarhyf.github.io/lalouise/";
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const textWidth = doc.getTextWidth(text);
+  const x = pageWidth - textWidth - margin;
+  const y = pageHeight - margin;
+  doc.text(text, x, y);
+  doc.setFontSize(oldfs);
 }
