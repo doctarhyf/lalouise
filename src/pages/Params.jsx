@@ -22,14 +22,17 @@ export default function Params() {
       //2.save data
       const photos = [pms1.publicUrl, pms2.publicUrl, pms3.publicUrl];
 
-      const r = photos.map(
+      const promises = photos.map(
         async (p, i) =>
           await Upsert({ id: i, url: p, active: true }, TABLE_NAME.PROMO)
       );
-      console.log(r);
-      const pr = await Promise.all(r);
+      // console.log(promises);
+      const promisesAllRes = await Promise.all(promises);
 
-      console.log(pr);
+      if (promisesAllRes.every((it) => it[0].id !== undefined)) {
+        alert("Les photos promos ont etes toutes mises a jour avec succes!");
+      }
+      console.log("promisesAllRes", promisesAllRes);
       setloading(false);
     } catch (e) {
       alert(`Error upload data \n ${JSON.stringify(e)} `);
@@ -59,11 +62,15 @@ export default function Params() {
         onImageSelectChange={onImageSelectChange}
       />
 
-      <ActionButton
-        icon={cloud}
-        title={"SAVE"}
-        onClick={(e) => uploadFiles(supabase)}
-      />
+      {loading ? (
+        <span className="loading" />
+      ) : (
+        <ActionButton
+          icon={cloud}
+          title={"SAVE"}
+          onClick={(e) => uploadFiles(supabase)}
+        />
+      )}
 
       {/* <div className=" flex gap-4 flex-col sm:flex-row ">
         {[...Array(4)].map((promoSlide, i) => (
