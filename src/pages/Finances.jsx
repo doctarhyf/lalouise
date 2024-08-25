@@ -223,8 +223,7 @@ export default function Finances() {
     const [date, time] = formatFrenchDateTime(
       paymentsToPrint[0][ROW_INDEX.DATE][1]
     ).split("à");
-    const TITLE = `Payment du ${date}`.toUpperCase();
-    console.log(TITLE);
+    let TITLE = `Payment du ${date}`.toUpperCase();
 
     let total = 0;
     let DATA = paymentsToPrint.map((payment) => {
@@ -250,7 +249,11 @@ export default function Finances() {
 
     DATA.push(totalRow);
 
-    const FILE_NAME = `${TITLE.replaceAll(" ", "_")}.pdf`;
+    if (!filterbydate) {
+      TITLE = `PAYMENTS [${curpage} - ${curpage + perpage}]`;
+    }
+
+    let FILE_NAME = `${TITLE.replaceAll(" ", "_")}.pdf`;
 
     printTable(DATA, TITLE, TABLE_HEADERS, FILE_NAME);
   }
