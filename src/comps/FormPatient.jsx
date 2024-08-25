@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import print from "../assets/print.png";
 import {
   AddNewItemToTable,
   DeleteItem,
@@ -10,7 +11,6 @@ import { StyleButton, StyleFormBlockTitle, StyleInputText } from "../Styles";
 import ActionButton from "./ActionButton";
 import IconButtonsCont from "./IconButtonsCont";
 import PaymenDetails from "./PaymentDetails";
-import print from "../assets/print.png";
 import { printPatienInfo } from "../helpers/print";
 
 const DEFAULT_PATIENT = {
@@ -142,10 +142,9 @@ export default function FormPatient({
     }
   }, [patient]);
 
-  function onPrint() {
-    //alert("Print patient info ...");
-    //console.log(patientData, patientPayments);
-    printPatienInfo(patientData, patientPayments);
+  async function onPrint() {
+    const filename = `${patient.nom.replaceAll(" ", "_") + ".pdf"}`;
+    printPatienInfo(patientData, patientPayments, filename);
   }
 
   function onPaymentsLoaded(payments) {

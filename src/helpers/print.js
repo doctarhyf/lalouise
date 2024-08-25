@@ -47,11 +47,7 @@ people: [
   doc.save(filename);
 }
 
-export function printPatienInfo(
-  patientData,
-  patientPayments,
-  filename = "PATIENT.pdf"
-) {
+export function printPatienInfo(patientData, patientPayments, filename) {
   console.log(patientData, patientPayments);
 
   const unit = "px";
@@ -67,7 +63,7 @@ export function printPatienInfo(
   doc.setFontSize(12);
   //doc.text("cool", marginLeft, rect.hm);
 
-  const data = {
+  /* const data = {
     id: 838,
     created_at: "2024-08-24T17:25:07.482+00:00",
     emergContact: {
@@ -89,7 +85,9 @@ export function printPatienInfo(
     dep: "MAT",
     exit_hospital_at: null,
     exit: null,
-  };
+  }; */
+
+  const data = patientData;
 
   // Define starting coordinates for text placement
   let x = 20; // X coordinate
@@ -127,7 +125,7 @@ export function printPatienInfo(
   });
 
   printWatermark(doc, marginLeft);
-  doc.save(filename);
+  doc.save(filename || "patient_info.pdf");
 }
 
 function drawLogo(doc, logo, margin, yspacefactor = 4) {
