@@ -45,13 +45,17 @@ export async function UpdateInfRoulement(updateID, day, val) {
   ////console.log("aftr --> roulement : ", rl, `, rl[${day}]`, rl[day]);
 }
 
-export async function GetAllItemsFromTable(tableName = TABLE_NAME.MEDS) {
+export async function GetAllItemsFromTable(
+  tableName = TABLE_NAME.MEDS,
+  orderby = "created_at",
+  ascending = false
+) {
   let items = [];
 
   let { data, error } = await supabase
     .from(tableName)
     .select("*")
-    .order("created_at", { ascending: false });
+    .order(orderby, { ascending: ascending });
   items = data;
 
   if (error) return error;

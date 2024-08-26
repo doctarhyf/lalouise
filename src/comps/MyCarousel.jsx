@@ -12,9 +12,8 @@ export default function MyCarousel() {
   }, []);
 
   async function loadimages() {
-    const imgs = await GetAllItemsFromTable(TABLE_NAME.PROMO);
+    let imgs = await GetAllItemsFromTable(TABLE_NAME.PROMO, "id", true);
 
-    console.log(imgs);
     setpromos(imgs);
   }
 

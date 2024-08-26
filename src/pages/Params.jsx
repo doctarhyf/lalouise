@@ -1,47 +1,73 @@
-import React, { useEffect, useRef, useState } from "react";
-import PageHeader from "../comps/PageHeader";
-import ImageItemContainer from "../comps/ImageItemContainer";
-import { UploadFile } from "../helpers/FileUpload";
-import { supabase, AddNewItemToTable, TABLE_NAME, Upsert } from "../db/sb";
-import ActionButton from "../comps/ActionButton";
+import React, { useEffect, useState } from "react";
 import cloud from "../assets/cloud.png";
+import ActionButton from "../comps/ActionButton";
+import ImageItemContainer from "../comps/ImageItemContainer";
+import PageHeader from "../comps/PageHeader";
+import { GetAllItemsFromTable, supabase, TABLE_NAME, Upsert } from "../db/sb";
+import { UploadFile } from "../helpers/FileUpload";
+import { useNavigate } from "react-router-dom";
+
+const MAX_PROMO_COUNT = 6;
 
 export default function Params() {
-  const refs = [useRef(), useRef(), useRef(), useRef()];
   const [images, setimages] = useState();
   const [loading, setloading] = useState(false);
+  const [count, setcount] = useState();
+  const [defaults, setdefaults] = useState([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    loadDefaults();
+  }, []);
+
+  async function loadDefaults() {
+    let defs = await GetAllItemsFromTable(TABLE_NAME.PROMO, "id", true);
+
+    console.log("DEFS", defs);
+    setcount(defs.length);
+    setdefaults(defs);
+  }
 
   async function uploadFiles(supabase) {
-    try {
-      setloading(true);
-      const [img1, img2, img3] = Object.values(images);
-      //1.upload images
-      const pms1 = await UploadFile(supabase, img1.file, "lalouise", true);
-      const pms2 = await UploadFile(supabase, img2.file, "lalouise", true);
-      const pms3 = await UploadFile(supabase, img3.file, "lalouise", true);
-      //2.save data
-      const photos = [pms1.publicUrl, pms2.publicUrl, pms3.publicUrl];
+    // try {
+    setloading(true);
 
-      const promises = photos.map(
-        async (p, i) =>
-          await Upsert({ id: i, url: p, active: true }, TABLE_NAME.PROMO)
-      );
-      // console.log(promises);
-      const promisesAllRes = await Promise.all(promises);
+    const promos = Object.values(images);
+    //1.upload images
+    console.log("images", images);
+    console.log("promos", promos);
 
-      if (promisesAllRes.every((it) => it[0].id !== undefined)) {
-        alert("Les photos promos ont etes toutes mises a jour avec succes!");
-      }
-      console.log("promisesAllRes", promisesAllRes);
+    const uploadPromises = promos.map(async (img) => {
+      const pms1 = UploadFile(supabase, img.file, "lalouise", true, img.idx);
+      return pms1;
+    });
+
+    const uploadPromisesRes = await Promise.all(uploadPromises);
+
+    console.log("uploadPromisesRes", uploadPromisesRes);
+
+    const promisesSaveRecords = uploadPromisesRes.map(async (p, i) => {
+      const data = { id: parseInt(p.tag), url: p.publicUrl, active: true };
+      console.log("data", data);
+      return await Upsert(data, TABLE_NAME.PROMO);
+    });
+
+    const promisesSaveRecordsRes = await Promise.all(promisesSaveRecords);
+
+    if (promisesSaveRecordsRes.every((it) => it[0].id !== undefined)) {
+      alert("Les photos promos ont etes toutes mises a jour avec succes!");
       setloading(false);
-    } catch (e) {
-      alert(`Error upload data \n ${JSON.stringify(e)} `);
-      setloading(false);
+      navigate("/lalouise/");
     }
+
+    console.log("promisesSaveRecordsRes", promisesSaveRecordsRes);
+    setloading(false);
+    return;
   }
 
   useEffect(() => {
-    console.log(images);
+    //console.log(images);
   }, [images]);
 
   function onImageSelectChange(d) {
@@ -56,9 +82,28 @@ export default function Params() {
         loading={loading}
       />
 
+      <div>
+        <div>Nombre de photos promo</div>
+        <select
+          onChange={(e) => {
+            const parsedval = parseInt(e.target.value);
+            setcount(parsedval);
+          }}
+        >
+          {[...Array(MAX_PROMO_COUNT)].map(
+            (it, i) =>
+              i > 0 && (
+                <option selected={i === count} value={i}>
+                  {i} Image(s)
+                </option>
+              )
+          )}
+        </select>
+      </div>
+
       <ImageItemContainer
-        count={3}
-        titles={["Bon", "Truck Front", "Truck Side"]}
+        count={count}
+        defaults={defaults}
         onImageSelectChange={onImageSelectChange}
       />
 
@@ -71,16 +116,6 @@ export default function Params() {
           onClick={(e) => uploadFiles(supabase)}
         />
       )}
-
-      {/* <div className=" flex gap-4 flex-col sm:flex-row ">
-        {[...Array(4)].map((promoSlide, i) => (
-          <ImageItem
-            idx={i}
-            title={`Image ${i}`}
-            onImageDataSet={(e) => console.log(e)}
-          />
-        ))}
-      </div> */}
     </div>
   );
 }

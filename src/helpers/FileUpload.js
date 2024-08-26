@@ -46,6 +46,7 @@ export async function UploadFile(
   file,
   bucketName,
   compressImage = false,
+  tag,
   allowed_types = ["image/jpeg", "image/gif", "image/png"]
 ) {
   if (!file) return { error: true, code: 1, message: "File cant be null!" };
@@ -74,5 +75,5 @@ export async function UploadFile(
 
   //.log(publicUrl);
 
-  return { ...data, publicUrl: publicUrl };
+  return { ...data, publicUrl: publicUrl, tag: tag };
 }
