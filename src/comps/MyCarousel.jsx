@@ -18,8 +18,8 @@ export default function MyCarousel() {
   }
 
   return (
-    <div className="  overflow-hidden">
-      <Carousel className="-mt-[120pt]" autoPlay>
+    <div className=" ">
+      <Carousel className="" autoPlay>
         {promos.map((p, i) => (
           <div className="lg:h-[380pt]   ">
             <img className="   " src={p.url} />
