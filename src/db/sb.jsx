@@ -113,6 +113,29 @@ export async function UpdateItem(
   return data;
 }
 
+export async function deleteFile(bucket = "lalouise", path, isPublicURL) {
+  let filename = path;
+  console.log("removing raw : ", filename);
+
+  if (isPublicURL) {
+    filename = path.split("/")[path.split("/").length - 1];
+  }
+
+  console.log("removing parsed : ", filename);
+
+  const { data, error } = await supabase.storage
+    .from(bucket) // Specify the bucket name
+    .remove([path]); // File path within the bucket
+
+  if (error) {
+    console.error("Error deleting file:", error.message);
+    return { error: true, ...error };
+  } else {
+    console.log("File deleted successfully:", data);
+    return data;
+  }
+}
+
 export async function DeleteFileFromBucket(
   storageFilePath,
   onFileDeleted,
