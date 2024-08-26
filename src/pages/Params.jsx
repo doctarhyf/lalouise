@@ -103,7 +103,7 @@ export default function Params() {
       if (promisesSaveRecordsRes.every((it) => it[0].id !== undefined)) {
         alert("Les photos promos ont etes toutes mises a jour avec succes!");
         setloading(false);
-        //navigate("/lalouise/");
+        navigate("/lalouise/");
       }
 
       console.log("promisesSaveRecordsRes", promisesSaveRecordsRes);

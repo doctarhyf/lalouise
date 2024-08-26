@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import logo from "../assets/hospital.png";
+import user from "../assets/user.png";
 
 export function printTable(
   data,
@@ -59,41 +60,24 @@ export function printPatienInfo(patientData, patientPayments, filename) {
 
   doc.setFontSize(15);
 
+  printWatermark(doc, marginLeft);
   const rect = drawLogo(doc, logo, marginLeft);
+  const PAT_IMG_SIZE = { w: 32, h: 32 };
+  doc.addImage(
+    user,
+    "PNG",
+    marginLeft - 10,
+    rect.h,
+    PAT_IMG_SIZE.w,
+    PAT_IMG_SIZE.h
+  );
   doc.setFontSize(12);
-  //doc.text("cool", marginLeft, rect.hm);
-
-  /* const data = {
-    id: 838,
-    created_at: "2024-08-24T17:25:07.482+00:00",
-    emergContact: {
-      nom: "",
-      phone: "",
-      add: "",
-    },
-    nom: "Patient",
-    phone: "0974507835",
-    add: "Joli city",
-    dob: "2024-08-28",
-    poids: 80,
-    taille: 15,
-    vaccVaricelle: true,
-    vaccMeasles: true,
-    hepC: false,
-    autre: "Pas d'autres maladies",
-    photo: null,
-    dep: "MAT",
-    exit_hospital_at: null,
-    exit: null,
-  }; */
 
   const data = patientData;
 
-  // Define starting coordinates for text placement
-  let x = 20; // X coordinate
-  let y = rect.hm; // Initial Y coordinate
+  let x = 20;
+  let y = rect.hm + PAT_IMG_SIZE.h + 10;
 
-  // Function to add text to the PDF with custom formatting
   function addTextToPDF(key, value, doc) {
     // Set font size and style for the key
     doc.setFontSize(11);
@@ -112,7 +96,6 @@ export function printPatienInfo(patientData, patientPayments, filename) {
     y += 12;
   }
 
-  // Add data to the PDF
   Object.keys(data).forEach((key) => {
     if (key !== "emergContact") {
       // Skip 'emergContact'
@@ -124,7 +107,6 @@ export function printPatienInfo(patientData, patientPayments, filename) {
     }
   });
 
-  printWatermark(doc, marginLeft);
   doc.save(filename || "patient_info.pdf");
 }
 
@@ -139,7 +121,6 @@ function drawLogo(doc, logo, margin, yspacefactor = 4) {
   doc.text(text, margin, logotexty);
   const textdims = doc.getTextDimensions(text);
 
-  //console.log(textdims);
   doc.setFontSize(ofs);
   return {
     x: margin,
@@ -159,6 +140,7 @@ function printWatermark(doc, margin, watermark) {
   const textWidth = doc.getTextWidth(text);
   const x = pageWidth - textWidth - margin;
   const y = pageHeight - margin;
+  doc.text(new Date().toISOString(), margin, y);
   doc.text(text, x, y);
   doc.setFontSize(oldfs);
 }
