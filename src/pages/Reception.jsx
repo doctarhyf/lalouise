@@ -233,11 +233,11 @@ export default function Reception({ user }) {
         <button
           name="lspat"
           onClick={onChangeSection}
-          className={`px-2 mx-4 border border-white ${
+          className={`px-2 md:mx-4 border border-white ${
             selectedSection === "lspat"
               ? " border-b-sky-500 bg-sky-500 text-white"
               : "hover:text-sky-500"
-          }  hover:border-b-sky-500   rounded-tl-[6pt] rounded-tr-[6pt] `}
+          }  hover:border-b-sky-500    md:rounded-t-[6pt] `}
         >
           Liste des Patients ({listPatientsFiltered.length})
         </button>
@@ -245,11 +245,11 @@ export default function Reception({ user }) {
         <button
           name="newpat"
           onClick={onChangeSection}
-          className={`px-2 mx-4 ml-0 border border-white  ${
+          className={`px-2 md:mx-4 ml-0 border border-white  ${
             selectedSection === "newpat"
               ? " border-b-sky-500 bg-sky-500 text-white"
               : "hover:text-sky-500"
-          }  hover:border-b-sky-500  rounded-tl-[6pt] rounded-tr-[6pt] `}
+          }  hover:border-b-sky-500  md:rounded-t-[6pt] `}
         >
           Nouveau Patient
         </button>
