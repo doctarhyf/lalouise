@@ -393,7 +393,7 @@ export default function FormPatient({
 
           <button
             className={`cool p-1 m-1 rounded-[6pt] text-sm px-4 mx-4 hover:bg-red-500 hover:text-white text-red-500  border border-red-500 `}
-            onClick={(e) => onDelPat(patientData.updateID)}
+            onClick={(e) => onDelPat(patientData)}
           >
             SUPPRIMER PATIENT
           </button>

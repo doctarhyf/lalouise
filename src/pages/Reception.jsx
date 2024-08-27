@@ -147,11 +147,17 @@ export default function Reception({ user }) {
     }
   }
 
-  function onDelPat(id) {
-    if (confirm("Are you sure you want to delete?")) {
-      DeleteItem(TABLE_NAME.PATIENTS, id);
-      loadPatList();
-      setSelectedSection(SECTIONS.LIST_PATIENTS);
+  function onDelPat(pat) {
+    const { nom, id } = pat;
+    if (confirm(`Are you sure you want to delete " ${nom} "?`)) {
+      DeleteItem(TABLE_NAME.PATIENTS, id, (r) => {
+        console.log("del pat", r);
+        if (r === null) {
+          alert("Le patient a ete supprime avec succes!");
+        }
+        loadPatList();
+        setSelectedSection(SECTIONS.LIST_PATIENTS);
+      });
     }
   }
 
