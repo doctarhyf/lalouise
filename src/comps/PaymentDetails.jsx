@@ -79,6 +79,8 @@ export default function PaymenDetails({
       return;
     }
 
+    //finished with prints
+
     const { nom } = pat;
     const headers = [["id", "created_at", "type", "amount", "cash", "payed"]];
     let tot = 0;
