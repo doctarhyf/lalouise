@@ -31,18 +31,22 @@ export default function Home({ user }) {
 
   useEffect(() => {
     async function loadCounts() {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      const pats = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
-      const patslen = pats.filter((p) => p.exit === null).length;
-      const patsexitlen = pats.filter((p) => p.exit !== null).length;
+        const pats = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
+        const patslen = pats.filter((p) => p.exit === null).length;
+        const patsexitlen = pats.filter((p) => p.exit !== null).length;
 
-      setInfCount(await CountItemsInTable(TABLE_NAME.INFIRMIERS));
-      setMedsCount(await CountItemsInTable());
-      setPatsLen(patslen);
-      setPatsExitLen(patsexitlen);
+        setInfCount(await CountItemsInTable(TABLE_NAME.INFIRMIERS));
+        setMedsCount(await CountItemsInTable());
+        setPatsLen(patslen);
+        setPatsExitLen(patsexitlen);
 
-      setLoading(false);
+        setLoading(false);
+      } catch (e) {
+        alert("Error\n" + JSON.stringify(e));
+      }
     }
 
     loadCounts();

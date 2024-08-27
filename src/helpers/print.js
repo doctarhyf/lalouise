@@ -1,5 +1,4 @@
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import logo from "../assets/hospital.png";
 import user from "../assets/user.png";
 
@@ -9,6 +8,18 @@ export function printTable(
   headers,
   filename = `report_${new Date().getTime()}.pdf`
 ) {
+  /*
+
+  autoTable(doc, {
+  head: [['Name', 'Email', 'Country']],
+  body: [
+    ['David', 'david@example.com', 'Sweden'],
+    ['Castille', 'castille@example.com', 'Spain'],
+    // ...
+  ],
+})
+
+  */
   const unit = "pt";
   const size = "A4"; // Use A1, A2, A3 or A4
   const orientation = "portrait"; // portrait or landscape

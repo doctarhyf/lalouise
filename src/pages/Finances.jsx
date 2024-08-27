@@ -10,6 +10,7 @@ import {
 } from "../helpers/funcs";
 import { GET_PAYMENT_TYPE } from "../helpers/flow";
 import print from "../assets/print.png";
+import del from "../assets/delete.png";
 import refresh from "../assets/refresh.png";
 import check from "../assets/check.png";
 import { printTable } from "../helpers/print";
@@ -23,6 +24,7 @@ const HEADERS = {
   "MONTANT(CDF)": "amount",
   CASH: "cash",
   "DAJA PAYE": "payed",
+  ACTION: "action",
 };
 
 const ITEMS_PER_PAGE = [10, 20, 50, 100];
@@ -145,7 +147,7 @@ export default function Finances() {
   const [curpage, setcurpage] = useState(0);
   const [perpage, setperpage] = useState(ITEMS_PER_PAGE[0]);
   const [numpages, setnumpages] = useState(0);
-  const [slicedpayments, setslicedpayments] = useState([]);
+  const [filteredpayments, setfilteredpayments] = useState([]);
   const [total, settotal] = useState(0);
   const [filterbydate, setfilterbydate] = useState(false);
   const [datefilter, setdatefilter] = useState();
@@ -176,13 +178,13 @@ export default function Finances() {
 
     settotal(formatCDF(totalAmount));
 
-    setslicedpayments(curslicedpayments);
+    setfilteredpayments(curslicedpayments);
   }, [perpage, payments, curpage, filterbydate, datefilter]);
 
   async function loadPayments() {
     setloading(true);
     setpayments([]);
-    setslicedpayments([]);
+    setfilteredpayments([]);
     let pts = await SB.GetAllItemsFromTable(SB.TABLE_NAME.PAYMENTS);
     pts = pts.map((it, i) => ({
       idx: i,
@@ -190,6 +192,13 @@ export default function Finances() {
       cash: it.cash ? "OUI" : "NON",
       payed: it.payed ? "OUI" : "NON",
       type: GET_PAYMENT_TYPE(it.type).label,
+      action: (
+        <ActionButton
+          icon={del}
+          title={"Delete"}
+          onClick={(e) => onDelPayment(it)}
+        />
+      ),
     }));
 
     setpayments(pts);
@@ -251,6 +260,17 @@ export default function Finances() {
     printTable(DATA, TITLE, TABLE_HEADERS, FILE_NAME);
   }
 
+  function onDelPayment(payment) {
+    console.log(payment);
+    if (window.confirm("Etes-vous sure de vouloir supprimer ce payement?")) {
+      SB.DeleteItem(SB.TABLE_NAME.PAYMENTS, payment.id, (s) => {
+        alert("Payment deleted!");
+        loadPayments();
+        console.log(s);
+      });
+    }
+  }
+
   return (
     <div className=" p-8 container ">
       <PageHeader
@@ -260,7 +280,7 @@ export default function Finances() {
       />
 
       <Pagination
-        onPrint={(e) => onPrint(slicedpayments)}
+        onPrint={(e) => onPrint(filteredpayments)}
         curpage={curpage}
         numpages={numpages}
         setcurpage={setcurpage}
@@ -286,7 +306,7 @@ export default function Finances() {
           </thead>
           <tbody>
             <RowTotal total={total} />
-            {slicedpayments.map((payment) => (
+            {filteredpayments.map((payment) => (
               <tr className={` hover:bg-slate-300 cursor-pointer  `}>
                 {Object.entries(payment)
                   .filter((paymentItemData) =>
@@ -336,7 +356,7 @@ export default function Finances() {
 
       {perpage > ITEMS_PER_PAGE[ITEMS_PER_PAGE.length - 2] && (
         <Pagination
-          onPrint={(e) => onPrint(slicedpayments)}
+          onPrint={(e) => onPrint(filteredpayments)}
           curpage={curpage}
           numpages={numpages}
           setcurpage={setcurpage}

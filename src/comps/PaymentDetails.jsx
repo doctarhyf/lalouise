@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { cltd, PAYMENTS_TYPES } from "../helpers/flow";
-import { StyleFormBlockTitle, StyleInputText } from "../Styles";
-import { GetAllItemsFromTableByColEqVal, TABLE_NAME } from "../db/sb";
-import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
 import { Link } from "react-router-dom";
+import { GetAllItemsFromTableByColEqVal, TABLE_NAME } from "../db/sb";
+import { cltd, PAYMENTS_TYPES } from "../helpers/flow";
+import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
+import { StyleFormBlockTitle, StyleInputText } from "../Styles";
 
 import cash from "../assets/cash.png";
 import check from "../assets/check.png";
 import close from "../assets/close.png";
 import debt from "../assets/debt.png";
 import ok from "../assets/ok.png";
-import DOBInput from "./DOBInput";
+import print from "../assets/print.png";
+import ActionButton from "./ActionButton";
 import ProgressView from "./ProgressView";
 
 export default function PaymenDetails({
@@ -56,6 +57,10 @@ export default function PaymenDetails({
     setPayments(p);
     onPaymentsLoaded(p);
     setLoading(false);
+  }
+
+  function printPayments(payments) {
+    console.log("printing ...", payments);
   }
 
   return (
@@ -180,6 +185,12 @@ export default function PaymenDetails({
               >
                 ACTUALISER
               </button>
+
+              <ActionButton
+                icon={print}
+                title={"Print"}
+                onClick={(e) => printPayments(payments)}
+              />
             </>
           )}
           <p className="font-bold text-sm text-sky-500">TABLEAU PAYEMENT</p>

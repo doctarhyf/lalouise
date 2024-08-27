@@ -15,6 +15,7 @@ import {
 import PatientItem from "../comps/PatientItem";
 import FormPatient from "../comps/FormPatient";
 import ActionButton from "../comps/ActionButton";
+import print from "../assets/print.png";
 
 const SECTIONS = {
   LIST_PATIENTS: "lspat",
@@ -62,7 +63,7 @@ export default function Reception({ user }) {
     setLoading(true);
     setlist([]);
     setListPatients([]);
-    setListPatients([]);
+    setListPatientsFiltered([]);
 
     let list = await GetAllItemsFromTable(TABLE_NAME.PATIENTS);
     setlist(list);
@@ -230,6 +231,10 @@ export default function Reception({ user }) {
     }
   }
 
+  function printPatientsList(patients) {
+    console.log(patients);
+  }
+
   return (
     <div className="p-8">
       <PageHeader
@@ -302,9 +307,9 @@ export default function Reception({ user }) {
               <span>SORTIS HIPTAL</span>
             </div>
             <ActionButton
-              icon={""}
+              icon={print}
               title={"Print"}
-              onClick={(e) => alert("impression list patients ...")}
+              onClick={(e) => printPatientsList(listPatientsFiltered)}
             />
           </div>
 
