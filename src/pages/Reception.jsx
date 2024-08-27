@@ -217,6 +217,7 @@ export default function Reception({ user }) {
         newpat,
         TABLE_NAME.PATIENTS,
         (d) => {
+          alert("Le nouveau patient a ete ajoute avec succes!");
           loadPatList();
           console.log(d);
         },
