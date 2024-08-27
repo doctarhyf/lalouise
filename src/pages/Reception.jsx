@@ -248,35 +248,6 @@ export default function Reception({ user }) {
         )
     );
 
-    //console.log(patients);
-
-    /*
-    {
-    "id": 846,
-    "created_at": "2024-08-27T14:27:11.922468+00:00",
-    "emergContact": {
-        "nom": "",
-        "phone": "",
-        "add": ""
-    },
-    "nom": "mwanza - sido",
-    "phone": "0974507835",
-    "add": "jolie city",
-    "dob": "2024-08-28",
-    "poids": 0,
-    "taille": 0,
-    "vaccVaricelle": true,
-    "vaccMeasles": true,
-    "hepC": false,
-    "autre": "Pas d'autres maladies ",
-    "photo": null,
-    "dep": "MAT",
-    "exit_hospital_at": null,
-    "exit": null
-}
-    */
-
-    //console.log(patients);
     const title = showSortis
       ? `LISTE PATIENTS SORTIS HOPITAL (${patients.length})`
       : `LISTE PATIENTS (${patients.length})`;

@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { GetAllItemsFromTableByColEqVal, TABLE_NAME } from "../db/sb";
-import { cltd, PAYMENTS_TYPES } from "../helpers/flow";
-import { FormatDate, FormatNumberWithCommas } from "../helpers/funcs";
+import { cltd, DEPARTEMENTS, PAYMENTS_TYPES } from "../helpers/flow";
+import {
+  DATE_TYPE,
+  FormatDate,
+  formatFrenchDateTime,
+  formatNumberWithCDF,
+  FormatNumberWithCommas,
+} from "../helpers/funcs";
 import { StyleFormBlockTitle, StyleInputText } from "../Styles";
 
 import cash from "../assets/cash.png";
@@ -13,6 +19,7 @@ import ok from "../assets/ok.png";
 import print from "../assets/print.png";
 import ActionButton from "./ActionButton";
 import ProgressView from "./ProgressView";
+import { printTable } from "../helpers/print";
 
 export default function PaymenDetails({
   showFormNewMed,
@@ -59,8 +66,61 @@ export default function PaymenDetails({
     setLoading(false);
   }
 
-  function printPayments(payments) {
-    console.log("printing ...", payments);
+  function printPayments(payments, pat) {
+    if (payments.length === 0) {
+      alert("Aucun payment a imprimer");
+      return;
+    }
+
+    if (!pat) {
+      alert(
+        "Veuillez dabord selectioner  un patient afin d'imprimer ses payements"
+      );
+      return;
+    }
+
+    const { nom } = pat;
+    const headers = [["id", "created_at", "type", "amount", "cash", "payed"]];
+    let tot = 0;
+    payments = payments.map((payment) => {
+      const p = Object.entries(payment)
+        .map((paymentdata, i) =>
+          headers[0].includes(paymentdata[0]) ? paymentdata[1] : "off"
+        )
+        .filter((paymentdata) => paymentdata !== "off")
+        .map((paymentdata, i) => {
+          if (i === 3 && payment.payed) tot += paymentdata;
+          return paymentdata;
+        })
+        .map((paymentdata, i) =>
+          i === 1
+            ? `${
+                formatFrenchDateTime(paymentdata, DATE_TYPE.DATE_TIME_OBJECT)
+                  .date
+              } - ${
+                formatFrenchDateTime(paymentdata, DATE_TYPE.DATE_TIME_OBJECT)
+                  .time
+              }`
+            : i === 2
+            ? DEPARTEMENTS[paymentdata]?.label
+            : i === 3
+            ? formatNumberWithCDF(paymentdata)
+            : paymentdata
+        );
+
+      return p;
+    });
+
+    const totrow = [, , "TOTAL", tot, ,];
+    payments.push(totrow);
+
+    const title = `PAYMENT DE ${nom.toUpperCase()}`;
+    printTable(
+      payments,
+      title,
+      headers,
+      `${title.replaceAll(" ", "_").replaceAll("-", "_")}.pdf`
+    );
   }
 
   return (
@@ -189,7 +249,7 @@ export default function PaymenDetails({
               <ActionButton
                 icon={print}
                 title={"Print"}
-                onClick={(e) => printPayments(payments)}
+                onClick={(e) => printPayments(payments, updatingPat)}
               />
             </>
           )}
