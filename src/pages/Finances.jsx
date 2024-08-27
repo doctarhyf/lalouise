@@ -18,12 +18,12 @@ import ActionButton from "../comps/ActionButton";
 
 const HEADERS = {
   IDX: "idx",
-  "ID PAYMENT": "id",
+  ID: "id",
   DATE: "created_at",
   "TYPE PAYMENT": "type",
-  "MONTANT(CDF)": "amount",
+  MONTANT: "amount",
   CASH: "cash",
-  "DAJA PAYE": "payed",
+  PAYE: "payed",
   ACTION: "action",
 };
 
@@ -192,7 +192,7 @@ export default function Finances() {
       cash: it.cash ? "OUI" : "NON",
       payed: it.payed ? "OUI" : "NON",
       type: GET_PAYMENT_TYPE(it.type).label,
-      action: (
+      action: !it.payed && (
         <ActionButton
           icon={del}
           title={"Delete"}
@@ -216,7 +216,7 @@ export default function Finances() {
       )
     );
 
-    console.log(paymentsToPrint[0][ROW_INDEX.DATE][1]);
+    //console.log(paymentsToPrint[0][ROW_INDEX.DATE][1]);
 
     const [date, time] = formatFrenchDateTime(
       paymentsToPrint[0][ROW_INDEX.DATE][1]

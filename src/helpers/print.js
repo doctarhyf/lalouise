@@ -20,8 +20,6 @@ export function printTable(
 
   const rect = drawLogo(doc, logo, marginLeft);
 
-  console.log(rect);
-
   let content = {
     startY: rect.h + marginLeft / 2, //rect.y + rect.h,
     head: headers,
@@ -29,8 +27,6 @@ export function printTable(
   };
 
   doc.text(title, marginLeft, rect.hm);
-
-  console.log(doc);
 
   autoTable(doc, content);
   printWatermark(doc, marginLeft);
