@@ -9,18 +9,6 @@ export function printTable(
   headers,
   filename = `report_${new Date().getTime()}.pdf`
 ) {
-  /*
-
-  autoTable(doc, {
-  head: [['Name', 'Email', 'Country']],
-  body: [
-    ['David', 'david@example.com', 'Sweden'],
-    ['Castille', 'castille@example.com', 'Spain'],
-    // ...
-  ],
-})
-
-  */
   const unit = "pt";
   const size = "A4"; // Use A1, A2, A3 or A4
   const orientation = "portrait"; // portrait or landscape
@@ -29,20 +17,6 @@ export function printTable(
   const doc = new jsPDF(orientation, unit, size);
 
   doc.setFontSize(15);
-
-  //const title = "My Awesome Report";
-  //const headers = [["NAME", "PROFESSION"]];
-
-  /*
-people: [
-        { name: "Keanu Reeves", profession: "Actor" },
-        { name: "Lionel Messi", profession: "Football Player" },
-        { name: "Cristiano Ronaldo", profession: "Football Player" },
-        { name: "Jack Nicklaus", profession: "Golf Player" },
-      ]
-  */
-
-  //const data = this.state.people.map((elt) => [elt.name, elt.profession]);
 
   const rect = drawLogo(doc, logo, marginLeft);
 
@@ -58,7 +32,6 @@ people: [
 
   console.log(doc);
 
-  //doc.autoTable(content);
   autoTable(doc, content);
   printWatermark(doc, marginLeft);
   doc.save(filename);
