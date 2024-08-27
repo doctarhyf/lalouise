@@ -14,6 +14,7 @@ import {
 } from "../db/sb";
 import PatientItem from "../comps/PatientItem";
 import FormPatient from "../comps/FormPatient";
+import ActionButton from "../comps/ActionButton";
 
 const SECTIONS = {
   LIST_PATIENTS: "lspat",
@@ -290,14 +291,21 @@ export default function Reception({ user }) {
           />
 
           <div className=" flex gap-2  ">
-            <input
-              value={showSortis}
-              onChange={(e) => setShowSortis(e.target.checked)}
-              type="checkbox"
-              defaultChecked={showSortis}
-              className="toggle"
+            <div>
+              <input
+                value={showSortis}
+                onChange={(e) => setShowSortis(e.target.checked)}
+                type="checkbox"
+                defaultChecked={showSortis}
+                className="toggle"
+              />
+              <span>SORTIS HIPTAL</span>
+            </div>
+            <ActionButton
+              icon={""}
+              title={"Print"}
+              onClick={(e) => alert("impression list patients ...")}
             />
-            <span>SORTIS HIPTAL</span>
           </div>
 
           <div>
