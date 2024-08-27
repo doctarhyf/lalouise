@@ -207,7 +207,8 @@ export default function Finances() {
 
   function onPrint(payments) {
     const TABLE_HEADERS = [Object.keys(HEADERS)];
-    //TABLE_HEADERS[0][ROW_INDEX.DATE] = "HEURE";
+
+    TABLE_HEADERS[0].pop();
 
     let paymentsToPrint = payments.map((payment) =>
       Object.entries(payment).filter((paymentItemData) =>
@@ -244,10 +245,11 @@ export default function Finances() {
         total += parseInt(
           p[ROW_INDEX.AMOUNT].replaceAll(", ", "").replace(" CDF", "")
         );
+      delete p.action;
       return p;
     });
 
-    const totalRow = [, , , "TOTAL", formatNumberWithCDF(total), ,];
+    const totalRow = [, , , "TOTAL", formatNumberWithCDF(total)];
 
     DATA.push(totalRow);
 

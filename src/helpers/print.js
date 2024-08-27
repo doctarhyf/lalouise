@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import logo from "../assets/hospital.png";
 import user from "../assets/user.png";
+import autoTable from "jspdf-autotable";
 
 export function printTable(
   data,
@@ -54,7 +55,11 @@ people: [
   };
 
   doc.text(title, marginLeft, rect.hm);
-  doc.autoTable(content);
+
+  console.log(doc);
+
+  //doc.autoTable(content);
+  autoTable(doc, content);
   printWatermark(doc, marginLeft);
   doc.save(filename);
 }
