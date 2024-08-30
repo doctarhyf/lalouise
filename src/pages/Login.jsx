@@ -6,6 +6,7 @@ import hosp from "../assets/hospital.png";
 import ld from "../assets/loading.gif";
 import { CheckUserExists } from "../db/sb";
 import { Login as SBLogin } from "../helpers/funcs";
+import Loader from "../assets/loader/loader";
 
 export default function Login() {
   const [loading, setloading] = useState();
@@ -19,6 +20,8 @@ export default function Login() {
     setuserdata(undefined);
     setloading(true);
     seterror(false);
+
+    return;
 
     await CheckUserExists(
       phone,
@@ -75,7 +78,7 @@ export default function Login() {
           />
 
           <div className={`mx-auto ${loading ? "block" : "hidden"} `}>
-            <img src={ld} width={30} />
+            <Loader />
           </div>
 
           <div className="text-sm text-center">
