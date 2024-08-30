@@ -21,8 +21,6 @@ export default function Login() {
     setloading(true);
     seterror(false);
 
-    return;
-
     await CheckUserExists(
       phone,
       pwd,
